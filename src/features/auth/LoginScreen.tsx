@@ -3,7 +3,7 @@ import { useAuth } from '../../context/AuthContext';
 import { Button } from '../../components/common/Button';
 
 export const LoginScreen: React.FC = () => {
-  const { loginWithGoogle, loading } = useAuth();
+  const { loginWithGoogle, enterAsOperator, loading } = useAuth();
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleLogin = async () => {
@@ -12,7 +12,7 @@ export const LoginScreen: React.FC = () => {
       await loginWithGoogle();
     } catch (err: any) {
       if (err?.code === 'auth/configuration-not-found' || err?.message?.includes('configuration-not-found')) {
-        setErrorMsg('CONFIG ERROR: Google Sign-in provider is not enabled in Firebase Console. Go to Firebase Console -> Authentication -> Sign-in method, click Google, enable it with a support email, and save.');
+        setErrorMsg('CONFIG NOTICE: Google Sign-in provider is not enabled in Firebase Console. You can click "OPEN HOME" below to enter immediately in Operator mode.');
       } else if (err?.code === 'auth/unauthorized-domain' || err?.message?.includes('unauthorized-domain')) {
         setErrorMsg('UNAUTHORIZED DOMAIN: Add your current domain (e.g., localhost) to Firebase Console -> Authentication -> Settings -> Authorized domains.');
       } else if (err?.code === 'auth/operation-not-allowed') {
@@ -90,9 +90,25 @@ export const LoginScreen: React.FC = () => {
           variant="inverted"
           onClick={handleLogin}
           disabled={loading}
-          style={{ minHeight: '50px', fontSize: '14px' }}
+          style={{ minHeight: '50px', fontSize: '14px', width: '100%' }}
         >
           {loading ? 'INITIALIZING...' : 'CONTINUE WITH GOOGLE'}
+        </Button>
+
+        <div
+          className="font-mono"
+          style={{ fontSize: '11px', color: 'var(--text-muted)', margin: '14px 0 10px 0', letterSpacing: '0.12em' }}
+        >
+          — OR DIRECT ACCESS —
+        </div>
+
+        <Button
+          id="btn-operator-login"
+          variant="outline"
+          onClick={enterAsOperator}
+          style={{ minHeight: '46px', fontSize: '13px', width: '100%' }}
+        >
+          OPEN HOME (OPERATOR MODE)
         </Button>
 
         <div
