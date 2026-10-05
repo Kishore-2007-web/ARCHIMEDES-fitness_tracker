@@ -1,31 +1,66 @@
 # Dependencies
-node_modules
-.pnp
-.pnp.js
+node_modules/
+functions/node_modules/
 
-# Production output
-dist
-dist-ssr
-*.local
-
-# Firebase
-.firebase
-firebase-debug.log
-firebase-debug.*.log
-functions/node_modules
-functions/lib
+# Production builds & bundler artifacts
+dist/
+build/
+.vite/
+functions/lib/
 
 # Environment variables
 .env
-.env*.local
+.env.*
+functions/.env
+functions/.env.*
+!.env.example
 
-# Editor directories and files
+# Firebase & local emulators
+.firebase/
+.emulator/
+firebase-debug.log
+firestore-debug.log
+firebase-debug.*.log
+
+# Service accounts & secrets
+serviceAccountKey.json
+service-account.json
+firebase-adminsdk-*.json
+*-service-account.json
+
+# Test coverage & reports
+coverage/
+.nyc_output/
+playwright-report/
+test-results/
+cypress/videos/
+cypress/screenshots/
+
+# General logs
+*.log
+
+# Operating system files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# IDE & editors
 .vscode/*
 !.vscode/extensions.json
-.idea
-.DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+!.vscode/settings.json
+!.vscode/tasks.json
+.idea/
+*.iml
+
+# TypeScript build info & caches
+*.tsbuildinfo
+.cache/
+.parcel-cache/
+.eslintcache
+.stylelintcache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.temp
