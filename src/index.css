@@ -18,8 +18,9 @@
     --border-subtle: rgba(255, 255, 255, 0.15);
     --border-faint: rgba(255, 255, 255, 0.08);
 
-    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    --font-display: 'Anton', sans-serif;
+    --font-mono: 'Anta', sans-serif;
+    --font-sans: 'Anta', sans-serif;
 
     --radius-none: 0px;
     --radius-sm: 2px;
@@ -49,9 +50,19 @@
     overflow-x: hidden;
     touch-action: manipulation;
   }
+
+  h1, h2, h3 {
+    font-family: var(--font-display);
+    letter-spacing: 0.05em;
+    font-weight: 400;
+  }
 }
 
-/* Typography Utility */
+/* Typography Utilities - Only Anta & Anton */
+.font-display {
+  font-family: var(--font-display);
+}
+
 .font-mono {
   font-family: var(--font-mono);
 }
