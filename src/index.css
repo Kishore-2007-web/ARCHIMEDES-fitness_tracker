@@ -1,0 +1,371 @@
+/* ARCHIMEDES DESIGN SYSTEM - STRICT MONOCHROME (NO HUES, NO GRADIENTS) */
+@layer base {
+  :root {
+    --bg-primary: #000000;
+    --bg-secondary: #0a0a0a;
+    --bg-surface: #121212;
+    --bg-surface-elevated: #1a1a1a;
+    --bg-inverted: #ffffff;
+
+    --text-primary: #ffffff;
+    --text-secondary: rgba(255, 255, 255, 0.7);
+    --text-muted: rgba(255, 255, 255, 0.4);
+    --text-faint: rgba(255, 255, 255, 0.2);
+    --text-inverted: #000000;
+
+    --border-strong: #ffffff;
+    --border-medium: rgba(255, 255, 255, 0.35);
+    --border-subtle: rgba(255, 255, 255, 0.15);
+    --border-faint: rgba(255, 255, 255, 0.08);
+
+    --font-mono: 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+    --font-sans: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+
+    --radius-none: 0px;
+    --radius-sm: 2px;
+    --radius-md: 4px;
+
+    --safe-bottom: env(safe-area-inset-bottom, 0px);
+    --safe-top: env(safe-area-inset-top, 0px);
+  }
+
+  *, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  html, body {
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    font-family: var(--font-sans);
+    font-size: 15px;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    min-height: 100%;
+    width: 100%;
+    overflow-x: hidden;
+    touch-action: manipulation;
+  }
+}
+
+/* Typography Utility */
+.font-mono {
+  font-family: var(--font-mono);
+}
+
+.tracking-system {
+  letter-spacing: 0.12em;
+}
+
+.tracking-wide-system {
+  letter-spacing: 0.2em;
+}
+
+/* Common System Structural Components */
+.sys-container {
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px 20px calc(84px + var(--safe-bottom)) 20px;
+}
+
+@media (min-width: 1024px) {
+  .sys-container {
+    max-width: 900px;
+    padding-bottom: 40px;
+  }
+}
+
+.sys-header {
+  border-bottom: 1px solid var(--border-medium);
+  padding-bottom: 14px;
+  margin-bottom: 20px;
+}
+
+.sys-section {
+  border: 1px solid var(--border-subtle);
+  background-color: var(--bg-surface);
+  padding: 18px;
+  margin-bottom: 16px;
+  position: relative;
+}
+
+.sys-section-title {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.15em;
+  color: var(--text-muted);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.sys-divider {
+  height: 1px;
+  background-color: var(--border-subtle);
+  margin: 16px 0;
+}
+
+/* System Buttons */
+.sys-btn {
+  font-family: var(--font-mono);
+  font-size: 13px;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 12px 18px;
+  min-height: 46px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  transition: transform 0.08s ease, background-color 0.1s ease, color 0.1s ease, border-color 0.1s ease;
+  user-select: none;
+  text-decoration: none;
+  background: transparent;
+  color: var(--text-primary);
+  border: 1px solid var(--border-strong);
+  width: 100%;
+}
+
+.sys-btn:active {
+  transform: scale(0.985);
+}
+
+.sys-btn-inverted {
+  background-color: var(--bg-inverted);
+  color: var(--text-inverted);
+  border: 1px solid var(--border-strong);
+}
+
+.sys-btn-inverted:hover, .sys-btn-inverted:active {
+  background-color: rgba(255, 255, 255, 0.88);
+}
+
+.sys-btn-outline:hover, .sys-btn-outline:active {
+  background-color: rgba(255, 255, 255, 0.1);
+}
+
+.sys-btn-subtle {
+  border-color: var(--border-subtle);
+  color: var(--text-secondary);
+}
+
+.sys-btn-subtle:hover, .sys-btn-subtle:active {
+  border-color: var(--border-medium);
+  color: var(--text-primary);
+  background-color: rgba(255, 255, 255, 0.04);
+}
+
+.sys-btn:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* Inputs */
+.sys-input {
+  font-family: var(--font-mono);
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+  padding: 10px 12px;
+  font-size: 15px;
+  border-radius: var(--radius-sm);
+  width: 100%;
+  min-height: 44px;
+}
+
+.sys-input:focus {
+  outline: none;
+  border-color: var(--border-strong);
+  background-color: var(--bg-surface);
+}
+
+.sys-input::placeholder {
+  color: var(--text-muted);
+}
+
+/* Badge / Pills */
+.sys-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border: 1px solid var(--border-medium);
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sys-tag-inverted {
+  background-color: var(--bg-inverted);
+  color: var(--text-inverted);
+  border-color: var(--border-strong);
+}
+
+/* Grid & Flex Utilities */
+.flex-between {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-col {
+  display: flex;
+  flex-direction: column;
+}
+
+.gap-2 { gap: 8px; }
+.gap-3 { gap: 12px; }
+.gap-4 { gap: 16px; }
+.gap-6 { gap: 24px; }
+
+/* Inversion Block for PR / Boss Alerts */
+.sys-alert-inverted {
+  background-color: var(--bg-inverted);
+  color: var(--text-inverted);
+  border: 1px solid var(--border-strong);
+  padding: 16px;
+  margin: 14px 0;
+  font-family: var(--font-mono);
+}
+
+/* Bottom Navigation Bar */
+.sys-bottom-nav {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--bg-primary);
+  border-top: 1px solid var(--border-medium);
+  display: flex;
+  align-items: stretch;
+  justify-content: space-around;
+  height: 60px;
+  padding-bottom: var(--safe-bottom);
+  z-index: 100;
+}
+
+.sys-nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+  color: var(--text-muted);
+  font-family: var(--font-mono);
+  font-size: 9px;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  font-weight: 700;
+  padding: 6px 2px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  transition: color 0.1s ease;
+  position: relative;
+}
+
+.sys-nav-item.active {
+  color: var(--text-primary);
+}
+
+.sys-nav-item.active::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 20%;
+  right: 20%;
+  height: 2px;
+  background-color: var(--text-primary);
+}
+
+/* Modals & Overlays */
+.sys-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+  z-index: 200;
+}
+
+.sys-modal-content {
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-strong);
+  width: 100%;
+  max-width: 480px;
+  max-height: 88vh;
+  overflow-y: auto;
+  padding: 22px;
+  position: relative;
+}
+
+/* Level Up & XP Reveal Animations - Event-driven, Short, Monochrome */
+@keyframes sysFadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes sysScaleIn {
+  from { opacity: 0; transform: scale(0.96); }
+  to { opacity: 1; transform: scale(1); }
+}
+
+.anim-fade-in {
+  animation: sysFadeIn 0.2s ease-out forwards;
+}
+
+.anim-scale-in {
+  animation: sysScaleIn 0.25s ease-out forwards;
+}
+
+/* Low-motion and prefers-reduced-motion overrides */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+.reduced-motion *, .reduced-motion *::before, .reduced-motion *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+}
+
+/* Custom Scrollbar Monochrome */
+::-webkit-scrollbar {
+  width: 4px;
+  height: 4px;
+}
+::-webkit-scrollbar-track {
+  background: var(--bg-primary);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--border-medium);
+}
+::-webkit-scrollbar-thumb:hover {
+  background: var(--border-strong);
+}

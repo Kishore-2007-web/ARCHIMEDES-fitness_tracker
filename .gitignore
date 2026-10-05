@@ -1,0 +1,31 @@
+# Dependencies
+node_modules
+.pnp
+.pnp.js
+
+# Production output
+dist
+dist-ssr
+*.local
+
+# Firebase
+.firebase
+firebase-debug.log
+firebase-debug.*.log
+functions/node_modules
+functions/lib
+
+# Environment variables
+.env
+.env*.local
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+.DS_Store
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
