@@ -11,7 +11,15 @@ export const LoginScreen: React.FC = () => {
     try {
       await loginWithGoogle();
     } catch (err: any) {
-      setErrorMsg(err.message || 'Authentication error.');
+      if (err?.code === 'auth/configuration-not-found' || err?.message?.includes('configuration-not-found')) {
+        setErrorMsg('CONFIG ERROR: Google Sign-in provider is not enabled in Firebase Console. Go to Firebase Console -> Authentication -> Sign-in method, click Google, enable it with a support email, and save.');
+      } else if (err?.code === 'auth/unauthorized-domain' || err?.message?.includes('unauthorized-domain')) {
+        setErrorMsg('UNAUTHORIZED DOMAIN: Add your current domain (e.g., localhost) to Firebase Console -> Authentication -> Settings -> Authorized domains.');
+      } else if (err?.code === 'auth/operation-not-allowed') {
+        setErrorMsg('PROVIDER DISABLED: Google Sign-in is not activated in Firebase Console for this project.');
+      } else {
+        setErrorMsg(err.message || 'Authentication error.');
+      }
     }
   };
 
