@@ -65,8 +65,9 @@ export function evaluateAchievements(params: {
         if (consistencyStreak >= 60) conditionMet = true;
         break;
 
+      case 'ach_streak_120':
       case 'ach_streak_124':
-        if (consistencyStreak >= 124 || todaySession.dayNumber >= 124) conditionMet = true;
+        if (consistencyStreak >= 120 || todaySession.dayNumber >= 120) conditionMet = true;
         break;
 
       case 'ach_recovery_discipline':

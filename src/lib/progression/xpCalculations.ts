@@ -29,6 +29,7 @@ export const STREAK_MILESTONES: Record<number, number> = {
   30: 300,
   60: 500,
   90: 800,
+  120: 1500,
   124: 1500
 };
 

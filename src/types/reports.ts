@@ -24,7 +24,7 @@ export interface WeeklyReport {
 
 export interface MilestoneReport {
   id: string;
-  milestoneDay: 30 | 60 | 90 | 124;
+  milestoneDay: 30 | 60 | 90 | 120 | 124;
   title: string;
   date: string;
   level: number;

@@ -26,7 +26,7 @@ export const SystemHeader: React.FC<SystemHeaderProps> = ({
           </span>
         </div>
         <h1 className="font-mono" style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '0.08em', marginTop: '4px' }}>
-          DAY {padDayNumber(dayNumber)} <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>/ 124</span>
+          DAY {padDayNumber(dayNumber)} <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>/ 120</span>
         </h1>
         <div className="font-mono" style={{ fontSize: '12px', color: 'var(--text-secondary)', letterSpacing: '0.06em' }}>
           {formattedDate}

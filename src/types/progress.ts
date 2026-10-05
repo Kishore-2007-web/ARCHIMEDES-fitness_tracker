@@ -1,5 +1,5 @@
 export interface ProgressCheckpoint {
-  checkpointId: 'day001' | 'day030' | 'day060' | 'day090' | 'day124';
+  checkpointId: 'day001' | 'day030' | 'day060' | 'day090' | 'day120' | 'day124';
   dayNumber: number;
   date: string;
   bodyWeightKg?: number;

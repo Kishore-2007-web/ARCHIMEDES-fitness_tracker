@@ -46,7 +46,7 @@ graph TD
 - **`UserProgressionContext` (`src/context/UserProgressionContext.tsx`)**:
   - Coordinates the active workout session in Firestore (`users/{uid}/activeSessions/{dateKey}`).
   - Maintains the silent, timestamp-based Rest Timer.
-  - Drives challenge day navigation (Day 1 to 124) with default selection pegged to Kolkata local time.
+  - Drives challenge day navigation (Day 1 to 120) with default selection pegged to Kolkata local time.
   - Handles authoritative workout finalization and triggers sequential XP and Level-up modal animations.
 
 ### 2.4 Styling & Design System

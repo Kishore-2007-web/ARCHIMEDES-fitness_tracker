@@ -49,7 +49,7 @@ export interface ExerciseLog {
 
 export interface ActiveSession {
   date: string;       // YYYY-MM-DD
-  dayNumber: number;  // 1 to 124
+  dayNumber: number;  // 1 to 120
   scheduleId: string;
   startedAt: string;
   status: 'in_progress' | 'completed' | 'exception' | 'missed';

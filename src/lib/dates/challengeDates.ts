@@ -1,14 +1,14 @@
-export const CHALLENGE_START_DATE = '2026-10-07';
+export const CHALLENGE_START_DATE = '2026-10-11';
 export const CHALLENGE_END_DATE = '2027-02-07';
 export const CHALLENGE_TIMEZONE = 'Asia/Kolkata';
-export const TOTAL_CHALLENGE_DAYS = 124;
+export const TOTAL_CHALLENGE_DAYS = 120;
 
 export interface ChallengeDayInfo {
-  dayNumber: number; // 1 to 124
+  dayNumber: number; // 1 to 120
   dateString: string; // YYYY-MM-DD
-  formattedDate: string; // "07 OCT 2026"
+  formattedDate: string; // "11 OCT 2026"
   weekday: number; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-  weekdayName: string; // "WEDNESDAY"
+  weekdayName: string; // "SUNDAY"
   isBeforeChallenge: boolean;
   isAfterChallenge: boolean;
   isInsideChallenge: boolean;
@@ -19,7 +19,7 @@ export interface ChallengeDayInfo {
   hasBossUnlock?: boolean;
   bossId?: string;
   isPhotoCheckpoint?: boolean;
-  checkpointId?: 'day001' | 'day030' | 'day060' | 'day090' | 'day124';
+  checkpointId?: 'day001' | 'day030' | 'day060' | 'day090' | 'day120' | 'day124';
 }
 
 const MONTH_NAMES = [
@@ -105,11 +105,11 @@ export function formatChallengeDate(dateStr: string): string {
 }
 
 /**
- * Given a challenge day number (1 to 124), returns the exact ISO date string (YYYY-MM-DD)
+ * Given a challenge day number (1 to 120), returns the exact ISO date string (YYYY-MM-DD)
  */
 export function getDateStringForDayNumber(dayNumber: number): string {
-  // Day 1 is 2026-10-07
-  const start = new Date(Date.UTC(2026, 9, 7)); // Month 9 is October
+  // Day 1 is 2026-10-11
+  const start = new Date(Date.UTC(2026, 9, 11)); // Month 9 is October
   const target = new Date(start.getTime() + (dayNumber - 1) * 86400000);
   const y = target.getUTCFullYear();
   const m = String(target.getUTCMonth() + 1).padStart(2, '0');
@@ -118,10 +118,10 @@ export function getDateStringForDayNumber(dayNumber: number): string {
 }
 
 /**
- * Computes calendar day difference between 2026-10-07 and given date string
+ * Computes calendar day difference between 2026-10-11 and given date string
  */
 export function getChallengeDayNumber(dateStr: string): number {
-  const start = new Date(Date.UTC(2026, 9, 7));
+  const start = new Date(Date.UTC(2026, 9, 11));
   const parts = dateStr.split('-').map(Number);
   const target = new Date(Date.UTC(parts[0], parts[1] - 1, parts[2]));
   const diffMs = target.getTime() - start.getTime();
@@ -169,15 +169,16 @@ export function getChallengeDay(dateInput?: string | Date): ChallengeDayInfo {
   else if (dayNumber === 75) { hasBossUnlock = true; bossId = 'boss_d75'; }
   else if (dayNumber === 90) { hasBossUnlock = true; bossId = 'boss_d90'; }
   else if (dayNumber === 105) { hasBossUnlock = true; bossId = 'boss_d105'; }
-  else if (dayNumber === 124) { hasBossUnlock = true; bossId = 'boss_final'; }
+  else if (dayNumber === 120 || dayNumber === 124) { hasBossUnlock = true; bossId = 'boss_final'; }
 
-  // Photo checkpoint milestones (Day 1, 30, 60, 90, 124)
+  // Photo checkpoint milestones (Day 1, 30, 60, 90, 120)
   let isPhotoCheckpoint = false;
-  let checkpointId: 'day001' | 'day030' | 'day060' | 'day090' | 'day124' | undefined;
+  let checkpointId: 'day001' | 'day030' | 'day060' | 'day090' | 'day120' | 'day124' | undefined;
   if (dayNumber === 1) { isPhotoCheckpoint = true; checkpointId = 'day001'; }
   else if (dayNumber === 30) { isPhotoCheckpoint = true; checkpointId = 'day030'; }
   else if (dayNumber === 60) { isPhotoCheckpoint = true; checkpointId = 'day060'; }
   else if (dayNumber === 90) { isPhotoCheckpoint = true; checkpointId = 'day090'; }
+  else if (dayNumber === 120) { isPhotoCheckpoint = true; checkpointId = 'day120'; }
   else if (dayNumber === 124) { isPhotoCheckpoint = true; checkpointId = 'day124'; }
 
   return {

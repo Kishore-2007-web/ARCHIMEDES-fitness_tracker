@@ -20,7 +20,7 @@ export function createDefaultUserProfile(uid: string, displayName: string, email
     displayName: displayName || 'SYSTEM USER',
     email,
     photoURL: photoURL || '',
-    challengeStart: '2026-10-07',
+    challengeStart: '2026-10-11',
     challengeEnd: '2027-02-07',
     timezone: 'Asia/Kolkata',
     level: 1,

@@ -16,7 +16,7 @@ Firestore Root
         ├── rewards/{rewardId}          [Custom user-defined reward items]
         ├── rewardTransactions/{txId}   [Token acquisition and redemption ledger]
         ├── events/{eventId}            [System audit trail feed]
-        ├── progressCheckpoints/{cpId}  [Checkpoints: Day 1, 30, 60, 90, 124]
+        ├── progressCheckpoints/{cpId}  [Checkpoints: Day 1, 30, 60, 90, 120]
         ├── measurements/{measId}       [Body measurement logs]
         ├── reports/{reportId}          [Cached weekly performance summaries]
         └── milestoneReports/{reportId} [Cached milestone reports]
@@ -37,7 +37,7 @@ Firestore Root
 | `displayName` | `string` | Operator display name (defaults to "SYSTEM USER") |
 | `email` | `string` | Operator Google account email |
 | `photoURL` | `string` | Optional Google avatar URL |
-| `challengeStart` | `string` | Fixed ISO date: `'2026-10-07'` |
+| `challengeStart` | `string` | Fixed ISO date: `'2026-10-11'` |
 | `challengeEnd` | `string` | Fixed ISO date: `'2027-02-07'` |
 | `timezone` | `string` | Fixed challenge timezone: `'Asia/Kolkata'` |
 | `level` | `number` | Current system level (1 to 50+) |
@@ -61,14 +61,14 @@ Firestore Root
 ---
 
 ### 2.2 Active Session Document
-- **Path**: `users/{uid}/activeSessions/{dateKey}` (e.g., `dateKey = '2026-10-07'`)
+- **Path**: `users/{uid}/activeSessions/{dateKey}` (e.g., `dateKey = '2026-10-11'`)
 - **Purpose**: Persists in-progress workout sets online so workouts can resume if the browser is reloaded or the mobile app is backgrounded.
 - **Ownership**: Read/Write restricted to `request.auth.uid == uid`. Deleted upon finalization.
 
 | Field | Type | Description |
 | :--- | :--- | :--- |
 | `date` | `string` | Date string (`YYYY-MM-DD`) |
-| `dayNumber` | `number` | Challenge day number (1 to 124) |
+| `dayNumber` | `number` | Challenge day number (1 to 120) |
 | `scheduleId` | `string` | Schedule identifier (e.g., `'strength_a'`, `'deadlift_strength'`) |
 | `startedAt` | `string` | ISO timestamp of session initiation |
 | `status` | `string` | `'in_progress'` |
@@ -79,7 +79,7 @@ Firestore Root
 ---
 
 ### 2.3 Finalized Completed Session Document
-- **Path**: `users/{uid}/sessions/{sessionId}` (e.g., `sessionId = 'session_2026-10-07'`)
+- **Path**: `users/{uid}/sessions/{sessionId}` (e.g., `sessionId = 'session_2026-10-11'`)
 - **Purpose**: Immutable audit log of a finalized training session or approved exception.
 - **Ownership**: Read and Create allowed by authenticated owner; Update and Delete explicitly disallowed to ensure audit integrity.
 
@@ -87,7 +87,7 @@ Firestore Root
 | :--- | :--- | :--- |
 | `id` | `string` | Unique session ID: `'session_YYYY-MM-DD'` |
 | `date` | `string` | Challenge date (`YYYY-MM-DD`) |
-| `dayNumber` | `number` | Day number (1 to 124) |
+| `dayNumber` | `number` | Day number (1 to 120) |
 | `scheduleId` | `string` | Schedule ID |
 | `weekday` | `number` | Day of week (0 = Sunday, 1 = Monday, ..., 6 = Saturday) |
 | `status` | `string` | Final status: `'completed'`, `'reduced'`, `'exception'`, or `'missed'` |
@@ -108,7 +108,7 @@ Firestore Root
 ---
 
 ### 2.4 Exercise Historical Record
-- **Path**: `users/{uid}/exerciseRecords/{recordId}` (e.g., `rec_back_squat_2026-10-07`)
+- **Path**: `users/{uid}/exerciseRecords/{recordId}` (e.g., `rec_back_squat_2026-10-11`)
 - **Purpose**: Fast chronological queries of performance history and Last Session lookups per movement.
 
 | Field | Type | Description |
@@ -117,7 +117,7 @@ Firestore Root
 | `exerciseId` | `string` | Identifier matching schedule exercise (e.g., `'back_squat'`) |
 | `exerciseName` | `string` | Display name of exercise |
 | `date` | `string` | Date of performance (`YYYY-MM-DD`) |
-| `dayNumber` | `number` | Challenge day number (1 to 124) |
+| `dayNumber` | `number` | Challenge day number (1 to 120) |
 | `bestWeight` | `number` | Highest working weight in session |
 | `bestReps` | `number` | Reps completed at maximum weight |
 | `bestDurationSec`| `number` | Best duration hold if applicable |
@@ -129,13 +129,13 @@ Firestore Root
 
 ### 2.5 Progress Checkpoints
 - **Path**: `users/{uid}/progressCheckpoints/{checkpointId}`
-- **Valid IDs**: `'day001'`, `'day030'`, `'day060'`, `'day090'`, `'day124'`
+- **Valid IDs**: `'day001'`, `'day030'`, `'day060'`, `'day090'`, `'day120'`
 - **Purpose**: Physical baseline and evolution audits.
 
 | Field | Type | Description |
 | :--- | :--- | :--- |
-| `checkpointId` | `string` | `'day001'` through `'day124'` |
-| `dayNumber` | `number` | 1, 30, 60, 90, or 124 |
+| `checkpointId` | `string` | `'day001'` through `'day120'` |
+| `dayNumber` | `number` | 1, 30, 60, 90, or 120 |
 | `date` | `string` | Date of checkpoint |
 | `bodyWeightKg` | `number` | Recorded body weight |
 | `waistIn` | `number` | Recorded waist circumference |
@@ -171,7 +171,7 @@ Examples:
 - `users/abc123xyz/progress/day001/side.webp`
 - `users/abc123xyz/progress/day001/back.webp`
 - `users/abc123xyz/progress/day030/front.webp`
-- `users/abc123xyz/progress/day124/back.webp`
+- `users/abc123xyz/progress/day120/back.webp`
 
 ### Storage Invariants
 1. **Private Ownership**: Enforced by `storage.rules`:

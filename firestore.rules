@@ -41,7 +41,7 @@ service cloud.firestore {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }
 
-      // Progress checkpoints (Day 1, 30, 60, 90, 124)
+      // Progress checkpoints (Day 1, 30, 60, 90, 120)
       match /progressCheckpoints/{checkpointId} {
         allow read, write: if request.auth != null && request.auth.uid == userId;
       }

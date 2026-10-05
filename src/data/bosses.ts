@@ -141,14 +141,14 @@ export const SYSTEM_BOSSES: BossQuest[] = [
   },
   {
     id: 'boss_final',
-    dayNumber: 124,
+    dayNumber: 120,
     title: 'ARCHIMEDES CORE',
     subtitle: 'Final Boss: Protocol Culmination & Full Ascension',
     type: 'final',
     targetMetric: {
       type: 'CONSISTENCY',
-      targetValue: 124,
-      description: 'Reach and complete Day 124 of the ARCHIMEDES progression system.'
+      targetValue: 120,
+      description: 'Reach and complete Day 120 of the ARCHIMEDES progression system.'
     },
     reward: {
       xp: 1500,

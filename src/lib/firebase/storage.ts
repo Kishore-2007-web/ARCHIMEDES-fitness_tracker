@@ -13,7 +13,7 @@ import { storage } from './config';
  */
 export async function uploadProgressPhoto(
   uid: string,
-  checkpointId: 'day001' | 'day030' | 'day060' | 'day090' | 'day124',
+  checkpointId: 'day001' | 'day030' | 'day060' | 'day090' | 'day120' | 'day124',
   photoType: 'front' | 'side' | 'back',
   blob: Blob
 ): Promise<string> {

@@ -107,7 +107,7 @@ export const QuestScreen: React.FC = () => {
         </button>
 
         <div style={{ textAlign: 'center' }}>
-          <div style={{ fontSize: '12px', fontWeight: 800 }}>DAY {padDayNumber(selectedDayNumber)} / 124</div>
+          <div style={{ fontSize: '12px', fontWeight: 800 }}>DAY {padDayNumber(selectedDayNumber)} / 120</div>
           <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{dayInfo.formattedDate}</div>
         </div>
 
@@ -115,8 +115,8 @@ export const QuestScreen: React.FC = () => {
           type="button"
           className="sys-btn sys-btn-subtle"
           style={{ width: 'auto', minHeight: '36px', padding: '4px 10px' }}
-          onClick={() => setSelectedDayNumber(Math.min(124, selectedDayNumber + 1))}
-          disabled={selectedDayNumber >= 124}
+          onClick={() => setSelectedDayNumber(Math.min(120, selectedDayNumber + 1))}
+          disabled={selectedDayNumber >= 120}
         >
           NEXT DAY →
         </button>

@@ -6,8 +6,8 @@ ARCHIMEDES
 PERSONAL PROGRESSION SYSTEM
 
 CHALLENGE WINDOW:
-07 OCTOBER 2026 → 07 FEBRUARY 2027
-124 CALENDAR DAYS INCLUSIVE
+11 OCTOBER 2026 → 07 FEBRUARY 2027
+120 CALENDAR DAYS INCLUSIVE
 TIMEZONE: Asia/Kolkata
 ```
 
@@ -21,7 +21,7 @@ TIMEZONE: Asia/Kolkata
 - **Performance Logging**: Real-time set logging (weight, reps, duration, assistance) with Last Session historical visibility.
 - **Progression Mechanics**: Cumulative XP, mathematical level thresholds (Levels 1 to 50+), weighted System Power calculations, and tier ranks (`E`, `D`, `C`, `B`, `A`, `S`).
 - **Game-Inspired Milestones**: Boss quests with logged performance verification, visible and secret achievements, cosmetic title unlocks, and controlled reward tokens.
-- **Progress Verification**: Checkpoints (Day 1, 30, 60, 90, 124) with body measurements and private, EXIF-stripped WebP progress photos.
+- **Progress Verification**: Checkpoints (Day 1, 30, 60, 90, 120) with body measurements and private, EXIF-stripped WebP progress photos.
 - **Deterministic Reporting**: Challenge-week performance summaries and milestone reports without reliance on external AI services.
 
 The application is inspired by game-like progression systems and instrument panel operating systems, but is strictly original and is not a direct visual or intellectual copy of Solo Leveling or any commercial video game.
@@ -66,7 +66,7 @@ Every technology listed below is installed, configured, and operational in this 
 ### Implemented Features
 - [x] **Google Authentication**: Mobile-friendly redirect and popup authentication with per-UID data isolation.
 - [x] **Day 1 Onboarding**: Mandatory baseline intake (109 kg, 44 in waist, lift numbers) and 3 progress photos (Front, Side, Back).
-- [x] **Deterministic Challenge Date Engine**: Exact 124-day mapping (Day 1: Wednesday, 07 Oct 2026; Day 124: Sunday, 07 Feb 2027) in `Asia/Kolkata` timezone.
+- [x] **Deterministic Challenge Date Engine**: Exact 120-day mapping (Day 1: Sunday, 11 Oct 2026; Day 120: Sunday, 07 Feb 2027) in `Asia/Kolkata` timezone.
 - [x] **Weekly Training Engine**: Fully data-driven schedule for all 7 days with exercise tracking, sets, reps, and metric types (`WEIGHT_REPS`, `BODYWEIGHT_REPS`, `DURATION`, `WEIGHT_DURATION`, `ASSISTANCE_REPS`, `TIME_BLOCK`, `CHECK_ONLY`).
 - [x] **Real-Time Workout Logging**: Online persistence in `users/{uid}/activeSessions/{dateKey}` allowing session resumption across browser reloads.
 - [x] **Silent Rest Timer**: Accurate timestamp-based 3-minute rest timer with `+30s`, `Skip`, and `Pause` controls.
@@ -78,8 +78,8 @@ Every technology listed below is installed, configured, and operational in this 
 - [x] **Boss Quests**: Milestone challenges verified against logged workout sets (e.g., Day 30 Iron Gate).
 - [x] **Achievements & Cosmetic Titles**: Visible and hidden achievements with single-grant idempotency; cosmetic title equip system.
 - [x] **Reward Vault**: Controlled random reward token generator (~2/week cap with bad-luck protection) and self-treat redemption ledger.
-- [x] **Progress Photo Timeline**: Checkpoints at Day 1, 30, 60, 90, and 124 with EXIF stripping.
-- [x] **124-Day Calendar**: Monochrome interactive challenge calendar grid.
+- [x] **Progress Photo Timeline**: Checkpoints at Day 1, 30, 60, 90, and 120 with EXIF stripping.
+- [x] **120-Day Calendar**: Monochrome interactive challenge calendar grid.
 - [x] **Account Deletion**: Complete multi-collection Firestore and Storage purge with confirmation.
 
 ### Planned Features

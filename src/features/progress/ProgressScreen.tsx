@@ -19,7 +19,7 @@ export const ProgressScreen: React.FC = () => {
   const [exerciseHistory, setExerciseHistory] = useState<ExerciseHistoricalRecord[]>([]);
 
   // Selected photo checkpoint modal
-  const [activeCheckpointView, setActiveCheckpointView] = useState<'day001' | 'day030' | 'day060' | 'day090' | 'day124' | null>(null);
+  const [activeCheckpointView, setActiveCheckpointView] = useState<'day001' | 'day030' | 'day060' | 'day090' | 'day120' | null>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -64,7 +64,7 @@ export const ProgressScreen: React.FC = () => {
 
   // Photo upload handler for current checkpoint
   const handlePhotoUpload = async (
-    cpId: 'day001' | 'day030' | 'day060' | 'day090' | 'day124',
+    cpId: 'day001' | 'day030' | 'day060' | 'day090' | 'day120',
     type: 'front' | 'side' | 'back',
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -80,8 +80,8 @@ export const ProgressScreen: React.FC = () => {
 
       const existingCp = checkpoints[cpId] || {
         checkpointId: cpId,
-        dayNumber: cpId === 'day001' ? 1 : cpId === 'day030' ? 30 : cpId === 'day060' ? 60 : cpId === 'day090' ? 90 : 124,
-        date: getDateStringForDayNumber(cpId === 'day001' ? 1 : cpId === 'day030' ? 30 : cpId === 'day060' ? 60 : cpId === 'day090' ? 90 : 124),
+        dayNumber: cpId === 'day001' ? 1 : cpId === 'day030' ? 30 : cpId === 'day060' ? 60 : cpId === 'day090' ? 90 : 120,
+        date: getDateStringForDayNumber(cpId === 'day001' ? 1 : cpId === 'day030' ? 30 : cpId === 'day060' ? 60 : cpId === 'day090' ? 90 : 120),
         photos: {},
         photosComplete: false,
         createdAt: new Date().toISOString(),
@@ -132,13 +132,13 @@ export const ProgressScreen: React.FC = () => {
           <span className="font-mono" style={{ fontSize: '11px', letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
             ARCHIMEDES // EVOLUTION AUDIT
           </span>
-          <span className="sys-tag">DAY {padDayNumber(challengeDay.dayNumber)} / 124</span>
+          <span className="sys-tag">DAY {padDayNumber(challengeDay.dayNumber)} / 120</span>
         </div>
         <h1 className="font-mono" style={{ fontSize: '20px', fontWeight: 800, margin: '4px 0 2px 0' }}>
           PROGRESS & MEASUREMENTS
         </h1>
         <div className="font-mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-          124-DAY PHYSICAL & PERFORMANCE TIMELINE
+          120-DAY PHYSICAL & PERFORMANCE TIMELINE
         </div>
       </div>
 
@@ -285,7 +285,7 @@ export const ProgressScreen: React.FC = () => {
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px', textAlign: 'center' }}>
-          {(['day001', 'day030', 'day060', 'day090', 'day124'] as const).map((cpId) => {
+          {(['day001', 'day030', 'day060', 'day090', 'day120'] as const).map((cpId) => {
             const cp = checkpoints[cpId];
             const isComplete = cp?.photosComplete;
             return (
@@ -363,15 +363,15 @@ export const ProgressScreen: React.FC = () => {
         )}
       </section>
 
-      {/* CHALLENGE CALENDAR (124 DAYS) */}
+      {/* CHALLENGE CALENDAR (120 DAYS) */}
       <section className="sys-section font-mono">
         <div className="sys-section-title">
           <span>CHALLENGE CALENDAR</span>
-          <span className="sys-tag">124 DAYS</span>
+          <span className="sys-tag">120 DAYS</span>
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '8px' }}>
-          {Array.from({ length: 124 }, (_, i) => i + 1).map((d) => {
+          {Array.from({ length: 120 }, (_, i) => i + 1).map((d) => {
             const status = sessionStatusMap.get(d);
             const isToday = d === challengeDay.dayNumber;
 

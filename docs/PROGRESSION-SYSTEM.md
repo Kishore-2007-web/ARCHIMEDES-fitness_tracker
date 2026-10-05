@@ -69,7 +69,7 @@ Awarded the first time a consistency streak reaches a milestone:
 - **30 Days**: +300 XP
 - **60 Days**: +500 XP
 - **90 Days**: +800 XP
-- **124 Days**: +1,500 XP
+- **120 Days**: +1,500 XP
 
 ---
 
@@ -134,7 +134,7 @@ Bosses cannot be manually marked complete; completion requires verifiable proof 
 | **Agility Tempest** | 75 | Jump Rope 15 min continuous cadence | +500 XP, +4 AGI |
 | **Gravity Breaker** | 90 | Push-ups 15 strict unbroken reps | +800 XP, +6 END, Token ×1 |
 | **Unbreakable Chain**| 105| 105-day unbroken consistency | +600 XP, +5 DIS |
-| **Archimedes Core** | 124| Final Challenge Completion | +1,500 XP, +10 FOC, Token ×3, Title: *ASCENDED* |
+| **Archimedes Core** | 120| Final Challenge Completion | +1,500 XP, +10 FOC, Token ×3, Title: *ASCENDED* |
 
 ---
 
