@@ -7,15 +7,33 @@ export type MetricType =
   | 'TIME_BLOCK'
   | 'CHECK_ONLY';
 
+export type ExerciseCategory =
+  | 'primary'
+  | 'secondary'
+  | 'support'
+  | 'athletic'
+  | 'calisthenics'
+  | 'grip'
+  | 'neck'
+  | 'forearms'
+  | 'conditioning'
+  | 'recovery';
+
 export interface ExerciseDefinition {
   id: string;
   name: string;
   targetSets: number;
   targetRepOrDuration: string;
   metricType: MetricType;
-  category: 'primary' | 'secondary' | 'support' | 'athletic' | 'calisthenics' | 'grip' | 'neck' | 'forearms';
+  category: ExerciseCategory;
   notes?: string;
   isBenchmark?: boolean;
+}
+
+export interface PreparationSection {
+  title: string;
+  duration?: string;
+  items: string[];
 }
 
 export interface WorkoutScheduleDay {
@@ -28,8 +46,12 @@ export interface WorkoutScheduleDay {
   preparationMinutes: number;
   recoveryMinutes: number;
   walkingMinutes: number;
+  walkingRange?: string; // e.g. "30–45 min"
+  dayNote?: string;
+  preparationSections?: PreparationSection[];
   preparationChecklist: string[];
   exercises: ExerciseDefinition[];
+  recoverySections?: PreparationSection[];
   recoveryChecklist: string[];
   primaryAttributes: ('strength' | 'endurance' | 'agility' | 'mobility' | 'discipline' | 'focus')[];
 }

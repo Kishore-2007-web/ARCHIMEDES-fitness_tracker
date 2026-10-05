@@ -54,7 +54,7 @@ export const WEEKDAY_SCHEDULE_METADATA: Record<number, { id: string; title: stri
   },
   4: {
     id: 'athletic_mobility',
-    title: 'ATHLETIC + MOBILITY',
+    title: 'ATHLETIC + MOBILITY DAY',
     baseXP: 200,
     mission: 'Complete conditioning block and thorough 15-minute recovery.'
   },

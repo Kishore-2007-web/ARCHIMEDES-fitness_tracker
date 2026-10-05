@@ -1,7 +1,7 @@
 import { WorkoutScheduleDay } from '../types/workout';
 
 export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
-  // 1 = Monday
+  // 1 = MONDAY
   1: {
     id: 'strength_a',
     weekday: 1,
@@ -11,16 +11,52 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     baseXP: 300,
     preparationMinutes: 30,
     recoveryMinutes: 15,
-    walkingMinutes: 40,
+    walkingMinutes: 45,
+    walkingRange: '30–45 min',
+    dayNote: 'Primary strength day focusing on heavy barbell mechanics, upper pull support and grip fortitude.',
     primaryAttributes: ['strength', 'discipline', 'focus'],
+    preparationSections: [
+      {
+        title: 'General warm-up',
+        duration: '5 min',
+        items: ['Easy walking', 'Joint movement', 'Gradually raise body temperature']
+      },
+      {
+        title: 'Mobility',
+        duration: '10 min',
+        items: [
+          'Ankle mobility',
+          'Deep squat hold',
+          '90/90 switches',
+          'Hip circles',
+          "World's Greatest Stretch",
+          'Thoracic rotations',
+          'Shoulder mobility'
+        ]
+      },
+      {
+        title: 'Agility',
+        duration: '5 min',
+        items: ['Low-intensity footwork', 'Lateral movement', 'Controlled direction changes']
+      },
+      {
+        title: 'Dynamic preparation',
+        duration: '10 min',
+        items: [
+          'Bodyweight squats',
+          'Glute bridges',
+          'Leg swings',
+          'Scapular push-ups',
+          'Empty-bar squat',
+          'Empty-bar bench preparation'
+        ]
+      }
+    ],
     preparationChecklist: [
-      '5 min easy walking & joint lubrication',
-      'Ankle mobility & deep squat hold',
-      '90/90 hip switches & circles',
-      'World\'s Greatest Stretch & thoracic rotation',
-      'Shoulder mobility & scapular push-ups',
-      'Agility footwork & lateral transitions',
-      'Empty-bar squat & bench warm-up'
+      'General warm-up (5 min: easy walk & joint movement)',
+      'Mobility (10 min: ankles, deep squat hold, 90/90, hip circles, WGS, thoracic, shoulders)',
+      'Agility (5 min: low-intensity footwork & lateral changes)',
+      'Dynamic preparation (10 min: squats, glute bridges, leg swings, empty-bar squat & bench)'
     ],
     exercises: [
       {
@@ -30,7 +66,8 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         targetRepOrDuration: '3–5 reps',
         metricType: 'WEIGHT_REPS',
         category: 'primary',
-        isBenchmark: true
+        isBenchmark: true,
+        notes: 'Primary strength lift. Controlled descent, powerful drive.'
       },
       {
         id: 'bench_press',
@@ -39,7 +76,8 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         targetRepOrDuration: '3–5 reps',
         metricType: 'WEIGHT_REPS',
         category: 'primary',
-        isBenchmark: true
+        isBenchmark: true,
+        notes: 'Primary strength lift. Retract scapulae, touch lower sternum.'
       },
       {
         id: 'cable_row',
@@ -55,7 +93,8 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         targetSets: 3,
         targetRepOrDuration: '6–8 reps',
         metricType: 'WEIGHT_REPS',
-        category: 'support'
+        category: 'support',
+        notes: 'Hinge back at the hips, neutral spine, hamstring load.'
       },
       {
         id: 'farmer_carry',
@@ -63,26 +102,44 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         targetSets: 3,
         targetRepOrDuration: '30–45 sec',
         metricType: 'WEIGHT_DURATION',
-        category: 'grip'
+        category: 'support'
       },
       {
         id: 'dead_hang',
         name: 'Dead Hang',
         targetSets: 2,
-        targetRepOrDuration: 'Near-max hold',
+        targetRepOrDuration: 'Near-max comfortable hold',
         metricType: 'DURATION',
-        category: 'grip'
+        category: 'support'
+      }
+    ],
+    recoverySections: [
+      {
+        title: '15-Min Recovery',
+        duration: '15 min',
+        items: [
+          'Hip-flexor stretch',
+          'Hamstring stretch',
+          'Calf stretch',
+          'Chest stretch',
+          'Lat stretch',
+          'Thoracic mobility',
+          'Slow breathing'
+        ]
       }
     ],
     recoveryChecklist: [
-      'Hip-flexor and hamstring stretches',
-      'Calf & chest stretches',
-      'Lat stretch & thoracic mobility',
+      'Hip-flexor stretch',
+      'Hamstring stretch',
+      'Calf stretch',
+      'Chest stretch',
+      'Lat stretch',
+      'Thoracic mobility',
       'Slow diaphragmatic breathing'
     ]
   },
 
-  // 2 = Tuesday
+  // 2 = TUESDAY
   2: {
     id: 'agility_athleticism',
     weekday: 2,
@@ -92,14 +149,51 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     baseXP: 200,
     preparationMinutes: 30,
     recoveryMinutes: 15,
-    walkingMinutes: 40,
+    walkingMinutes: 45,
+    walkingRange: '30–45 min',
+    dayNote: 'This is not another heavy lifting day. Focus on efficiency, elasticity, balance and reaction without combat application.',
     primaryAttributes: ['agility', 'mobility', 'endurance', 'discipline'],
+    preparationSections: [
+      {
+        title: 'Lower body mobility',
+        duration: '10 min',
+        items: [
+          'Knee-to-wall',
+          'Ankle circles',
+          'Calf raises',
+          'Deep squat hold',
+          '90/90',
+          'Cossack squat',
+          'Hip circles',
+          'Hip-flexor stretch'
+        ]
+      },
+      {
+        title: 'Dynamic preparation',
+        duration: '10 min',
+        items: [
+          'Leg swings',
+          'Hamstring sweeps',
+          "World's Greatest Stretch"
+        ]
+      },
+      {
+        title: 'Upper body mobility',
+        duration: '10 min',
+        items: [
+          'Cat-cow',
+          'Thoracic rotations',
+          'Wall slides',
+          'External rotation',
+          'Scapular push-ups',
+          'Wrist circles'
+        ]
+      }
+    ],
     preparationChecklist: [
-      'Knee-to-wall, ankle circles & calf raises',
-      'Deep squat hold, 90/90 & Cossack squats',
-      'Hip-flexor stretch & dynamic leg swings',
-      'Cat-cow, thoracic rotations & wall slides',
-      'External rotation & scapular push-ups'
+      'Lower body (knee-to-wall, ankle circles, calf raises, deep squat hold, 90/90, cossack, hip circles/flexors)',
+      'Dynamic preparation (leg swings, hamstring sweeps, World’s Greatest Stretch)',
+      'Upper body (cat-cow, thoracic rotations, wall slides, external rotation, scapular push-ups, wrist circles)'
     ],
     exercises: [
       {
@@ -108,32 +202,45 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         targetSets: 1,
         targetRepOrDuration: '10 min',
         metricType: 'DURATION',
-        category: 'athletic'
+        category: 'athletic',
+        notes: 'Continuous light cadence. Focus on acceleration, deceleration and balance.'
       },
       {
         id: 'reaction_ball_tue',
-        name: 'Reaction Ball Drill',
+        name: 'Reaction Ball',
         targetSets: 1,
         targetRepOrDuration: '10 min',
         metricType: 'DURATION',
-        category: 'athletic'
+        category: 'athletic',
+        notes: 'Sharp reaction, visual tracking and multidirectional coordination.'
       },
       {
         id: 'footwork_tue',
-        name: 'Agility Footwork Drill',
+        name: 'Footwork',
         targetSets: 1,
         targetRepOrDuration: '10 min',
         metricType: 'DURATION',
-        category: 'athletic'
+        category: 'athletic',
+        notes: 'Lateral transitions, quick direction changes, balance. No combat application.'
+      }
+    ],
+    recoverySections: [
+      {
+        title: '15-Min Recovery',
+        duration: '15 min',
+        items: [
+          'Longer static stretching',
+          'Deep diaphragmatic breathing'
+        ]
       }
     ],
     recoveryChecklist: [
-      '15 min static stretching',
-      'Diaphragmatic recovery breathing'
+      'Longer static stretching',
+      'Deep diaphragmatic breathing'
     ]
   },
 
-  // 3 = Wednesday (DAY 1)
+  // 3 = WEDNESDAY
   3: {
     id: 'deadlift_strength',
     weekday: 3,
@@ -143,13 +250,37 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     baseXP: 300,
     preparationMinutes: 30,
     recoveryMinutes: 15,
-    walkingMinutes: 40,
+    walkingMinutes: 45,
+    walkingRange: '30–45 min',
+    dayNote: 'This is your main deadlift day. Heavy + technically clean + progressive. Do not push to failure.',
     primaryAttributes: ['strength', 'endurance', 'discipline'],
+    preparationSections: [
+      {
+        title: 'General warm-up',
+        duration: '5 min',
+        items: ['General warm-up & joint movement']
+      },
+      {
+        title: 'Mobility',
+        duration: '10 min',
+        items: ['Hip & hamstring mobility', 'Deep squat & thoracic rotation']
+      },
+      {
+        title: 'Agility',
+        duration: '5 min',
+        items: ['Low-intensity footwork & agility priming']
+      },
+      {
+        title: 'Movement-specific preparation',
+        duration: '10 min',
+        items: ['Hip hinge patterning', 'Glute bridges', 'Empty-bar deadlift progression']
+      }
+    ],
     preparationChecklist: [
       '5 min general warm-up',
-      '10 min hip & hamstring mobility',
-      '5 min footwork & agility prep',
-      '10 min movement-specific deadlift prep'
+      '10 min mobility (hips, hamstrings, thoracic)',
+      '5 min agility priming',
+      '10 min movement-specific preparation (hinge, glute bridges, light bar)'
     ],
     exercises: [
       {
@@ -159,7 +290,8 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         targetRepOrDuration: '3 reps',
         metricType: 'WEIGHT_REPS',
         category: 'primary',
-        isBenchmark: true
+        isBenchmark: true,
+        notes: 'Objective: Heavy + technically clean + progressive. Do not push to failure.'
       },
       {
         id: 'leg_press',
@@ -197,59 +329,91 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         id: 'grip_trainer',
         name: 'Grip Trainer',
         targetSets: 3,
-        targetRepOrDuration: 'Max controlled reps',
+        targetRepOrDuration: '3 sets',
         metricType: 'BODYWEIGHT_REPS',
         category: 'grip'
       },
       {
         id: 'neck_flexion',
-        name: 'Neck Flexion (Controlled)',
+        name: 'Neck Flexion',
         targetSets: 2,
         targetRepOrDuration: '15 reps',
         metricType: 'BODYWEIGHT_REPS',
         category: 'neck',
-        notes: 'Strict controlled motion. Do not load aggressively.'
+        notes: 'Keep neck work controlled—no aggressive loading.'
       },
       {
         id: 'neck_extension',
-        name: 'Neck Extension (Controlled)',
+        name: 'Neck Extension',
         targetSets: 2,
         targetRepOrDuration: '15 reps',
         metricType: 'BODYWEIGHT_REPS',
         category: 'neck',
-        notes: 'Strict controlled motion. Do not load aggressively.'
+        notes: 'Keep neck work controlled—no aggressive loading.'
       },
       {
         id: 'neck_side_bend',
-        name: 'Neck Side Bend (Controlled)',
+        name: 'Neck Side Bend',
         targetSets: 2,
         targetRepOrDuration: '15 reps/side',
         metricType: 'BODYWEIGHT_REPS',
         category: 'neck',
-        notes: 'Strict controlled motion. Do not load aggressively.'
+        notes: 'Keep neck work controlled—no aggressive loading.'
+      }
+    ],
+    recoverySections: [
+      {
+        title: '15-Min Recovery',
+        duration: '15 min',
+        items: [
+          'Hamstring stretch',
+          'Hip openers',
+          'Glute stretches',
+          'Lat stretches',
+          'Thoracic spine release',
+          'Slow diaphragmatic breathing'
+        ]
       }
     ],
     recoveryChecklist: [
-      'Hamstrings and glutes decompression',
-      'Hips & lat recovery stretches',
-      'Thoracic spine release & slow breathing'
+      'Full-body stretching emphasizing hamstrings, hips, glutes, lats & thoracic spine',
+      'Slow diaphragmatic breathing'
     ]
   },
 
-  // 4 = Thursday
+  // 4 = THURSDAY
   4: {
     id: 'athletic_mobility',
     weekday: 4,
     weekdayName: 'THURSDAY',
-    title: 'ATHLETIC + MOBILITY',
-    subtitle: 'Elastic Coordination & Aerobic Conditioning',
+    title: 'ATHLETIC + MOBILITY DAY',
+    subtitle: 'Coordination, Reaction, Balance & Conditioning',
     baseXP: 200,
     preparationMinutes: 30,
     recoveryMinutes: 15,
-    walkingMinutes: 40,
+    walkingMinutes: 45,
+    walkingRange: '30–45 min',
+    dayNote: 'Instead of turning Thursday into another strength session, we use it to develop the qualities that heavy lifting doesn’t fully cover.',
     primaryAttributes: ['agility', 'endurance', 'mobility'],
+    preparationSections: [
+      {
+        title: 'Joint / mobility sequence',
+        duration: '10 min',
+        items: ['Joint rotations', 'Ankle & hip mobility', 'Spine mobility']
+      },
+      {
+        title: 'Dynamic flexibility',
+        duration: '10 min',
+        items: ['Leg swings & sweeps', "World's Greatest Stretch", 'Lateral lunges']
+      },
+      {
+        title: 'Movement preparation',
+        duration: '10 min',
+        items: ['Light skipping', 'Balance & reaction priming']
+      }
+    ],
     preparationChecklist: [
-      '10 min joint mobility',
+      '10 min joint/mobility sequence',
       '10 min dynamic flexibility',
       '10 min movement preparation'
     ],
@@ -260,41 +424,55 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         targetSets: 1,
         targetRepOrDuration: '15 min',
         metricType: 'DURATION',
-        category: 'athletic'
+        category: 'athletic',
+        notes: 'Rhythm, elasticity, reactive ankle stiffness.'
       },
       {
         id: 'reaction_ball_thu',
-        name: 'Reaction Ball Drill',
+        name: 'Reaction Ball',
         targetSets: 1,
         targetRepOrDuration: '10 min',
         metricType: 'DURATION',
-        category: 'athletic'
+        category: 'athletic',
+        notes: 'Hand-eye coordination, peripheral vision.'
       },
       {
         id: 'footwork_thu',
-        name: 'Footwork Drill',
+        name: 'Footwork',
         targetSets: 1,
         targetRepOrDuration: '15 min',
         metricType: 'DURATION',
-        category: 'athletic'
+        category: 'athletic',
+        notes: 'Acceleration, deceleration, balance, and movement efficiency.'
       },
       {
-        id: 'conditioning_block',
-        name: 'Conditioning (Rower / Bike / Elliptical / Brisk Walk)',
+        id: 'conditioning_thu',
+        name: 'Conditioning (Rower / Bike / Elliptical / Outdoor Brisk Walk)',
         targetSets: 1,
         targetRepOrDuration: '10–15 min',
         metricType: 'DURATION',
-        category: 'athletic',
-        notes: 'Choose one modality. Non-treadmill options preferred.'
+        category: 'conditioning',
+        notes: 'Choose available modality: rowing machine, stationary bike, elliptical, or outdoor brisk walk. No treadmill needed.'
+      }
+    ],
+    recoverySections: [
+      {
+        title: '15-Min Recovery',
+        duration: '15 min',
+        items: [
+          'Long mobility session',
+          'Static flexibility stretches',
+          'Parasympathetic breathing'
+        ]
       }
     ],
     recoveryChecklist: [
-      '15 min long mobility protocol',
-      'Full body passive stretches'
+      'Long mobility session',
+      'Parasympathetic breathing'
     ]
   },
 
-  // 5 = Friday
+  // 5 = FRIDAY
   5: {
     id: 'strength_b',
     weekday: 5,
@@ -304,18 +482,42 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     baseXP: 300,
     preparationMinutes: 30,
     recoveryMinutes: 15,
-    walkingMinutes: 40,
+    walkingMinutes: 45,
+    walkingRange: '30–45 min',
+    dayNote: 'This is your second major strength day. Light deadlift is strictly 50–65% technique work.',
     primaryAttributes: ['strength', 'discipline', 'focus'],
+    preparationSections: [
+      {
+        title: 'General warm-up',
+        duration: '5 min',
+        items: ['Easy walking & joint movement', 'Gradually raise body temperature']
+      },
+      {
+        title: 'Mobility',
+        duration: '10 min',
+        items: ['Ankle mobility & deep squat hold', '90/90 switches & hip circles', 'Thoracic rotations & shoulder mobility']
+      },
+      {
+        title: 'Agility',
+        duration: '5 min',
+        items: ['Low-intensity footwork & lateral changes']
+      },
+      {
+        title: 'Movement preparation',
+        duration: '10 min',
+        items: ['Bodyweight squats & glute bridges', 'Empty-bar squat and bench prep']
+      }
+    ],
     preparationChecklist: [
       '5 min general warm-up',
-      '10 min mobility drills',
-      '5 min agility activation',
-      '10 min squat & bench movement prep'
+      '10 min mobility',
+      '5 min agility',
+      '10 min movement preparation'
     ],
     exercises: [
       {
         id: 'back_squat_b',
-        name: 'Barbell Back Squat',
+        name: 'Back Squat',
         targetSets: 4,
         targetRepOrDuration: '4 reps',
         metricType: 'WEIGHT_REPS',
@@ -323,7 +525,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       },
       {
         id: 'bench_press_b',
-        name: 'Barbell Bench Press',
+        name: 'Bench Press',
         targetSets: 4,
         targetRepOrDuration: '4 reps',
         metricType: 'WEIGHT_REPS',
@@ -331,12 +533,12 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       },
       {
         id: 'light_deadlift',
-        name: 'Light Trap-Bar / Conventional Deadlift',
+        name: 'Light Trap-Bar Deadlift OR Light Conventional Deadlift',
         targetSets: 3,
         targetRepOrDuration: '5–6 reps',
         metricType: 'WEIGHT_REPS',
         category: 'secondary',
-        notes: 'Strictly 50–65% load. Speed and technique only.'
+        notes: 'Keep it genuinely light (~50–65% of normal working capability). This is NOT another heavy deadlift day.'
       },
       {
         id: 'seated_row',
@@ -358,7 +560,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         id: 'walking_lunges',
         name: 'Walking Lunges',
         targetSets: 2,
-        targetRepOrDuration: '10 reps/leg',
+        targetRepOrDuration: '10/leg',
         metricType: 'BODYWEIGHT_REPS',
         category: 'support'
       },
@@ -387,13 +589,26 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         category: 'forearms'
       }
     ],
+    recoverySections: [
+      {
+        title: '15-Min Recovery',
+        duration: '15 min',
+        items: [
+          'Full-body stretching',
+          'Hip-flexor, hamstring, calf, chest & lat stretches',
+          'Forearm & wrist release',
+          'Slow breathing'
+        ]
+      }
+    ],
     recoveryChecklist: [
-      '15 min full-body static stretching',
-      'Shoulder and wrist relief'
+      'Full-body stretching',
+      'Forearm and wrist relief',
+      'Slow diaphragmatic breathing'
     ]
   },
 
-  // 6 = Saturday
+  // 6 = SATURDAY
   6: {
     id: 'calisthenics_strength',
     weekday: 6,
@@ -403,12 +618,23 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     baseXP: 250,
     preparationMinutes: 30,
     recoveryMinutes: 15,
-    walkingMinutes: 40,
+    walkingMinutes: 45,
+    walkingRange: '30–45 min',
+    dayNote: 'This day is designed to help you become strong relative to your bodyweight, not simply stronger on barbells.',
     primaryAttributes: ['strength', 'endurance', 'agility', 'discipline'],
+    preparationSections: [
+      {
+        title: '30-Min Preparation',
+        duration: '30 min',
+        items: [
+          'Mobility & joint movement',
+          'Dynamic stretching & core temperature raise',
+          'Agility footwork priming'
+        ]
+      }
+    ],
     preparationChecklist: [
-      'Joint mobility & scapular activation',
-      'Dynamic stretching & core temperature raise',
-      'Agility footwork priming'
+      'Mobility + dynamic stretching + agility'
     ],
     exercises: [
       {
@@ -419,7 +645,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         metricType: 'BODYWEIGHT_REPS',
         category: 'calisthenics',
         isBenchmark: true,
-        notes: 'Strict lock-out and chest-to-deck.'
+        notes: 'Current max is ~3. Start with a version that allows clean repetitions if necessary.'
       },
       {
         id: 'assisted_pull_ups',
@@ -429,11 +655,11 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         metricType: 'ASSISTANCE_REPS',
         category: 'calisthenics',
         isBenchmark: true,
-        notes: 'Log machine/band assistance in kg. Lower assistance = higher progress.'
+        notes: 'Goal progression: 0 → 1 → 3 → 5 → 10 pull-ups. Log assistance in kg.'
       },
       {
         id: 'bw_squats',
-        name: 'Bodyweight Squats',
+        name: 'Bodyweight Squat',
         targetSets: 2,
         targetRepOrDuration: '15–20 reps',
         metricType: 'BODYWEIGHT_REPS',
@@ -441,7 +667,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       },
       {
         id: 'plank_hold',
-        name: 'Plank Hold',
+        name: 'Plank',
         targetSets: 3,
         targetRepOrDuration: '30–60 sec',
         metricType: 'DURATION',
@@ -476,18 +702,29 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
         id: 'farmer_carry_sat',
         name: 'Farmer Carry',
         targetSets: 3,
-        targetRepOrDuration: '3 rounds (30–45s)',
+        targetRepOrDuration: '3 rounds',
         metricType: 'WEIGHT_DURATION',
         category: 'grip'
       }
     ],
+    recoverySections: [
+      {
+        title: '15-Min Recovery',
+        duration: '15 min',
+        items: [
+          'Mobility + stretching',
+          'Chest, shoulder & lats decompression',
+          'Slow breathing'
+        ]
+      }
+    ],
     recoveryChecklist: [
-      '15 min mobility & stretching',
-      'Shoulder and forearm decompression'
+      'Mobility + stretching',
+      'Slow diaphragmatic breathing'
     ]
   },
 
-  // 0 = Sunday
+  // 0 = SUNDAY
   0: {
     id: 'active_recovery',
     weekday: 0,
@@ -498,39 +735,57 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     preparationMinutes: 0,
     recoveryMinutes: 45,
     walkingMinutes: 45,
+    walkingRange: '45 min',
+    dayNote: 'No heavy lifting. And because you specifically said no home workouts, this is not a hidden home workout.',
     primaryAttributes: ['mobility', 'endurance', 'focus'],
+    preparationSections: [],
     preparationChecklist: [
       'System rest: No heavy lifting or combat drills'
     ],
     exercises: [
       {
-        id: 'mobility_protocol',
-        name: 'Low-Intensity Mobility & Flexibility',
+        id: 'mobility_flexibility_sun',
+        name: 'Mobility + Flexibility (30 Min)',
         targetSets: 1,
         targetRepOrDuration: '30 min',
         metricType: 'CHECK_ONLY',
-        category: 'support'
+        category: 'recovery',
+        notes: 'Keep intensity low. Full-body joint freedom & tissue restoration.'
       },
       {
-        id: 'recovery_stretching',
-        name: 'Recovery Stretching & Breathing',
+        id: 'recovery_stretching_sun',
+        name: 'Recovery Stretching + Breathing (15 Min)',
         targetSets: 1,
         targetRepOrDuration: '15 min',
         metricType: 'CHECK_ONLY',
-        category: 'support'
+        category: 'recovery',
+        notes: 'Gentle passive stretching & slow parasympathetic breathing.'
       },
       {
-        id: 'recovery_walk',
-        name: 'Continuous Recovery Walk',
+        id: 'recovery_walk_sun',
+        name: 'Outdoor Recovery Walk (45 Min)',
         targetSets: 1,
         targetRepOrDuration: '45 min',
         metricType: 'TIME_BLOCK',
-        category: 'athletic'
+        category: 'recovery',
+        notes: 'Continuous 45 min walk in open air.'
+      }
+    ],
+    recoverySections: [
+      {
+        title: 'Recovery Protocol',
+        duration: '45 min',
+        items: [
+          '30 min mobility + flexibility (keep intensity low)',
+          '15 min recovery stretching + breathing',
+          '45 min continuous outdoor recovery walk'
+        ]
       }
     ],
     recoveryChecklist: [
-      'Complete 45 min walking in open air',
-      'Diaphragmatic breathwork to downregulate CNS'
+      '30 min low-intensity mobility + flexibility',
+      '15 min recovery stretching + breathing',
+      '45 min continuous outdoor recovery walk'
     ]
   }
 };

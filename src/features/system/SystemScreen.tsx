@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useAuth } from '../../context/AuthContext';
 import { useUserProgression } from '../../context/UserProgressionContext';
 import { SystemHeader } from '../../components/layout/SystemHeader';
@@ -7,6 +7,7 @@ import { ProgressBar } from '../../components/common/ProgressBar';
 import { RankBadge } from '../../components/common/RankBadge';
 import { InstallPrompt } from '../../components/common/InstallPrompt';
 import { SystemEventsFeed } from './SystemEventsFeed';
+import { WeeklyScheduleModal } from '../../components/overlays/WeeklyScheduleModal';
 import { calculateLevelFromXP } from '../../lib/progression/levelCalculations';
 import { formatXPNumber, padDayNumber } from '../../lib/formatting/formatters';
 
@@ -16,7 +17,8 @@ interface SystemScreenProps {
 
 export const SystemScreen: React.FC<SystemScreenProps> = ({ onNavigateToQuest }) => {
   const { userProfile } = useAuth();
-  const { challengeDay, activeSession } = useUserProgression();
+  const { challengeDay, activeSession, setSelectedDayNumber } = useUserProgression();
+  const [showBlueprintModal, setShowBlueprintModal] = useState<boolean>(false);
 
   if (!userProfile) return null;
 
@@ -51,14 +53,24 @@ export const SystemScreen: React.FC<SystemScreenProps> = ({ onNavigateToQuest })
           </div>
         </div>
 
-        <Button
-          id="btn-begin-quest"
-          variant="inverted"
-          onClick={onNavigateToQuest}
-          style={{ minHeight: '48px', fontSize: '14px' }}
-        >
-          {activeSession ? 'RESUME ACTIVE SESSION' : 'BEGIN QUEST'}
-        </Button>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+          <Button
+            id="btn-begin-quest"
+            variant="inverted"
+            onClick={onNavigateToQuest}
+            style={{ minHeight: '48px', fontSize: '14px' }}
+          >
+            {activeSession ? 'RESUME ACTIVE SESSION' : 'BEGIN QUEST'}
+          </Button>
+
+          <Button
+            variant="outline"
+            onClick={() => setShowBlueprintModal(true)}
+            style={{ minHeight: '38px', fontSize: '12px' }}
+          >
+            📋 VIEW 7-DAY WORKOUT BLUEPRINT
+          </Button>
+        </div>
       </section>
 
       {/* DAILY MISSION */}
@@ -160,7 +172,7 @@ export const SystemScreen: React.FC<SystemScreenProps> = ({ onNavigateToQuest })
         </div>
       </section>
 
-      {/* SYSTEM LOGS / RECENT EVENTS */}
+      {/* System Logs */}
       <section className="sys-section">
         <div className="sys-section-title">
           <span>RECENT SYSTEM AUDIT LOGS</span>
@@ -168,6 +180,19 @@ export const SystemScreen: React.FC<SystemScreenProps> = ({ onNavigateToQuest })
         </div>
         <SystemEventsFeed />
       </section>
+
+      <WeeklyScheduleModal
+        isOpen={showBlueprintModal}
+        onClose={() => setShowBlueprintModal(false)}
+        initialWeekday={challengeDay.weekday}
+        onSelectWeekday={(wday) => {
+          // Calculate day in current week
+          const weekStartSunday = 1 + (Math.ceil(challengeDay.dayNumber / 7) - 1) * 7;
+          const targetDay = Math.max(1, Math.min(120, weekStartSunday + (wday === 0 ? 0 : wday)));
+          setSelectedDayNumber(targetDay);
+          onNavigateToQuest();
+        }}
+      />
     </div>
   );
 };
