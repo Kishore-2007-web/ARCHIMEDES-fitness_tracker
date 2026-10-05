@@ -66,7 +66,7 @@ Every technology listed below is installed, configured, and operational in this 
 ### Implemented Features
 - [x] **Google Authentication**: Mobile-friendly redirect and popup authentication with per-UID data isolation.
 - [x] **Day 1 Onboarding**: Mandatory baseline intake (109 kg, 44 in waist, lift numbers) and 3 progress photos (Front, Side, Back).
-- [x] **Deterministic Challenge Date Engine**: Exact 120-day mapping (Day 1: Sunday, 11 Oct 2026; Day 120: Sunday, 07 Feb 2027) in `Asia/Kolkata` timezone.
+- [x] **Deterministic Challenge Date Engine**: Exact 120-day mapping (Day 1: Monday, 12 Oct 2026; Day 120: Monday, 08 Feb 2027) in `Asia/Kolkata` timezone.
 - [x] **Weekly Training Engine**: Fully data-driven schedule for all 7 days with exercise tracking, sets, reps, and metric types (`WEIGHT_REPS`, `BODYWEIGHT_REPS`, `DURATION`, `WEIGHT_DURATION`, `ASSISTANCE_REPS`, `TIME_BLOCK`, `CHECK_ONLY`).
 - [x] **Real-Time Workout Logging**: Online persistence in `users/{uid}/activeSessions/{dateKey}` allowing session resumption across browser reloads.
 - [x] **Silent Rest Timer**: Accurate timestamp-based 3-minute rest timer with `+30s`, `Skip`, and `Pause` controls.

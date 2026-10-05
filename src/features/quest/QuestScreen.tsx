@@ -92,21 +92,22 @@ export const QuestScreen: React.FC = () => {
   const dayInfo = getChallengeDay(selectedDateStr);
   const schedule = WORKOUT_SCHEDULE[dayInfo.weekday] || WORKOUT_SCHEDULE[1];
 
-  // Current week index (1-based)
-  // Day 1 is Sunday (week 1, day 1)
+  // Current week index (1-based, where Day 1 is Monday)
   const currentWeekNumber = Math.ceil(selectedDayNumber / 7);
 
   // Quick switch to a specific weekday within the currently selected week
   const handleSelectWeekday = (targetWeekday: number) => {
-    // Challenge starts Sunday (day 1, weekday 0)
-    // Week W starts at day 1 + (W - 1) * 7 (which is a Sunday)
-    // Sunday (0) -> offset 0
-    // Monday (1) -> offset 1
-    // ...
-    // Saturday (6) -> offset 6
-    const weekStartSundayDayNumber = 1 + (currentWeekNumber - 1) * 7;
-    const offset = targetWeekday === 0 ? 0 : targetWeekday;
-    const targetDayNumber = weekStartSundayDayNumber + offset;
+    // Week starts on Monday:
+    // Monday (1) -> offset 0
+    // Tuesday (2) -> offset 1
+    // Wednesday (3) -> offset 2
+    // Thursday (4) -> offset 3
+    // Friday (5) -> offset 4
+    // Saturday (6) -> offset 5
+    // Sunday (0) -> offset 6
+    const weekStartMondayDayNumber = 1 + (currentWeekNumber - 1) * 7;
+    const offset = targetWeekday === 0 ? 6 : targetWeekday - 1;
+    const targetDayNumber = weekStartMondayDayNumber + offset;
     const clampedDay = Math.max(1, Math.min(120, targetDayNumber));
     setSelectedDayNumber(clampedDay);
   };

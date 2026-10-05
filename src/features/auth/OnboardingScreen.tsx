@@ -6,6 +6,7 @@ import { Button } from '../../components/common/Button';
 import { compressAndStripExif } from '../../lib/compression/imageCompressor';
 import { uploadProgressPhoto } from '../../lib/firebase/storage';
 import { saveProgressCheckpoint } from '../../lib/firebase/db';
+import { CHALLENGE_START_DATE } from '../../lib/dates/challengeDates';
 
 export const OnboardingScreen: React.FC = () => {
   const { currentUser, userProfile, updateProfileData } = useAuth();
@@ -74,7 +75,7 @@ export const OnboardingScreen: React.FC = () => {
       await saveProgressCheckpoint(currentUser.uid, {
         checkpointId: 'day001',
         dayNumber: 1,
-        date: '2026-10-11',
+        date: CHALLENGE_START_DATE,
         bodyWeightKg: baseline.bodyWeightKg,
         waistIn: baseline.waistIn,
         maxPushUps: baseline.maxPushUps,

@@ -34,8 +34,8 @@ export interface UserProfile {
   displayName: string;
   email: string;
   photoURL?: string;
-  challengeStart: string; // '2026-10-11'
-  challengeEnd: string;   // '2027-02-07'
+  challengeStart: string; // '2026-10-12'
+  challengeEnd: string;   // '2027-02-08'
   timezone: string;       // 'Asia/Kolkata'
   level: number;
   xp: number;

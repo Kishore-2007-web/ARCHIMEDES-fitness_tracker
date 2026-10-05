@@ -11,12 +11,12 @@ npm test
 
 ### Verified Test Suites (23 Total Passing Tests)
 1. **Challenge Date Engine**:
-   - `Day 1` verifies as Sunday, 11 October 2026 (`ACTIVE RECOVERY`, Base 100 XP, `day001` checkpoint).
-   - `Day 30` verifies as Monday, 09 November 2026 with `boss_iron_gate` unlock and `day030` checkpoint.
-   - `Day 60` verifies as Wednesday, 09 December 2026 (`day060` checkpoint).
-   - `Day 90` verifies as Friday, 08 January 2027 (`day090` checkpoint).
-   - `Day 120` verifies as Sunday, 07 February 2027 (`ACTIVE RECOVERY`, Base 100 XP, protocol culmination).
-   - Boundary checks confirm dates before 11 Oct 2026 and after 07 Feb 2027 are properly flagged outside challenge window.
+   - `Day 1` verifies as Monday, 12 October 2026 (`SQUAT + BENCH STRENGTH A`, Base 300 XP, `day001` checkpoint).
+   - `Day 30` verifies as Tuesday, 10 November 2026 with `boss_iron_gate` unlock and `day030` checkpoint.
+   - `Day 60` verifies as Thursday, 10 December 2026 (`day060` checkpoint).
+   - `Day 90` verifies as Saturday, 09 January 2027 (`day090` checkpoint).
+   - `Day 120` verifies as Monday, 08 February 2027 (`SQUAT + BENCH STRENGTH A`, Base 300 XP, protocol culmination).
+   - Boundary checks confirm dates before 12 Oct 2026 and after 08 Feb 2027 are properly flagged outside challenge window.
 2. **Progression & XP Engine**:
    - Base XP mapping verified for each weekday: Mon (300), Tue (200), Wed (300), Thu (200), Fri (300), Sat (250), Sun (100).
    - Reduced sessions correctly award ~60% XP (180, 120, 150, 60 XP).
