@@ -4,6 +4,9 @@ import {
   getRedirectResult,
   signOut as firebaseSignOut,
   onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  sendPasswordResetEmail,
   User
 } from 'firebase/auth';
 import { auth, googleProvider, isFirebaseConfigured } from './config';
@@ -27,6 +30,38 @@ export async function signInWithGoogle(): Promise<User | null> {
     }
     throw error;
   }
+}
+
+/**
+ * Initiates Email & Password Login.
+ */
+export async function signInWithEmail(email: string, pass: string): Promise<User> {
+  if (!isFirebaseConfigured) {
+    throw new Error('Firebase configuration missing. Please check VITE_FIREBASE_* variables in .env');
+  }
+  const result = await signInWithEmailAndPassword(auth, email.trim(), pass);
+  return result.user;
+}
+
+/**
+ * Registers new user with Email & Password.
+ */
+export async function signUpWithEmail(email: string, pass: string): Promise<User> {
+  if (!isFirebaseConfigured) {
+    throw new Error('Firebase configuration missing. Please check VITE_FIREBASE_* variables in .env');
+  }
+  const result = await createUserWithEmailAndPassword(auth, email.trim(), pass);
+  return result.user;
+}
+
+/**
+ * Sends Password Reset Email.
+ */
+export async function sendPasswordReset(email: string): Promise<void> {
+  if (!isFirebaseConfigured) {
+    throw new Error('Firebase configuration missing. Please check VITE_FIREBASE_* variables in .env');
+  }
+  await sendPasswordResetEmail(auth, email.trim());
 }
 
 /**

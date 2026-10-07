@@ -451,3 +451,41 @@
 ::-webkit-scrollbar-thumb:hover {
   background: var(--border-strong);
 }
+
+/* System Form Inputs - Strict Monochrome */
+.sys-input {
+  width: 100%;
+  background-color: #0a0a0a;
+  color: #ffffff;
+  border: 1px solid var(--border-medium);
+  padding: 12px 14px;
+  font-family: var(--font-mono);
+  font-size: 14px;
+  letter-spacing: 0.05em;
+  outline: none;
+  transition: border-color 0.15s ease, background-color 0.15s ease;
+  border-radius: var(--radius-none);
+  box-sizing: border-box;
+}
+
+.sys-input:focus {
+  border-color: #ffffff;
+  background-color: #121212;
+}
+
+.sys-input::placeholder {
+  color: var(--text-muted);
+  font-size: 12px;
+  letter-spacing: 0.08em;
+}
+
+.sys-input-label {
+  display: block;
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  color: var(--text-secondary);
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  text-align: left;
+}

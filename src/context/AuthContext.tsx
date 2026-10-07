@@ -1,6 +1,14 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
-import { subscribeToAuthState, signInWithGoogle, signOutUser, checkRedirectResult } from '../lib/firebase/auth';
+import {
+  subscribeToAuthState,
+  signInWithGoogle,
+  signOutUser,
+  checkRedirectResult,
+  signInWithEmail,
+  signUpWithEmail as signUpWithEmailFirebase,
+  sendPasswordReset as sendPasswordResetFirebase
+} from '../lib/firebase/auth';
 import {
   getUserProfile,
   saveUserProfile,
@@ -11,30 +19,40 @@ import { deleteAllUserPhotos } from '../lib/firebase/storage';
 import { createDefaultUserProfile } from '../data/baseline';
 import { UserProfile } from '../types/auth';
 
-const DEMO_OPERATOR_USER: User = {
-  uid: 'operator-001',
-  displayName: 'ARCHIMEDES OPERATOR',
-  email: 'operator@archimedes.system',
-  photoURL: '',
-  emailVerified: true,
-  isAnonymous: true,
-  metadata: {} as any,
-  providerData: [],
-  refreshToken: '',
-  tenantId: null,
-  delete: async () => {},
-  getIdToken: async () => '',
-  getIdTokenResult: async () => ({} as any),
-  reload: async () => {},
-  toJSON: () => ({})
-} as unknown as User;
+function makeLocalUser(email: string, displayName?: string): User {
+  const cleanEmail = email.trim().toLowerCase();
+  const safeUid = 'operator-' + cleanEmail.replace(/[^a-z0-9]/g, '_').slice(0, 32);
+  const name = displayName || cleanEmail.split('@')[0].toUpperCase();
+  return {
+    uid: safeUid,
+    displayName: name,
+    email: cleanEmail,
+    photoURL: '',
+    emailVerified: true,
+    isAnonymous: true,
+    metadata: {} as any,
+    providerData: [],
+    refreshToken: '',
+    tenantId: null,
+    delete: async () => {},
+    getIdToken: async () => '',
+    getIdTokenResult: async () => ({} as any),
+    reload: async () => {},
+    toJSON: () => ({})
+  } as unknown as User;
+}
 
-function createDefaultOperatorProfile(): UserProfile {
-  const base = createDefaultUserProfile(
-    'operator-001',
-    'ARCHIMEDES OPERATOR',
-    'operator@archimedes.system'
-  );
+const DEMO_OPERATOR_USER: User = makeLocalUser('operator@archimedes.system', 'ARCHIMEDES OPERATOR');
+
+function getStoredProfileForUser(uid: string, displayName: string, email: string): UserProfile {
+  try {
+    const raw = localStorage.getItem(`archimedes_profile_${uid}`);
+    if (raw) {
+      const parsed = JSON.parse(raw);
+      if (parsed) return { ...parsed, onboardingComplete: true };
+    }
+  } catch {}
+  const base = createDefaultUserProfile(uid, displayName, email);
   return {
     ...base,
     onboardingComplete: true,
@@ -47,17 +65,6 @@ function createDefaultOperatorProfile(): UserProfile {
   };
 }
 
-function getStoredOperatorProfile(): UserProfile {
-  try {
-    const raw = localStorage.getItem('archimedes_profile_operator-001');
-    if (raw) {
-      const parsed = JSON.parse(raw);
-      if (parsed) return { ...parsed, onboardingComplete: true };
-    }
-  } catch {}
-  return createDefaultOperatorProfile();
-}
-
 interface AuthContextType {
   currentUser: User | null;
   userProfile: UserProfile | null;
@@ -67,6 +74,10 @@ interface AuthContextType {
   authError: string | null;
   clearAuthError: () => void;
   loginWithGoogle: () => Promise<void>;
+  loginWithEmail: (email: string, pass: string) => Promise<void>;
+  signUpWithEmail: (email: string, pass: string) => Promise<void>;
+  loginOfflineWithEmail: (email: string) => void;
+  sendPasswordReset: (email: string) => Promise<void>;
   enterAsOperator: () => void;
   logout: () => Promise<void>;
   updateProfileData: (partial: Partial<UserProfile>) => Promise<void>;
@@ -76,7 +87,6 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  // Check if user previously explicitly selected Operator mode in this browser
   const isPreviouslyOperator = () => {
     try {
       return localStorage.getItem('archimedes_active_mode') === 'operator';
@@ -85,19 +95,28 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
-  const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    if (isPreviouslyOperator()) {
-      return DEMO_OPERATOR_USER;
-    }
-    return null;
-  });
+  const getInitialOperatorUser = (): User | null => {
+    if (!isPreviouslyOperator()) return null;
+    try {
+      const email = localStorage.getItem('archimedes_operator_email');
+      if (email) return makeLocalUser(email);
+    } catch {}
+    return DEMO_OPERATOR_USER;
+  };
 
-  const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
-    if (isPreviouslyOperator()) {
-      return getStoredOperatorProfile();
-    }
-    return null;
-  });
+  const getInitialOperatorProfile = (): UserProfile | null => {
+    if (!isPreviouslyOperator()) return null;
+    const user = getInitialOperatorUser();
+    if (!user) return null;
+    return getStoredProfileForUser(
+      user.uid,
+      user.displayName || 'ARCHIMEDES OPERATOR',
+      user.email || 'operator@archimedes.system'
+    );
+  };
+
+  const [currentUser, setCurrentUser] = useState<User | null>(getInitialOperatorUser);
+  const [userProfile, setUserProfile] = useState<UserProfile | null>(getInitialOperatorProfile);
 
   const [loading, setLoading] = useState(true);
   const [authError, setAuthError] = useState<string | null>(null);
@@ -176,8 +195,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         if (unsubscribeProfile) unsubscribeProfile();
 
         if (isPreviouslyOperator()) {
-          const operatorProfile = getStoredOperatorProfile();
-          setCurrentUser(DEMO_OPERATOR_USER);
+          const operatorUser = getInitialOperatorUser();
+          const operatorProfile = getInitialOperatorProfile();
+          setCurrentUser(operatorUser);
           setUserProfile(operatorProfile);
           setIsOperatorMode(true);
         } else {
@@ -198,23 +218,80 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const loginWithGoogle = async () => {
     setLoading(true);
+    setAuthError(null);
     try {
       await signInWithGoogle();
     } catch (err: any) {
-      console.error('Login error:', err);
+      console.error('Google login error:', err);
       throw err;
     } finally {
       setLoading(false);
     }
   };
 
+  const loginWithEmail = async (email: string, pass: string) => {
+    setLoading(true);
+    setAuthError(null);
+    try {
+      await signInWithEmail(email, pass);
+    } catch (err: any) {
+      console.error('Email login error:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const signUpWithEmail = async (email: string, pass: string) => {
+    setLoading(true);
+    setAuthError(null);
+    try {
+      await signUpWithEmailFirebase(email, pass);
+    } catch (err: any) {
+      console.error('Email sign up error:', err);
+      throw err;
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const loginOfflineWithEmail = (email: string) => {
+    const cleanEmail = email.trim().toLowerCase();
+    const user = makeLocalUser(cleanEmail);
+    try {
+      localStorage.setItem('archimedes_active_mode', 'operator');
+      localStorage.setItem('archimedes_operator_uid', user.uid);
+      localStorage.setItem('archimedes_operator_email', cleanEmail);
+    } catch {}
+    setIsOperatorMode(true);
+    setCurrentUser(user);
+    const profile = getStoredProfileForUser(
+      user.uid,
+      cleanEmail.split('@')[0].toUpperCase(),
+      cleanEmail
+    );
+    setUserProfile(profile);
+    saveUserProfile(profile);
+  };
+
+  const sendPasswordReset = async (email: string) => {
+    setAuthError(null);
+    await sendPasswordResetFirebase(email);
+  };
+
   const enterAsOperator = () => {
     try {
       localStorage.setItem('archimedes_active_mode', 'operator');
+      localStorage.removeItem('archimedes_operator_email');
+      localStorage.setItem('archimedes_operator_uid', DEMO_OPERATOR_USER.uid);
     } catch {}
     setIsOperatorMode(true);
     setCurrentUser(DEMO_OPERATOR_USER);
-    const profile = getStoredOperatorProfile();
+    const profile = getStoredProfileForUser(
+      DEMO_OPERATOR_USER.uid,
+      'ARCHIMEDES OPERATOR',
+      'operator@archimedes.system'
+    );
     setUserProfile(profile);
     saveUserProfile(profile);
   };
@@ -224,6 +301,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     try {
       try {
         localStorage.removeItem('archimedes_active_mode');
+        localStorage.removeItem('archimedes_operator_uid');
+        localStorage.removeItem('archimedes_operator_email');
       } catch {}
       await signOutUser();
       setCurrentUser(null);
@@ -251,6 +330,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await signOutUser();
       try {
         localStorage.removeItem('archimedes_active_mode');
+        localStorage.removeItem('archimedes_operator_uid');
+        localStorage.removeItem('archimedes_operator_email');
       } catch {}
       setCurrentUser(null);
       setUserProfile(null);
@@ -271,6 +352,10 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         authError,
         clearAuthError,
         loginWithGoogle,
+        loginWithEmail,
+        signUpWithEmail,
+        loginOfflineWithEmail,
+        sendPasswordReset,
         enterAsOperator,
         logout,
         updateProfileData,

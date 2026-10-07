@@ -1,4 +1,5 @@
 import { UserBaseline, UserProfile } from '../types/auth';
+import { CHALLENGE_START_DATE, CHALLENGE_END_DATE, CHALLENGE_TIMEZONE } from '../lib/dates/challengeDates';
 
 export const DAY1_DEFAULT_BASELINE: UserBaseline = {
   bodyWeightKg: 109,
@@ -20,9 +21,9 @@ export function createDefaultUserProfile(uid: string, displayName: string, email
     displayName: displayName || 'SYSTEM USER',
     email,
     photoURL: photoURL || '',
-    challengeStart: '2026-10-12',
-    challengeEnd: '2027-02-08',
-    timezone: 'Asia/Kolkata',
+    challengeStart: CHALLENGE_START_DATE,
+    challengeEnd: CHALLENGE_END_DATE,
+    timezone: CHALLENGE_TIMEZONE,
     level: 1,
     xp: 0,
     rank: 'E',
