@@ -37,7 +37,7 @@ function createDefaultOperatorProfile(): UserProfile {
   );
   return {
     ...base,
-    onboardingComplete: true, // Instantly opens Home screen
+    onboardingComplete: true,
     day1PhotosComplete: true,
     currentTitle: 'INITIATE',
     level: 1,
@@ -74,24 +74,31 @@ interface AuthContextType {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const [isExplicitlyLoggedOut, setIsExplicitlyLoggedOut] = useState(() => {
+  // Check if user previously explicitly selected Operator mode in this browser
+  const isPreviouslyOperator = () => {
     try {
-      return sessionStorage.getItem('archimedes_logged_out') === 'true';
+      return localStorage.getItem('archimedes_active_mode') === 'operator';
     } catch {
       return false;
     }
-  });
+  };
 
   const [currentUser, setCurrentUser] = useState<User | null>(() => {
-    return isExplicitlyLoggedOut ? null : DEMO_OPERATOR_USER;
+    if (isPreviouslyOperator()) {
+      return DEMO_OPERATOR_USER;
+    }
+    return null;
   });
 
   const [userProfile, setUserProfile] = useState<UserProfile | null>(() => {
-    return isExplicitlyLoggedOut ? null : getStoredOperatorProfile();
+    if (isPreviouslyOperator()) {
+      return getStoredOperatorProfile();
+    }
+    return null;
   });
 
-  const [loading, setLoading] = useState(false);
-  const [isOperatorMode, setIsOperatorMode] = useState<boolean>(!isExplicitlyLoggedOut);
+  const [loading, setLoading] = useState(true);
+  const [isOperatorMode, setIsOperatorMode] = useState<boolean>(isPreviouslyOperator);
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
   // Monitor network connectivity
@@ -114,11 +121,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     const unsubscribeAuth = subscribeToAuthState(async (user) => {
       if (user) {
-        // Authenticated Google user
+        // Authenticated Firebase Google user
+        try {
+          localStorage.removeItem('archimedes_active_mode');
+        } catch {}
         setIsOperatorMode(false);
         setCurrentUser(user);
-        sessionStorage.removeItem('archimedes_logged_out');
-        setIsExplicitlyLoggedOut(false);
 
         try {
           const profile = await getUserProfile(user.uid);
@@ -143,20 +151,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
           console.error('Error loading user profile:', err);
         }
       } else {
-        // No Firebase user logged in
+        // No Firebase user signed in
         if (unsubscribeProfile) unsubscribeProfile();
 
-        const loggedOut = sessionStorage.getItem('archimedes_logged_out') === 'true';
-        if (loggedOut) {
-          setCurrentUser(null);
-          setUserProfile(null);
-          setIsOperatorMode(false);
-        } else {
-          // Default to Operator mode so the home screen opens immediately
+        if (isPreviouslyOperator()) {
           const operatorProfile = getStoredOperatorProfile();
           setCurrentUser(DEMO_OPERATOR_USER);
           setUserProfile(operatorProfile);
           setIsOperatorMode(true);
+        } else {
+          // Unauthenticated: present Login Screen
+          setCurrentUser(null);
+          setUserProfile(null);
+          setIsOperatorMode(false);
         }
       }
       setLoading(false);
@@ -182,9 +189,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const enterAsOperator = () => {
     try {
-      sessionStorage.removeItem('archimedes_logged_out');
+      localStorage.setItem('archimedes_active_mode', 'operator');
     } catch {}
-    setIsExplicitlyLoggedOut(false);
     setIsOperatorMode(true);
     setCurrentUser(DEMO_OPERATOR_USER);
     const profile = getStoredOperatorProfile();
@@ -196,9 +202,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setLoading(true);
     try {
       try {
-        sessionStorage.setItem('archimedes_logged_out', 'true');
+        localStorage.removeItem('archimedes_active_mode');
       } catch {}
-      setIsExplicitlyLoggedOut(true);
       await signOutUser();
       setCurrentUser(null);
       setUserProfile(null);
@@ -223,10 +228,12 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       await deleteAllUserPhotos(uid);
       await deleteEntireAccount(uid);
       await signOutUser();
-      sessionStorage.setItem('archimedes_logged_out', 'true');
-      setIsExplicitlyLoggedOut(true);
+      try {
+        localStorage.removeItem('archimedes_active_mode');
+      } catch {}
       setCurrentUser(null);
       setUserProfile(null);
+      setIsOperatorMode(false);
     } finally {
       setLoading(false);
     }
