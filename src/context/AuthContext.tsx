@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { User } from 'firebase/auth';
-import { subscribeToAuthState, signInWithGoogle, signOutUser } from '../lib/firebase/auth';
+import { subscribeToAuthState, signInWithGoogle, signOutUser, checkRedirectResult } from '../lib/firebase/auth';
 import {
   getUserProfile,
   saveUserProfile,
@@ -64,6 +64,8 @@ interface AuthContextType {
   loading: boolean;
   isOnline: boolean;
   isOperatorMode: boolean;
+  authError: string | null;
+  clearAuthError: () => void;
   loginWithGoogle: () => Promise<void>;
   enterAsOperator: () => void;
   logout: () => Promise<void>;
@@ -98,6 +100,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   });
 
   const [loading, setLoading] = useState(true);
+  const [authError, setAuthError] = useState<string | null>(null);
+  const clearAuthError = () => setAuthError(null);
   const [isOperatorMode, setIsOperatorMode] = useState<boolean>(isPreviouslyOperator);
   const [isOnline, setIsOnline] = useState(typeof navigator !== 'undefined' ? navigator.onLine : true);
 
@@ -118,6 +122,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Sync auth state with Firebase Auth
   useEffect(() => {
     let unsubscribeProfile: (() => void) | null = null;
+
+    checkRedirectResult()
+      .then((user) => {
+        if (user) {
+          setCurrentUser(user);
+        }
+      })
+      .catch((err: any) => {
+        console.warn('Redirect auth check notice:', err);
+        if (err?.code === 'auth/configuration-not-found' || err?.message?.includes('configuration-not-found')) {
+          setAuthError(
+            'Google Sign-in is not yet enabled in Firebase Console for project "archimedes-fitness-tracker". Please activate it under Authentication → Sign-in method.'
+          );
+        } else if (err?.code && err.code !== 'auth/null-user') {
+          setAuthError(err.message || 'Authentication error.');
+        }
+      });
 
     const unsubscribeAuth = subscribeToAuthState(async (user) => {
       if (user) {
@@ -247,6 +268,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
         loading,
         isOnline,
         isOperatorMode,
+        authError,
+        clearAuthError,
         loginWithGoogle,
         enterAsOperator,
         logout,
