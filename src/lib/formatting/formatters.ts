@@ -1,5 +1,5 @@
-export function padDayNumber(day: number): string {
-  return String(Math.max(0, day)).padStart(3, '0');
+export function padDayNumber(day: number, minDigits = 2): string {
+  return String(Math.max(0, day)).padStart(minDigits, '0');
 }
 
 export function formatXPNumber(xp: number): string {

@@ -67,13 +67,13 @@ export const LoginScreen: React.FC = () => {
             marginBottom: '28px'
           }}
         >
-          11 OCT 2026
+          07 OCT 2026
           <br />
           ↓
           <br />
           07 FEB 2027
           <br />
-          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>120 DAYS INCLUSIVE // ASIA/KOLKATA</span>
+          <span style={{ fontSize: '11px', color: 'var(--text-muted)' }}>124 DAYS INCLUSIVE // ASIA/KOLKATA</span>
         </div>
 
         {errorMsg && (

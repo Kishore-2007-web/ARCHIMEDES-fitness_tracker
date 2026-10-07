@@ -99,9 +99,80 @@
 .sys-section {
   border: 1px solid var(--border-subtle);
   background-color: var(--bg-surface);
-  padding: 18px;
-  margin-bottom: 16px;
+  padding: 16px;
+  margin-bottom: 20px;
   position: relative;
+}
+
+.sys-section-clean {
+  padding: 4px 0;
+  margin-bottom: 24px;
+}
+
+.sys-card-highlight {
+  border: 1px solid #ffffff;
+  background-color: var(--bg-surface);
+  padding: 18px;
+  margin-bottom: 20px;
+}
+
+.sys-card-subtle {
+  border: 1px solid var(--border-faint);
+  background-color: var(--bg-secondary);
+  padding: 14px 16px;
+  margin-bottom: 16px;
+}
+
+.sys-collapsible-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px 16px;
+  background-color: var(--bg-surface);
+  border: 1px solid var(--border-subtle);
+  cursor: pointer;
+  user-select: none;
+  width: 100%;
+  text-align: left;
+  transition: border-color 0.12s ease;
+}
+
+.sys-collapsible-header:hover {
+  border-color: var(--border-medium);
+}
+
+.sys-collapsible-content {
+  padding: 14px 16px;
+  background-color: var(--bg-secondary);
+  border: 1px solid var(--border-subtle);
+  border-top: none;
+}
+
+.sys-num-input {
+  font-family: var(--font-mono);
+  font-size: 24px;
+  font-weight: 700;
+  text-align: center;
+  background-color: var(--bg-primary);
+  border: 1px solid var(--border-medium);
+  color: var(--text-primary);
+  min-height: 52px;
+  padding: 6px 10px;
+  border-radius: var(--radius-sm);
+  width: 100%;
+  -moz-appearance: textfield;
+}
+
+.sys-num-input::-webkit-outer-spin-button,
+.sys-num-input::-webkit-inner-spin-button {
+  -webkit-appearance: none;
+  margin: 0;
+}
+
+.sys-num-input:focus {
+  outline: none;
+  border-color: #ffffff;
+  background-color: var(--bg-surface);
 }
 
 .sys-section-title {
@@ -109,9 +180,9 @@
   font-size: 11px;
   font-weight: 700;
   text-transform: uppercase;
-  letter-spacing: 0.15em;
+  letter-spacing: 0.12em;
   color: var(--text-muted);
-  margin-bottom: 12px;
+  margin-bottom: 10px;
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -120,7 +191,7 @@
 .sys-divider {
   height: 1px;
   background-color: var(--border-subtle);
-  margin: 16px 0;
+  margin: 20px 0;
 }
 
 /* System Buttons */
@@ -128,10 +199,10 @@
   font-family: var(--font-mono);
   font-size: 13px;
   font-weight: 700;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   padding: 12px 18px;
-  min-height: 46px;
+  min-height: 48px;
   display: inline-flex;
   align-items: center;
   justify-content: center;

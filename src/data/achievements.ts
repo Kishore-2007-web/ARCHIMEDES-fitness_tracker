@@ -64,7 +64,7 @@ export const INITIAL_ACHIEVEMENTS: Achievement[] = [
   {
     id: 'ach_streak_120',
     title: 'PROTOCOL COMPLETE',
-    description: 'Complete all 120 days of the ARCHIMEDES Challenge.',
+    description: 'Complete all 124 days of the ARCHIMEDES Challenge.',
     isSecret: false,
     category: 'consistency',
     xpReward: 1500,

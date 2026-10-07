@@ -23,21 +23,21 @@ import { DAY1_DEFAULT_BASELINE } from '../data/baseline';
 import { SYSTEM_BOSSES } from '../data/bosses';
 
 describe('1. Challenge Date Engine', () => {
-  it('Day 1 correctly maps to 12 Oct 2026, Monday', () => {
-    const day1 = getChallengeDay('2026-10-12');
+  it('Day 1 correctly maps to 07 Oct 2026, Wednesday', () => {
+    const day1 = getChallengeDay('2026-10-07');
     expect(day1.dayNumber).toBe(1);
-    expect(day1.weekday).toBe(1); // Monday
-    expect(day1.weekdayName).toBe('MONDAY');
-    expect(day1.workoutTitle).toBe('SQUAT + BENCH STRENGTH A');
+    expect(day1.weekday).toBe(3); // Wednesday
+    expect(day1.weekdayName).toBe('WEDNESDAY');
+    expect(day1.workoutTitle).toBe('DEADLIFT + FULL BODY STRENGTH');
     expect(day1.baseXP).toBe(300);
     expect(day1.isInsideChallenge).toBe(true);
     expect(day1.isPhotoCheckpoint).toBe(true);
     expect(day1.checkpointId).toBe('day001');
   });
 
-  it('Day 30 correctly maps to 10 Nov 2026, Tuesday with Iron Gate unlock', () => {
+  it('Day 30 correctly maps to 05 Nov 2026, Thursday with Iron Gate unlock', () => {
     const dateStr = getDateStringForDayNumber(30);
-    expect(dateStr).toBe('2026-11-10');
+    expect(dateStr).toBe('2026-11-05');
     const day30 = getChallengeDay(dateStr);
     expect(day30.dayNumber).toBe(30);
     expect(day30.hasBossUnlock).toBe(true);
@@ -46,44 +46,46 @@ describe('1. Challenge Date Engine', () => {
     expect(day30.checkpointId).toBe('day030');
   });
 
-  it('Day 60 correctly maps to 10 Dec 2026, Thursday', () => {
+  it('Day 60 correctly maps to 05 Dec 2026, Saturday', () => {
     const dateStr = getDateStringForDayNumber(60);
-    expect(dateStr).toBe('2026-12-10');
+    expect(dateStr).toBe('2026-12-05');
     const day60 = getChallengeDay(dateStr);
     expect(day60.dayNumber).toBe(60);
-    expect(day60.weekdayName).toBe('THURSDAY');
+    expect(day60.weekdayName).toBe('SATURDAY');
     expect(day60.checkpointId).toBe('day060');
   });
 
-  it('Day 90 correctly maps to 09 Jan 2027, Saturday', () => {
+  it('Day 90 correctly maps to 04 Jan 2027, Monday', () => {
     const dateStr = getDateStringForDayNumber(90);
-    expect(dateStr).toBe('2027-01-09');
+    expect(dateStr).toBe('2027-01-04');
     const day90 = getChallengeDay(dateStr);
     expect(day90.dayNumber).toBe(90);
-    expect(day90.weekdayName).toBe('SATURDAY');
+    expect(day90.weekdayName).toBe('MONDAY');
     expect(day90.checkpointId).toBe('day090');
   });
 
-  it('Day 120 correctly maps to 08 Feb 2027, Monday', () => {
-    const dateStr = getDateStringForDayNumber(120);
-    expect(dateStr).toBe('2027-02-08');
-    const day120 = getChallengeDay(dateStr);
-    expect(day120.dayNumber).toBe(120);
-    expect(day120.weekday).toBe(1); // Monday
-    expect(day120.weekdayName).toBe('MONDAY');
-    expect(day120.workoutTitle).toBe('SQUAT + BENCH STRENGTH A');
-    expect(day120.baseXP).toBe(300);
-    expect(day120.isInsideChallenge).toBe(true);
-    expect(day120.isPhotoCheckpoint).toBe(true);
-    expect(day120.checkpointId).toBe('day120');
+  it('Day 124 correctly maps to 07 Feb 2027, Sunday (Challenge finale)', () => {
+    const dateStr = getDateStringForDayNumber(124);
+    expect(dateStr).toBe('2027-02-07');
+    const day124 = getChallengeDay(dateStr);
+    expect(day124.dayNumber).toBe(124);
+    expect(day124.weekday).toBe(0); // Sunday
+    expect(day124.weekdayName).toBe('SUNDAY');
+    expect(day124.workoutTitle).toBe('ACTIVE RECOVERY');
+    expect(day124.baseXP).toBe(100);
+    expect(day124.isInsideChallenge).toBe(true);
+    expect(day124.isPhotoCheckpoint).toBe(true);
+    expect(day124.checkpointId).toBe('day124');
+    expect(day124.hasBossUnlock).toBe(true);
+    expect(day124.bossId).toBe('boss_final');
   });
 
   it('Correctly identifies dates before and after challenge', () => {
-    const before = getChallengeDay('2026-10-11');
+    const before = getChallengeDay('2026-10-06');
     expect(before.isBeforeChallenge).toBe(true);
     expect(before.isInsideChallenge).toBe(false);
 
-    const after = getChallengeDay('2027-02-09');
+    const after = getChallengeDay('2027-02-08');
     expect(after.isAfterChallenge).toBe(true);
     expect(after.isInsideChallenge).toBe(false);
   });
@@ -343,9 +345,9 @@ describe('6. System Power & Attributes', () => {
 
 describe('7. Date Formatting & Reward Token Generator', () => {
   it('formats challenge date and computes day numbers correctly', () => {
-    expect(formatChallengeDate('2026-10-12')).toBe('12 OCT 2026');
-    expect(getChallengeDayNumber('2026-10-12')).toBe(1);
-    expect(getChallengeDayNumber('2026-10-13')).toBe(2);
+    expect(formatChallengeDate('2026-10-07')).toBe('07 OCT 2026');
+    expect(getChallengeDayNumber('2026-10-07')).toBe(1);
+    expect(getChallengeDayNumber('2026-10-08')).toBe(2);
   });
 
   it('evaluates reward token with weekly cap and bad-luck protection', () => {

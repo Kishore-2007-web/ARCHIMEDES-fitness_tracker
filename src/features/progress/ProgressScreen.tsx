@@ -8,7 +8,17 @@ import { ProgressCheckpoint, ExerciseHistoricalRecord } from '../../types/progre
 import { CompletedSession } from '../../types/workout';
 import { Button } from '../../components/common/Button';
 import { padDayNumber } from '../../lib/formatting/formatters';
-import { getDateStringForDayNumber } from '../../lib/dates/challengeDates';
+import { getDateStringForDayNumber, TOTAL_CHALLENGE_DAYS } from '../../lib/dates/challengeDates';
+
+type CheckpointId = 'day001' | 'day030' | 'day060' | 'day090' | 'day124';
+
+const CHECKPOINTS_CONFIG: { id: CheckpointId; label: string; day: number }[] = [
+  { id: 'day001', label: 'Day 1', day: 1 },
+  { id: 'day030', label: 'Day 30', day: 30 },
+  { id: 'day060', label: 'Day 60', day: 60 },
+  { id: 'day090', label: 'Day 90', day: 90 },
+  { id: 'day124', label: 'Day 124', day: 124 }
+];
 
 export const ProgressScreen: React.FC = () => {
   const { currentUser, userProfile, updateProfileData } = useAuth();
@@ -18,8 +28,8 @@ export const ProgressScreen: React.FC = () => {
   const [completedSessions, setCompletedSessions] = useState<CompletedSession[]>([]);
   const [exerciseHistory, setExerciseHistory] = useState<ExerciseHistoricalRecord[]>([]);
 
-  // Selected photo checkpoint modal
-  const [activeCheckpointView, setActiveCheckpointView] = useState<'day001' | 'day030' | 'day060' | 'day090' | 'day120' | null>(null);
+  // Selected photo checkpoint
+  const [activeCheckpointView, setActiveCheckpointView] = useState<CheckpointId | null>(null);
   const [isUploadingPhoto, setIsUploadingPhoto] = useState(false);
   const [uploadError, setUploadError] = useState<string | null>(null);
 
@@ -48,7 +58,8 @@ export const ProgressScreen: React.FC = () => {
   // Best recorded lifts
   const getBestForExercise = (exerciseId: string) => {
     const matches = exerciseHistory.filter((r) => r.exerciseId === exerciseId);
-    let bestW = 0, bestR = 0;
+    let bestW = 0;
+    let bestR = 0;
     matches.forEach((m) => {
       if ((m.bestWeight ?? 0) > bestW) {
         bestW = m.bestWeight ?? 0;
@@ -62,9 +73,9 @@ export const ProgressScreen: React.FC = () => {
   const benchBest = getBestForExercise('bench_press');
   const deadliftBest = getBestForExercise('conventional_deadlift');
 
-  // Photo upload handler for current checkpoint
+  // Photo upload handler
   const handlePhotoUpload = async (
-    cpId: 'day001' | 'day030' | 'day060' | 'day090' | 'day120',
+    cpId: CheckpointId,
     type: 'front' | 'side' | 'back',
     e: React.ChangeEvent<HTMLInputElement>
   ) => {
@@ -74,14 +85,16 @@ export const ProgressScreen: React.FC = () => {
     setIsUploadingPhoto(true);
     setUploadError(null);
 
+    const targetDay = cpId === 'day001' ? 1 : cpId === 'day030' ? 30 : cpId === 'day060' ? 60 : cpId === 'day090' ? 90 : 124;
+
     try {
       const { blob } = await compressAndStripExif(file);
       const url = await uploadProgressPhoto(currentUser.uid, cpId, type, blob);
 
       const existingCp = checkpoints[cpId] || {
         checkpointId: cpId,
-        dayNumber: cpId === 'day001' ? 1 : cpId === 'day030' ? 30 : cpId === 'day060' ? 60 : cpId === 'day090' ? 90 : 120,
-        date: getDateStringForDayNumber(cpId === 'day001' ? 1 : cpId === 'day030' ? 30 : cpId === 'day060' ? 60 : cpId === 'day090' ? 90 : 120),
+        dayNumber: targetDay,
+        date: getDateStringForDayNumber(targetDay),
         photos: {},
         photosComplete: false,
         createdAt: new Date().toISOString(),
@@ -126,52 +139,61 @@ export const ProgressScreen: React.FC = () => {
   });
 
   return (
-    <div>
-      <div className="sys-header">
-        <div className="flex-between">
-          <span className="font-mono" style={{ fontSize: '11px', letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
-            ARCHIMEDES // EVOLUTION AUDIT
+    <div className="anim-fade-in">
+      {/* TOP HEADER */}
+      <div style={{ marginBottom: '20px' }}>
+        <div className="font-mono flex-between" style={{ marginBottom: '4px' }}>
+          <span style={{ fontSize: '11px', letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
+            ARCHIMEDES // EVOLUTION
           </span>
-          <span className="sys-tag">DAY {padDayNumber(challengeDay.dayNumber)} / 120</span>
+          <span style={{ fontSize: '12px', fontWeight: 800 }}>
+            DAY {padDayNumber(challengeDay.dayNumber)} / {TOTAL_CHALLENGE_DAYS}
+          </span>
         </div>
-        <h1 className="font-mono" style={{ fontSize: '20px', fontWeight: 800, margin: '4px 0 2px 0' }}>
-          PROGRESS & MEASUREMENTS
+        <h1 className="font-mono" style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '0.04em', margin: '4px 0 2px 0' }}>
+          REAL-WORLD PROGRESS
         </h1>
         <div className="font-mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-          120-DAY PHYSICAL & PERFORMANCE TIMELINE
+          {TOTAL_CHALLENGE_DAYS}-DAY PHYSICAL & PERFORMANCE AUDIT
         </div>
       </div>
 
-      {/* BODY METRICS */}
+      {/* 1. BODY MEASUREMENTS */}
       <section className="sys-section font-mono">
         <div className="sys-section-title">
-          <span>BODY MEASUREMENTS</span>
+          <span>BODY</span>
           <button
             type="button"
             className="sys-btn sys-btn-subtle"
             style={{ width: 'auto', minHeight: '28px', padding: '2px 8px', fontSize: '10px' }}
             onClick={() => setIsEditingMeasurements(!isEditingMeasurements)}
           >
-            {isEditingMeasurements ? 'CANCEL' : 'RECORD UPDATE'}
+            {isEditingMeasurements ? 'CANCEL' : 'UPDATE'}
           </button>
         </div>
 
         {isEditingMeasurements ? (
-          <div style={{ padding: '8px 0' }}>
+          <div style={{ padding: '6px 0' }}>
             <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '12px' }}>
               <div>
-                <label style={{ fontSize: '10px', color: 'var(--text-muted)' }}>WEIGHT (KG)</label>
+                <label style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                  WEIGHT (KG)
+                </label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   className="sys-input"
                   value={newWeight}
                   onChange={(e) => setNewWeight(Number(e.target.value))}
                 />
               </div>
               <div>
-                <label style={{ fontSize: '10px', color: 'var(--text-muted)' }}>WAIST (INCHES)</label>
+                <label style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                  WAIST (INCHES)
+                </label>
                 <input
                   type="number"
+                  inputMode="decimal"
                   className="sys-input"
                   value={newWaist}
                   onChange={(e) => setNewWaist(Number(e.target.value))}
@@ -183,111 +205,99 @@ export const ProgressScreen: React.FC = () => {
             </Button>
           </div>
         ) : (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '14px' }}>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '16px' }}>
             <div style={{ borderLeft: '2px solid #ffffff', paddingLeft: '10px' }}>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>BODY WEIGHT</div>
+              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>WEIGHT</div>
               <div style={{ fontSize: '18px', fontWeight: 800, marginTop: '2px' }}>
-                {baseline.bodyWeightKg} kg
+                109 kg → {baseline.bodyWeightKg} kg
               </div>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>BASELINE: 109 kg</div>
             </div>
 
             <div style={{ borderLeft: '2px solid #ffffff', paddingLeft: '10px' }}>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>WAIST CIRCUMFERENCE</div>
+              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>WAIST</div>
               <div style={{ fontSize: '18px', fontWeight: 800, marginTop: '2px' }}>
-                {baseline.waistIn} in
+                44 in → {baseline.waistIn} in
               </div>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>BASELINE: 44 in</div>
             </div>
           </div>
         )}
       </section>
 
-      {/* PERFORMANCE BENCHMARKS */}
+      {/* 2. PERFORMANCE */}
       <section className="sys-section font-mono">
         <div className="sys-section-title">
-          <span>CALISTHENIC CAPACITY</span>
-          <span className="sys-tag">BENCHMARKS</span>
+          <span>PERFORMANCE</span>
+          <span className="sys-tag">CAPACITY</span>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr 1fr', gap: '8px' }}>
-          <div style={{ border: '1px solid var(--border-subtle)', padding: '8px' }}>
+          <div style={{ border: '1px solid var(--border-subtle)', padding: '10px 8px', textAlign: 'center' }}>
             <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>PUSH-UPS</div>
-            <div style={{ fontSize: '16px', fontWeight: 800, margin: '2px 0' }}>{baseline.maxPushUps}</div>
-            <div style={{ fontSize: '9px', color: 'var(--text-muted)' }}>BASE: 3</div>
+            <div style={{ fontSize: '16px', fontWeight: 800, marginTop: '4px' }}>
+              3 → {baseline.maxPushUps}
+            </div>
           </div>
 
-          <div style={{ border: '1px solid var(--border-subtle)', padding: '8px' }}>
+          <div style={{ border: '1px solid var(--border-subtle)', padding: '10px 8px', textAlign: 'center' }}>
             <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>PULL-UPS</div>
-            <div style={{ fontSize: '16px', fontWeight: 800, margin: '2px 0' }}>{baseline.maxPullUps}</div>
-            <div style={{ fontSize: '9px', color: 'var(--text-muted)' }}>BASE: 0</div>
+            <div style={{ fontSize: '16px', fontWeight: 800, marginTop: '4px' }}>
+              0 → {baseline.maxPullUps}
+            </div>
           </div>
 
-          <div style={{ border: '1px solid var(--border-subtle)', padding: '8px' }}>
+          <div style={{ border: '1px solid var(--border-subtle)', padding: '10px 8px', textAlign: 'center' }}>
             <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>PLANK</div>
-            <div style={{ fontSize: '16px', fontWeight: 800, margin: '2px 0' }}>{baseline.maxPlankSec}s</div>
-            <div style={{ fontSize: '9px', color: 'var(--text-muted)' }}>BASE: 30s</div>
+            <div style={{ fontSize: '16px', fontWeight: 800, marginTop: '4px' }}>
+              30s → {baseline.maxPlankSec}s
+            </div>
           </div>
         </div>
       </section>
 
-      {/* KEY LIFTS BENCHMARKS */}
+      {/* 3. KEY LIFTS */}
       <section className="sys-section font-mono">
         <div className="sys-section-title">
-          <span>KEY BARBELL LIFTS</span>
-          <span className="sys-tag">STRENGTH AUDIT</span>
+          <span>KEY LIFTS</span>
+          <span className="sys-tag">BASELINE → BEST</span>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
           <div className="flex-between" style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: '6px' }}>
-            <div>
-              <span style={{ fontWeight: 700 }}>BACK SQUAT</span>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
-                Baseline: {baseline.squatBestWeightKg} kg × {baseline.squatBestReps}
-              </div>
-            </div>
-            <div style={{ textAlign: 'right', fontWeight: 800 }}>
-              {squatBest.weight > 0 ? `${squatBest.weight} kg × ${squatBest.reps}` : `${baseline.squatBestWeightKg} kg × ${baseline.squatBestReps}`}
-            </div>
+            <span style={{ fontWeight: 700 }}>Squat</span>
+            <span style={{ fontWeight: 800 }}>
+              80 kg × 8 → {squatBest.weight > 0 ? `${squatBest.weight} kg × ${squatBest.reps}` : `${baseline.squatBestWeightKg} kg × ${baseline.squatBestReps}`}
+            </span>
           </div>
 
           <div className="flex-between" style={{ borderBottom: '1px solid var(--border-subtle)', paddingBottom: '6px' }}>
-            <div>
-              <span style={{ fontWeight: 700 }}>BENCH PRESS</span>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
-                Baseline: {baseline.benchBestWeightKg} kg × {baseline.benchBestReps}
-              </div>
-            </div>
-            <div style={{ textAlign: 'right', fontWeight: 800 }}>
-              {benchBest.weight > 0 ? `${benchBest.weight} kg × ${benchBest.reps}` : `${baseline.benchBestWeightKg} kg × ${baseline.benchBestReps}`}
-            </div>
+            <span style={{ fontWeight: 700 }}>Bench</span>
+            <span style={{ fontWeight: 800 }}>
+              30 kg × 12 → {benchBest.weight > 0 ? `${benchBest.weight} kg × ${benchBest.reps}` : `${baseline.benchBestWeightKg} kg × ${baseline.benchBestReps}`}
+            </span>
           </div>
 
           <div className="flex-between">
-            <div>
-              <span style={{ fontWeight: 700 }}>DEADLIFT</span>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>
-                Baseline: {baseline.deadliftBestWeightKg} kg × {baseline.deadliftBestReps}
-              </div>
-            </div>
-            <div style={{ textAlign: 'right', fontWeight: 800 }}>
-              {deadliftBest.weight > 0 ? `${deadliftBest.weight} kg × ${deadliftBest.reps}` : `${baseline.deadliftBestWeightKg} kg × ${baseline.deadliftBestReps}`}
-            </div>
+            <span style={{ fontWeight: 700 }}>Deadlift</span>
+            <span style={{ fontWeight: 800 }}>
+              80 kg × 8 → {deadliftBest.weight > 0 ? `${deadliftBest.weight} kg × ${deadliftBest.reps}` : `${baseline.deadliftBestWeightKg} kg × ${baseline.deadliftBestReps}`}
+            </span>
           </div>
         </div>
       </section>
 
-      {/* PHOTO TIMELINE */}
+      {/* 4. PHOTO TIMELINE */}
       <section className="sys-section font-mono">
         <div className="sys-section-title">
-          <span>PROGRESS PHOTO CHECKPOINTS</span>
+          <span>PHOTO TIMELINE</span>
           <span className="sys-tag">5 CHECKPOINTS</span>
         </div>
 
         <div style={{ display: 'grid', gridTemplateColumns: 'repeat(5, 1fr)', gap: '6px', textAlign: 'center' }}>
-          {(['day001', 'day030', 'day060', 'day090', 'day120'] as const).map((cpId) => {
+          {CHECKPOINTS_CONFIG.map(({ id: cpId, label }) => {
             const cp = checkpoints[cpId];
             const isComplete = cp?.photosComplete;
+            const isSelected = activeCheckpointView === cpId;
+
             return (
               <button
                 key={cpId}
@@ -297,14 +307,14 @@ export const ProgressScreen: React.FC = () => {
                   minHeight: '44px',
                   padding: '4px',
                   border: isComplete ? '1px solid #ffffff' : '1px dashed var(--border-subtle)',
-                  backgroundColor: activeCheckpointView === cpId ? 'var(--bg-inverted)' : 'transparent',
-                  color: activeCheckpointView === cpId ? 'var(--text-inverted)' : 'inherit'
+                  backgroundColor: isSelected ? 'var(--bg-inverted)' : 'transparent',
+                  color: isSelected ? 'var(--text-inverted)' : 'inherit'
                 }}
-                onClick={() => setActiveCheckpointView(cpId)}
+                onClick={() => setActiveCheckpointView(isSelected ? null : cpId)}
               >
-                <div style={{ fontSize: '9px' }}>{cpId.toUpperCase()}</div>
-                <div style={{ fontSize: '10px', fontWeight: 700, marginTop: '2px' }}>
-                  {isComplete ? '✓ VIEW' : '+ ADD'}
+                <div style={{ fontSize: '10px', fontWeight: 800 }}>{label}</div>
+                <div style={{ fontSize: '9px', marginTop: '2px', opacity: 0.8 }}>
+                  {isComplete ? '✓' : '+ ADD'}
                 </div>
               </button>
             );
@@ -337,11 +347,11 @@ export const ProgressScreen: React.FC = () => {
                 const photoUrl = checkpoints[activeCheckpointView]?.photos?.[ptype];
                 return (
                   <div key={ptype} style={{ border: '1px solid var(--border-subtle)', padding: '6px', textAlign: 'center' }}>
-                    <div style={{ fontSize: '9px', marginBottom: '4px' }}>{ptype.toUpperCase()}</div>
+                    <div style={{ fontSize: '10px', marginBottom: '4px', textTransform: 'uppercase' }}>{ptype}</div>
                     {photoUrl ? (
-                      <img src={photoUrl} alt={ptype} style={{ width: '100%', height: '120px', objectFit: 'cover' }} />
+                      <img src={photoUrl} alt={ptype} style={{ width: '100%', height: '110px', objectFit: 'cover' }} />
                     ) : (
-                      <div style={{ height: '120px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', color: 'var(--text-muted)' }}>
+                      <div style={{ height: '110px', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '9px', color: 'var(--text-muted)' }}>
                         NO PHOTO
                       </div>
                     )}
@@ -363,15 +373,15 @@ export const ProgressScreen: React.FC = () => {
         )}
       </section>
 
-      {/* CHALLENGE CALENDAR (120 DAYS) */}
+      {/* 5. 124-DAY CHALLENGE CALENDAR */}
       <section className="sys-section font-mono">
         <div className="sys-section-title">
           <span>CHALLENGE CALENDAR</span>
-          <span className="sys-tag">120 DAYS</span>
+          <span className="sys-tag">{TOTAL_CHALLENGE_DAYS} DAYS</span>
         </div>
 
         <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '8px' }}>
-          {Array.from({ length: 120 }, (_, i) => i + 1).map((d) => {
+          {Array.from({ length: TOTAL_CHALLENGE_DAYS }, (_, i) => i + 1).map((d) => {
             const status = sessionStatusMap.get(d);
             const isToday = d === challengeDay.dayNumber;
 
@@ -403,31 +413,26 @@ export const ProgressScreen: React.FC = () => {
                 key={d}
                 type="button"
                 onClick={() => setSelectedDayNumber(d)}
+                title={`Day ${d}`}
                 style={{
-                  width: 'calc(100% / 14 - 3px)',
-                  aspectRatio: '1',
+                  width: '26px',
+                  height: '26px',
                   backgroundColor: bg,
                   border,
                   color,
-                  fontSize: '8px',
+                  fontSize: '9px',
+                  fontWeight: 700,
+                  cursor: 'pointer',
                   display: 'flex',
                   alignItems: 'center',
                   justifyContent: 'center',
-                  padding: 0,
-                  cursor: 'pointer'
+                  padding: 0
                 }}
-                title={`Day ${d}: ${status || (isToday ? 'Today' : 'Pending')}`}
               >
                 {d}
               </button>
             );
           })}
-        </div>
-
-        <div className="flex-between" style={{ marginTop: '10px', fontSize: '9px', color: 'var(--text-muted)' }}>
-          <span>■ COMPLETED</span>
-          <span>□ EXCEPTION / TODAY</span>
-          <span>· FUTURE</span>
         </div>
       </section>
     </div>

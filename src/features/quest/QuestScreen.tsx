@@ -4,68 +4,15 @@ import { useUserProgression } from '../../context/UserProgressionContext';
 import { WORKOUT_SCHEDULE } from '../../data/workoutSchedule';
 import { ExerciseHistoricalRecord } from '../../types/progress';
 import { getExerciseHistory } from '../../lib/firebase/db';
-import { ExerciseLogger } from './ExerciseLogger';
-import { BlockChecklist } from './BlockChecklist';
-import { RestTimer } from '../../components/common/RestTimer';
 import { Button } from '../../components/common/Button';
 import { ExceptionModal } from '../../components/overlays/ExceptionModal';
 import { WeeklyScheduleModal } from '../../components/overlays/WeeklyScheduleModal';
 import { padDayNumber } from '../../lib/formatting/formatters';
-import { getDateStringForDayNumber, getChallengeDay } from '../../lib/dates/challengeDates';
-import { ExceptionReason, ExerciseDefinition } from '../../types/workout';
-
-const CATEGORY_HEADERS: Record<string, { title: string; subtitle?: string }> = {
-  primary: {
-    title: 'PRIMARY STRENGTH LIFTS',
-    subtitle: 'Primary strength progression lifts. Maximum mechanical intent and controlled execution.'
-  },
-  secondary: {
-    title: 'SECONDARY LIFTS',
-    subtitle: 'Regulated volume & technique work.'
-  },
-  support: {
-    title: 'SUPPORT MOVEMENTS',
-    subtitle: 'Accessory volume, structural balance and stability.'
-  },
-  calisthenics: {
-    title: 'CALISTHENICS & BODYWEIGHT',
-    subtitle: 'Relative strength mastery and progressive bodyweight force.'
-  },
-  athletic: {
-    title: 'ATHLETIC & AGILITY',
-    subtitle: 'Coordination, reactive elasticity, balance and quick footwork.'
-  },
-  conditioning: {
-    title: 'AEROBIC CONDITIONING',
-    subtitle: 'Sustained aerobic output (Rower / Bike / Elliptical / Outdoor Brisk Walk).'
-  },
-  grip: {
-    title: 'GRIP FORTITUDE',
-    subtitle: 'Forearm flexors and grip endurance capacity.'
-  },
-  neck: {
-    title: 'CERVICAL / NECK INTEGRITY',
-    subtitle: 'Controlled multi-planar neck stability.'
-  },
-  forearms: {
-    title: 'FOREARM & WRIST HYPERTROPHY',
-    subtitle: 'Isolated flexor, extensor and rotational forearm fortitude.'
-  },
-  recovery: {
-    title: 'ACTIVE RECOVERY PROTOCOLS',
-    subtitle: 'Low-intensity mobility and systemic restoration.'
-  }
-};
-
-const WEEKDAY_BUTTONS: { weekday: number; label: string }[] = [
-  { weekday: 1, label: 'MON' },
-  { weekday: 2, label: 'TUE' },
-  { weekday: 3, label: 'WED' },
-  { weekday: 4, label: 'THU' },
-  { weekday: 5, label: 'FRI' },
-  { weekday: 6, label: 'SAT' },
-  { weekday: 0, label: 'SUN' }
-];
+import { getDateStringForDayNumber, getChallengeDay, TOTAL_CHALLENGE_DAYS } from '../../lib/dates/challengeDates';
+import { ExceptionReason } from '../../types/workout';
+import { WarmUpSection } from './WarmUpSection';
+import { RecoverySection } from './RecoverySection';
+import { ActiveStepLogger } from './ActiveStepLogger';
 
 export const QuestScreen: React.FC = () => {
   const { currentUser, isOnline } = useAuth();
@@ -77,8 +24,7 @@ export const QuestScreen: React.FC = () => {
     logExerciseSet,
     updateBlockState,
     setDailyMissionStatus,
-    finalizeCurrentSession,
-    startRestTimer
+    finalizeCurrentSession
   } = useUserProgression();
 
   const [historyRecords, setHistoryRecords] = useState<Record<string, ExerciseHistoricalRecord>>({});
@@ -92,25 +38,23 @@ export const QuestScreen: React.FC = () => {
   const dayInfo = getChallengeDay(selectedDateStr);
   const schedule = WORKOUT_SCHEDULE[dayInfo.weekday] || WORKOUT_SCHEDULE[1];
 
-  // Current week index (1-based, where Day 1 is Monday)
-  const currentWeekNumber = Math.ceil(selectedDayNumber / 7);
+  // Training mode state
+  const hasLoggedSets = Boolean(
+    activeSession &&
+    activeSession.status === 'in_progress' &&
+    Object.keys(activeSession.exercises || {}).length > 0
+  );
 
-  // Quick switch to a specific weekday within the currently selected week
-  const handleSelectWeekday = (targetWeekday: number) => {
-    // Week starts on Monday:
-    // Monday (1) -> offset 0
-    // Tuesday (2) -> offset 1
-    // Wednesday (3) -> offset 2
-    // Thursday (4) -> offset 3
-    // Friday (5) -> offset 4
-    // Saturday (6) -> offset 5
-    // Sunday (0) -> offset 6
-    const weekStartMondayDayNumber = 1 + (currentWeekNumber - 1) * 7;
-    const offset = targetWeekday === 0 ? 6 : targetWeekday - 1;
-    const targetDayNumber = weekStartMondayDayNumber + offset;
-    const clampedDay = Math.max(1, Math.min(120, targetDayNumber));
-    setSelectedDayNumber(clampedDay);
-  };
+  const [isTrainingActive, setIsTrainingActive] = useState<boolean>(() => hasLoggedSets);
+  const [activeExerciseIndex, setActiveExerciseIndex] = useState<number>(0);
+  const [showFinalizeSection, setShowFinalizeSection] = useState<boolean>(false);
+
+  // Auto-resume to active mode if session already has logged sets
+  useEffect(() => {
+    if (hasLoggedSets) {
+      setIsTrainingActive(true);
+    }
+  }, [hasLoggedSets]);
 
   // Fetch recent exercise history for display
   useEffect(() => {
@@ -128,12 +72,13 @@ export const QuestScreen: React.FC = () => {
       .catch((err) => console.warn('Could not fetch exercise history:', err));
   }, [currentUser]);
 
-  // Ensure active session is started when on quest screen
-  useEffect(() => {
+  const handleStartWorkout = async () => {
     if (!activeSession && dayInfo.isInsideChallenge) {
-      startWorkoutSession(selectedDateStr);
+      await startWorkoutSession(selectedDateStr);
     }
-  }, [activeSession, selectedDayNumber, selectedDateStr, dayInfo.isInsideChallenge]);
+    setIsTrainingActive(true);
+    setShowFinalizeSection(false);
+  };
 
   const handleFinalize = async () => {
     if (!isOnline) {
@@ -144,6 +89,8 @@ export const QuestScreen: React.FC = () => {
     setIsFinalizing(true);
     try {
       await finalizeCurrentSession();
+      setIsTrainingActive(false);
+      setShowFinalizeSection(false);
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to finalize session.');
     } finally {
@@ -160,6 +107,8 @@ export const QuestScreen: React.FC = () => {
     setIsFinalizing(true);
     try {
       await finalizeCurrentSession({ exceptionReason: reason, isReduced });
+      setIsTrainingActive(false);
+      setShowFinalizeSection(false);
     } catch (err: any) {
       setErrorMessage(err.message || 'Failed to commit exception.');
     } finally {
@@ -167,297 +116,284 @@ export const QuestScreen: React.FC = () => {
     }
   };
 
-  // Group exercises by category while preserving their sequence order and numbering
-  const categoryGroups: { category: string; exercises: ExerciseDefinition[]; startIndex: number }[] = [];
-  let runningNumber = 1;
-  for (const ex of schedule.exercises) {
-    let grp = categoryGroups.find((g) => g.category === ex.category);
-    if (!grp) {
-      grp = { category: ex.category, exercises: [], startIndex: runningNumber };
-      categoryGroups.push(grp);
-    }
-    grp.exercises.push(ex);
-    runningNumber++;
-  }
-
   return (
-    <div>
-      {/* Weekday Quick-Select Navigation Bar */}
-      <div className="sys-section" style={{ padding: '12px 14px', marginBottom: '14px' }}>
-        <div className="flex-between font-mono" style={{ marginBottom: '8px' }}>
-          <button
-            type="button"
-            className="sys-btn sys-btn-subtle"
-            style={{ width: 'auto', minHeight: '32px', padding: '2px 10px', fontSize: '11px' }}
-            onClick={() => setSelectedDayNumber(Math.max(1, selectedDayNumber - 1))}
-            disabled={selectedDayNumber <= 1}
-          >
-            ← PREV DAY
-          </button>
-
-          <div style={{ textAlign: 'center' }}>
-            <span style={{ fontSize: '12px', fontWeight: 800 }}>DAY {padDayNumber(selectedDayNumber)} / 120</span>
-            <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '8px' }}>
-              WEEK {currentWeekNumber}
-            </span>
-          </div>
-
-          <button
-            type="button"
-            className="sys-btn sys-btn-subtle"
-            style={{ width: 'auto', minHeight: '32px', padding: '2px 10px', fontSize: '11px' }}
-            onClick={() => setSelectedDayNumber(Math.min(120, selectedDayNumber + 1))}
-            disabled={selectedDayNumber >= 120}
-          >
-            NEXT DAY →
-          </button>
-        </div>
-
-        {/* 7-Day Weekday Quick Tabs */}
-        <div
-          style={{
-            display: 'grid',
-            gridTemplateColumns: 'repeat(7, 1fr)',
-            gap: '3px',
-            marginTop: '8px',
-            marginBottom: '10px'
-          }}
-        >
-          {WEEKDAY_BUTTONS.map((item) => {
-            const isSelected = dayInfo.weekday === item.weekday;
-            return (
-              <button
-                key={item.weekday}
-                type="button"
-                onClick={() => handleSelectWeekday(item.weekday)}
-                style={{
-                  background: isSelected ? '#ffffff' : 'var(--bg-elevated)',
-                  color: isSelected ? '#000000' : 'var(--text-secondary)',
-                  border: isSelected ? '1px solid #ffffff' : '1px solid var(--border-subtle)',
-                  fontFamily: 'var(--font-mono)',
-                  fontSize: '11px',
-                  fontWeight: 800,
-                  padding: '8px 2px',
-                  cursor: 'pointer',
-                  textAlign: 'center',
-                  transition: 'all 0.15s ease'
-                }}
-              >
-                {item.label}
-              </button>
-            );
-          })}
-        </div>
-
-        {/* Blueprint Modal Trigger */}
-        <button
-          type="button"
-          className="sys-btn sys-btn-outline font-mono flex-center"
-          style={{
-            width: '100%',
-            minHeight: '36px',
-            fontSize: '11px',
-            fontWeight: 800,
-            letterSpacing: '0.08em',
-            gap: '6px'
-          }}
-          onClick={() => setShowScheduleModal(true)}
-        >
-          <span>📋</span>
-          <span>VIEW FULL 7-DAY WORKOUT BLUEPRINT</span>
-        </button>
-      </div>
-
-      {/* Main Quest Header */}
-      <div className="sys-header">
-        <div className="flex-between">
-          <span className="font-mono" style={{ fontSize: '11px', letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
-            QUEST ENGINE // {dayInfo.weekdayName}
-          </span>
-          <span className="sys-tag">BASE {schedule.baseXP} XP</span>
-        </div>
-        <h1 className="font-mono" style={{ fontSize: '20px', fontWeight: 800, margin: '6px 0 2px 0' }}>
-          {schedule.title}
-        </h1>
-        <div className="font-mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-          {schedule.subtitle}
-        </div>
-      </div>
-
-      {/* Archimedes Directive / Day Note */}
-      {schedule.dayNote && (
-        <div
-          className="font-mono anim-fade-in"
-          style={{
-            padding: '12px 14px',
-            marginBottom: '16px',
-            border: '1px solid #ffffff',
-            borderLeft: '4px solid #ffffff',
-            background: 'var(--bg-elevated)',
-            fontSize: '12px',
-            lineHeight: 1.5,
-            color: 'var(--text-primary)'
-          }}
-        >
-          <div style={{ fontWeight: 800, letterSpacing: '0.08em', marginBottom: '4px', color: '#ffffff' }}>
-            ⚡ ARCHIMEDES SYSTEM DIRECTIVE
-          </div>
-          <div>{schedule.dayNote}</div>
-        </div>
-      )}
-
+    <div className="anim-fade-in">
       {errorMessage && (
         <div className="sys-alert-inverted font-mono" style={{ fontSize: '12px', padding: '10px', marginBottom: '14px' }}>
           {errorMessage}
         </div>
       )}
 
-      {/* PREPARATION BLOCK (with sub-sections if present) */}
-      {schedule.preparationChecklist.length > 0 && (
-        <BlockChecklist
-          title="PREPARATION PROTOCOL"
-          durationLabel={`${schedule.preparationMinutes} MIN`}
-          items={schedule.preparationChecklist}
-          sections={schedule.preparationSections}
-          isCompleted={activeSession?.blocks.preparationComplete ?? false}
-          onToggleComplete={(val) => updateBlockState('preparationComplete', val)}
-        />
-      )}
+      {/* ACTIVE WORKOUT MODE (STEP-BY-STEP) */}
+      {isTrainingActive && !showFinalizeSection ? (
+        <div>
+          {/* Active Workout Header */}
+          <div className="flex-between font-mono" style={{ marginBottom: '14px' }}>
+            <button
+              type="button"
+              onClick={() => setIsTrainingActive(false)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-muted)',
+                fontFamily: 'inherit',
+                fontSize: '11px',
+                letterSpacing: '0.08em',
+                cursor: 'pointer',
+                padding: '4px 0'
+              }}
+            >
+              ← OVERVIEW
+            </button>
 
-      {/* REST TIMER INTEGRATION */}
-      <RestTimer />
+            <div style={{ textAlign: 'center' }}>
+              <span style={{ fontSize: '12px', fontWeight: 800 }}>
+                DAY {padDayNumber(selectedDayNumber)} / {TOTAL_CHALLENGE_DAYS}
+              </span>
+              <span style={{ fontSize: '11px', color: 'var(--text-muted)', marginLeft: '6px' }}>
+                · {dayInfo.weekdayName}
+              </span>
+            </div>
 
-      {/* EXERCISES GROUPED BY CATEGORY */}
-      <div style={{ marginTop: '20px' }}>
-        {categoryGroups.map((group) => {
-          const headerInfo = CATEGORY_HEADERS[group.category] || {
-            title: group.category.toUpperCase()
-          };
+            <button
+              type="button"
+              onClick={() => setShowFinalizeSection(true)}
+              style={{
+                background: 'none',
+                border: 'none',
+                color: 'var(--text-secondary)',
+                fontFamily: 'inherit',
+                fontSize: '11px',
+                letterSpacing: '0.08em',
+                cursor: 'pointer',
+                padding: '4px 0'
+              }}
+            >
+              FINISH →
+            </button>
+          </div>
 
-          return (
-            <div key={group.category} style={{ marginBottom: '24px' }}>
-              <div
-                className="sys-section-title"
-                style={{
-                  marginBottom: '6px',
-                  borderLeft: '3px solid #ffffff',
-                  paddingLeft: '8px'
-                }}
-              >
-                <span>{headerInfo.title}</span>
-                <span className="sys-tag">{group.exercises.length} MOVEMENTS</span>
+          <ActiveStepLogger
+            exercises={schedule.exercises}
+            activeExerciseIndex={activeExerciseIndex}
+            onSelectExerciseIndex={setActiveExerciseIndex}
+            historyRecords={historyRecords}
+            onLogSet={(exId, set) => logExerciseSet(exId, set)}
+            onFinishWorkout={() => setShowFinalizeSection(true)}
+          />
+        </div>
+      ) : (
+        /* WORKOUT OVERVIEW & PREPARATION MODE */
+        <div>
+          {/* TOP HEADER */}
+          <div style={{ marginBottom: '20px' }}>
+            <div className="flex-between font-mono" style={{ marginBottom: '4px' }}>
+              <div style={{ fontSize: '12px', letterSpacing: '0.12em', color: 'var(--text-muted)' }}>
+                {dayInfo.weekdayName}
               </div>
+              <div style={{ fontSize: '12px', fontWeight: 800 }}>
+                DAY {padDayNumber(selectedDayNumber)} / {TOTAL_CHALLENGE_DAYS}
+              </div>
+            </div>
 
-              {headerInfo.subtitle && (
-                <div
-                  className="font-mono"
-                  style={{
-                    fontSize: '11px',
-                    color: 'var(--text-muted)',
-                    marginBottom: '12px',
-                    paddingLeft: '11px'
-                  }}
-                >
-                  {headerInfo.subtitle}
-                </div>
-              )}
+            <h1
+              className="font-mono"
+              style={{
+                fontSize: '22px',
+                fontWeight: 800,
+                letterSpacing: '0.04em',
+                margin: '6px 0 4px 0',
+                textTransform: 'uppercase'
+              }}
+            >
+              {schedule.title}
+            </h1>
 
-              {group.exercises.map((exercise) => {
-                const loggedSets = activeSession?.exercises[exercise.id]?.sets || [];
-                const historical = historyRecords[exercise.id];
+            <div className="font-mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+              {schedule.baseXP} XP · ~90–120 min
+            </div>
+          </div>
+
+          {/* PRIMARY WORKOUT ACTION BUTTON */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '20px' }}>
+            <Button
+              id="btn-start-workout-quest"
+              variant="primary"
+              onClick={handleStartWorkout}
+              style={{ minHeight: '52px', fontSize: '15px', fontWeight: 800 }}
+            >
+              {hasLoggedSets ? 'RESUME WORKOUT' : 'START WORKOUT'}
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setShowScheduleModal(true)}
+              style={{ minHeight: '40px', fontSize: '12px' }}
+            >
+              VIEW WEEKLY PLAN
+            </Button>
+          </div>
+
+          {/* TODAY'S MISSION */}
+          <div className="sys-section">
+            <div className="sys-section-title">
+              <span>TODAY'S MISSION</span>
+              <span className="sys-tag">+25 XP</span>
+            </div>
+            <p style={{ fontSize: '13px', lineHeight: 1.5, color: 'var(--text-primary)' }}>
+              {dayInfo.dailyMission}
+            </p>
+          </div>
+
+          {/* WARM-UP ACCORDION (PROGRESSIVE DISCLOSURE) */}
+          <WarmUpSection
+            durationMinutes={schedule.preparationMinutes}
+            sections={schedule.preparationSections}
+            items={schedule.preparationChecklist}
+            isCompleted={activeSession?.blocks.preparationComplete ?? false}
+            onToggleComplete={(val) => updateBlockState('preparationComplete', val)}
+          />
+
+          {/* MAIN WORKOUT EXERCISE LIST OVERVIEW */}
+          <div className="sys-section">
+            <div className="sys-section-title">
+              <span>MAIN WORKOUT</span>
+              <span className="sys-tag">{schedule.exercises.length} MOVEMENTS</span>
+            </div>
+
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              {schedule.exercises.map((ex, idx) => {
+                const logged = activeSession?.exercises[ex.id]?.sets || [];
+                const isComplete = logged.length >= ex.targetSets;
 
                 return (
-                  <ExerciseLogger
-                    key={exercise.id}
-                    exercise={exercise}
-                    loggedSets={loggedSets}
-                    historicalRecord={historical}
-                    onLogSet={(set) => logExerciseSet(exercise.id, set)}
-                    onTriggerRestTimer={() => startRestTimer(180)}
-                  />
+                  <div
+                    key={ex.id}
+                    className="font-mono flex-between"
+                    style={{
+                      padding: '8px 10px',
+                      backgroundColor: 'var(--bg-primary)',
+                      border: '1px solid var(--border-subtle)',
+                      fontSize: '13px'
+                    }}
+                  >
+                    <div>
+                      <span style={{ color: 'var(--text-muted)', marginRight: '8px' }}>
+                        {idx + 1}.
+                      </span>
+                      <span style={{ fontWeight: 700 }}>{ex.name}</span>
+                    </div>
+
+                    <div className="flex-center gap-2">
+                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                        {ex.targetSets} × {ex.targetRepOrDuration}
+                      </span>
+                      {isComplete && <span style={{ color: '#ffffff', fontWeight: 800 }}>✓</span>}
+                    </div>
+                  </div>
                 );
               })}
             </div>
-          );
-        })}
-      </div>
-
-      {/* RECOVERY PROTOCOL (with sub-sections if present) */}
-      {schedule.recoveryChecklist.length > 0 && (
-        <BlockChecklist
-          title="RECOVERY PROTOCOL"
-          durationLabel={`${schedule.recoveryMinutes} MIN`}
-          items={schedule.recoveryChecklist}
-          sections={schedule.recoverySections}
-          isCompleted={activeSession?.blocks.recoveryComplete ?? false}
-          onToggleComplete={(val) => updateBlockState('recoveryComplete', val)}
-        />
-      )}
-
-      {/* CONTINUOUS WALKING BLOCK */}
-      {schedule.walkingMinutes > 0 && (
-        <div className="sys-section">
-          <div className="sys-section-title">
-            <span>CONTINUOUS WALKING PROTOCOL</span>
-            <span className="sys-tag">{schedule.walkingRange || `${schedule.walkingMinutes} MIN`}</span>
           </div>
-          <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px' }}>
-            Brisk, unbroken continuous walking to accelerate recovery, clear metabolic accumulation and maintain aerobic baseline.
-          </p>
-          <Button
-            variant={activeSession?.blocks.walkingComplete ? 'inverted' : 'outline'}
-            onClick={() => updateBlockState('walkingComplete', !activeSession?.blocks.walkingComplete)}
-          >
-            {activeSession?.blocks.walkingComplete ? '✓ WALKING PROTOCOL LOGGED' : 'MARK WALKING PROTOCOL COMPLETE'}
-          </Button>
+
+          {/* RECOVERY ACCORDION (PROGRESSIVE DISCLOSURE) */}
+          <RecoverySection
+            durationMinutes={schedule.recoveryMinutes}
+            sections={schedule.recoverySections}
+            items={schedule.recoveryChecklist}
+            walkingMinutes={schedule.walkingMinutes}
+            walkingRange={schedule.walkingRange}
+            isRecoveryComplete={activeSession?.blocks.recoveryComplete ?? false}
+            isWalkingComplete={activeSession?.blocks.walkingComplete ?? false}
+            onToggleRecovery={(val) => updateBlockState('recoveryComplete', val)}
+            onToggleWalking={(val) => updateBlockState('walkingComplete', val)}
+          />
+
+          {/* SESSION FINALIZATION / RECOVERY ACTIONS */}
+          {(hasLoggedSets || showFinalizeSection) && (
+            <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
+              <Button
+                id="btn-finalize-workout"
+                variant="primary"
+                onClick={handleFinalize}
+                disabled={isFinalizing}
+                style={{ minHeight: '52px', fontSize: '15px', fontWeight: 800 }}
+              >
+                {isFinalizing ? 'CALCULATING PROGRESSION...' : 'FINALIZE WORKOUT SESSION'}
+              </Button>
+
+              <Button
+                variant="subtle"
+                onClick={() => setShowExceptionModal(true)}
+                disabled={isFinalizing}
+              >
+                REPORT EXCEPTION / REDUCED SESSION
+              </Button>
+            </div>
+          )}
         </div>
       )}
 
-      {/* DAILY MISSION STATUS */}
-      <div className="sys-section font-mono">
-        <div className="sys-section-title">
-          <span>DAILY MISSION OBJECTIVE</span>
-          <span className="sys-tag">+25 XP</span>
+      {/* FINALIZE CONFIRMATION DRAWER/VIEW IF IN TRAINING */}
+      {isTrainingActive && showFinalizeSection && (
+        <div className="sys-section anim-scale-in" style={{ border: '1px solid #ffffff', marginTop: '16px' }}>
+          <div className="sys-section-title">
+            <span>FINALIZE WORKOUT</span>
+            <span className="sys-tag">SESSION SUMMARY</span>
+          </div>
+
+          <p style={{ fontSize: '13px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
+            Review your session before committing progression and PR calculations.
+          </p>
+
+          {/* Daily Mission completion toggle */}
+          <div style={{ marginBottom: '14px' }}>
+            <Button
+              variant={activeSession?.dailyMissionStatus === 'completed' ? 'inverted' : 'outline'}
+              onClick={() =>
+                setDailyMissionStatus(
+                  activeSession?.dailyMissionStatus === 'completed' ? 'pending' : 'completed'
+                )
+              }
+              style={{ minHeight: '44px', fontSize: '12px' }}
+            >
+              {activeSession?.dailyMissionStatus === 'completed'
+                ? '✓ TODAY\'S MISSION MET (+25 XP)'
+                : 'MARK TODAY\'S MISSION COMPLETE (+25 XP)'}
+            </Button>
+          </div>
+
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+            <Button
+              id="btn-finalize-active-session"
+              variant="primary"
+              onClick={handleFinalize}
+              disabled={isFinalizing}
+              style={{ minHeight: '52px', fontSize: '15px', fontWeight: 800 }}
+            >
+              {isFinalizing ? 'CALCULATING PROGRESSION...' : 'CONFIRM & FINALIZE SESSION'}
+            </Button>
+
+            <Button
+              variant="outline"
+              onClick={() => setShowFinalizeSection(false)}
+              disabled={isFinalizing}
+            >
+              ← RETURN TO TRAINING
+            </Button>
+
+            <Button
+              variant="subtle"
+              onClick={() => setShowExceptionModal(true)}
+              disabled={isFinalizing}
+            >
+              REPORT EXCEPTION / REDUCED SESSION
+            </Button>
+          </div>
         </div>
-        <p style={{ fontSize: '12px', color: 'var(--text-primary)', marginBottom: '12px' }}>
-          {dayInfo.dailyMission}
-        </p>
-        <Button
-          variant={activeSession?.dailyMissionStatus === 'completed' ? 'inverted' : 'subtle'}
-          onClick={() =>
-            setDailyMissionStatus(
-              activeSession?.dailyMissionStatus === 'completed' ? 'pending' : 'completed'
-            )
-          }
-        >
-          {activeSession?.dailyMissionStatus === 'completed'
-            ? '✓ DAILY MISSION COMPLETE'
-            : 'MARK DAILY MISSION OBJECTIVE MET'}
-        </Button>
-      </div>
+      )}
 
-      {/* FINALIZATION ACTIONS */}
-      <div style={{ marginTop: '24px', display: 'flex', flexDirection: 'column', gap: '10px' }}>
-        <Button
-          id="btn-finalize-workout"
-          variant="inverted"
-          onClick={handleFinalize}
-          disabled={isFinalizing}
-          style={{ minHeight: '52px', fontSize: '15px', fontWeight: 800 }}
-        >
-          {isFinalizing ? 'CALCULATING PROGRESSION...' : 'FINALIZE WORKOUT SESSION'}
-        </Button>
-
-        <Button
-          variant="subtle"
-          onClick={() => setShowExceptionModal(true)}
-          disabled={isFinalizing}
-        >
-          REPORT EXCEPTION / REDUCED SESSION
-        </Button>
-      </div>
-
-      {/* Modals */}
+      {/* MODALS */}
       <ExceptionModal
         isOpen={showExceptionModal}
         onClose={() => setShowExceptionModal(false)}
@@ -468,7 +404,15 @@ export const QuestScreen: React.FC = () => {
         isOpen={showScheduleModal}
         onClose={() => setShowScheduleModal(false)}
         initialWeekday={dayInfo.weekday}
-        onSelectWeekday={(wday) => handleSelectWeekday(wday)}
+        onSelectWeekday={(wday) => {
+          const currentWeekNumber = Math.ceil(selectedDayNumber / 7);
+          const weekStartMonday = 1 + (currentWeekNumber - 1) * 7;
+          const offset = wday === 0 ? 6 : wday - 1;
+          const targetDay = Math.max(1, Math.min(TOTAL_CHALLENGE_DAYS, weekStartMonday + offset));
+          setSelectedDayNumber(targetDay);
+          setShowScheduleModal(false);
+          setIsTrainingActive(false);
+        }}
       />
     </div>
   );

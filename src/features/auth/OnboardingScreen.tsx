@@ -291,7 +291,7 @@ export const OnboardingScreen: React.FC = () => {
           </div>
 
           <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-            Day 1 front, side, and back photos anchor your 120-day physical timeline. Photos are compressed client-side, stripped of EXIF metadata, and stored privately under your UID.
+            Day 1 front, side, and back photos anchor your 124-day physical timeline. Photos are compressed client-side, stripped of EXIF metadata, and stored privately under your UID.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>

@@ -7,7 +7,7 @@ export const SYSTEM_TITLES: TitleItem[] = [
   { id: 'system_user', name: 'SYSTEM USER', requirement: 'Reach Level 10', unlocked: false },
   { id: 'boss_breaker', name: 'BOSS BREAKER', requirement: 'Defeat the Iron Gate on Day 30', unlocked: false },
   { id: 'recovery_master', name: 'RECOVERY MASTER', requirement: 'Log 4 consecutive Sunday active recovery sessions', unlocked: false },
-  { id: 'ascended', name: 'ASCENDED', requirement: 'Complete the 120-day protocol on Day 120', unlocked: false }
+  { id: 'ascended', name: 'ASCENDED', requirement: 'Complete the 124-day protocol on Day 124', unlocked: false }
 ];
 
 export const SYSTEM_UNLOCKS: SystemUnlock[] = [

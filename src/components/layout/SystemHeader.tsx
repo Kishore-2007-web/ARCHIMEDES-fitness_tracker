@@ -1,9 +1,11 @@
 import React from 'react';
 import { padDayNumber } from '../../lib/formatting/formatters';
+import { TOTAL_CHALLENGE_DAYS } from '../../lib/dates/challengeDates';
 
 interface SystemHeaderProps {
   dayNumber: number;
-  formattedDate: string;
+  formattedDate?: string;
+  weekdayName?: string;
   systemStatus?: string;
   action?: React.ReactNode;
 }
@@ -11,28 +13,27 @@ interface SystemHeaderProps {
 export const SystemHeader: React.FC<SystemHeaderProps> = ({
   dayNumber,
   formattedDate,
-  systemStatus = 'SYSTEM ONLINE',
+  weekdayName,
   action
 }) => {
   return (
-    <header className="sys-header flex-between">
-      <div>
-        <div className="flex-center gap-2" style={{ justifyContent: 'flex-start' }}>
-          <span className="font-mono" style={{ fontSize: '11px', letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
-            ARCHIMEDES // OS
-          </span>
-          <span className="sys-tag" style={{ fontSize: '9px', padding: '1px 5px' }}>
-            {systemStatus}
-          </span>
+    <header className="sys-header" style={{ borderBottom: 'none', paddingBottom: '0', marginBottom: '20px' }}>
+      <div className="flex-between">
+        <div>
+          <div className="font-mono" style={{ fontSize: '11px', letterSpacing: '0.22em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+            ARCHIMEDES
+          </div>
+          <h1 className="font-mono" style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '0.04em', margin: '4px 0 2px 0' }}>
+            DAY {padDayNumber(dayNumber)} <span style={{ color: 'var(--text-muted)', fontWeight: 400, fontSize: '18px' }}>/ {TOTAL_CHALLENGE_DAYS}</span>
+          </h1>
+          {(weekdayName || formattedDate) && (
+            <div className="font-mono" style={{ fontSize: '12px', color: 'var(--text-secondary)', letterSpacing: '0.08em', textTransform: 'uppercase' }}>
+              {weekdayName ? weekdayName : ''}{weekdayName && formattedDate ? ' · ' : ''}{formattedDate ? formattedDate.replace(/\s*\d{4}$/, '') : ''}
+            </div>
+          )}
         </div>
-        <h1 className="font-mono" style={{ fontSize: '20px', fontWeight: 800, letterSpacing: '0.08em', marginTop: '4px' }}>
-          DAY {padDayNumber(dayNumber)} <span style={{ color: 'var(--text-muted)', fontWeight: 400 }}>/ 120</span>
-        </h1>
-        <div className="font-mono" style={{ fontSize: '12px', color: 'var(--text-secondary)', letterSpacing: '0.06em' }}>
-          {formattedDate}
-        </div>
+        {action && <div>{action}</div>}
       </div>
-      {action && <div>{action}</div>}
     </header>
   );
 };

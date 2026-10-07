@@ -13,7 +13,7 @@ export const Button: React.FC<ButtonProps> = ({
   ...props
 }) => {
   let variantClass = 'sys-btn-outline';
-  if (variant === 'inverted') variantClass = 'sys-btn-inverted';
+  if (variant === 'inverted' || variant === 'primary') variantClass = 'sys-btn-inverted';
   if (variant === 'subtle') variantClass = 'sys-btn-subtle';
 
   return (

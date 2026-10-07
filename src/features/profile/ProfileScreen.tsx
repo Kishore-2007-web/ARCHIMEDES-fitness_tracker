@@ -109,53 +109,47 @@ export const ProfileScreen: React.FC = () => {
   };
 
   return (
-    <div>
-      <div className="sys-header">
-        <div className="flex-between">
-          <span className="font-mono" style={{ fontSize: '11px', letterSpacing: '0.2em', color: 'var(--text-muted)' }}>
-            ARCHIMEDES // USER PROTOCOL
-          </span>
-          <span className="sys-tag">PRIVATE</span>
+    <div className="anim-fade-in">
+      {/* HEADER */}
+      <div style={{ marginBottom: '20px' }}>
+        <div className="font-mono" style={{ fontSize: '11px', letterSpacing: '0.2em', color: 'var(--text-muted)', textTransform: 'uppercase' }}>
+          ARCHIMEDES // PROFILE
         </div>
-        <h1 className="font-mono" style={{ fontSize: '20px', fontWeight: 800, margin: '4px 0 2px 0' }}>
-          PROFILE & VAULT
+        <h1 className="font-mono" style={{ fontSize: '24px', fontWeight: 800, letterSpacing: '0.04em', margin: '4px 0 2px 0' }}>
+          SETTINGS & VAULT
         </h1>
         <div className="font-mono" style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-          CONFIG, SETTINGS & SELF-TREAT VAULT
+          OPERATOR PREFERENCES
         </div>
       </div>
 
-      {/* ACCOUNT IDENTITY */}
+      {/* GOOGLE ACCOUNT */}
       <section className="sys-section font-mono">
         <div className="sys-section-title">
-          <span>AUTHENTICATED OPERATOR</span>
-          <span className="sys-tag">GOOGLE AUTH</span>
+          <span>GOOGLE ACCOUNT</span>
+          <span className="sys-tag">AUTHENTICATED</span>
         </div>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '6px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
           <div className="flex-between">
-            <span style={{ color: 'var(--text-muted)' }}>NAME</span>
+            <span style={{ color: 'var(--text-muted)' }}>Name</span>
             <span style={{ fontWeight: 700 }}>{userProfile.displayName}</span>
           </div>
           <div className="flex-between">
-            <span style={{ color: 'var(--text-muted)' }}>EMAIL</span>
-            <span>{userProfile.email}</span>
-          </div>
-          <div className="flex-between">
-            <span style={{ color: 'var(--text-muted)' }}>ACTIVE TITLE</span>
-            <span className="sys-tag">{userProfile.currentTitle}</span>
+            <span style={{ color: 'var(--text-muted)' }}>Email</span>
+            <span style={{ fontSize: '12px' }}>{userProfile.email}</span>
           </div>
         </div>
       </section>
 
-      {/* TITLES SELECTION */}
+      {/* CURRENT TITLE */}
       <section className="sys-section font-mono">
         <div className="sys-section-title">
-          <span>COSMETIC TITLES</span>
-          <span className="sys-tag">EQUIP</span>
+          <span>CURRENT TITLE</span>
+          <span className="sys-tag">{userProfile.currentTitle}</span>
         </div>
 
-        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginTop: '10px' }}>
           {SYSTEM_TITLES.map((t) => {
             const isEquipped = userProfile.currentTitle === t.name;
             return (
@@ -163,7 +157,7 @@ export const ProfileScreen: React.FC = () => {
                 key={t.id}
                 type="button"
                 className={`sys-btn ${isEquipped ? 'sys-btn-inverted' : 'sys-btn-subtle'}`}
-                style={{ minHeight: '40px', padding: '6px 8px', fontSize: '11px' }}
+                style={{ minHeight: '38px', padding: '4px 8px', fontSize: '10px' }}
                 onClick={() => handleEquipTitle(t.name)}
               >
                 {t.name}
@@ -173,20 +167,72 @@ export const ProfileScreen: React.FC = () => {
         </div>
       </section>
 
+      {/* REMINDERS & NOTIFICATIONS */}
+      <section className="sys-section font-mono">
+        <div className="sys-section-title">
+          <span>NOTIFICATIONS & REMINDERS</span>
+          <span className="sys-tag">ALERT</span>
+        </div>
+
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
+          <div className="flex-between">
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: 700 }}>NOTIFICATIONS</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Daily training reminder</div>
+            </div>
+            <button
+              type="button"
+              className={`sys-btn ${userProfile.settings.reminderEnabled ? 'sys-btn-inverted' : 'sys-btn-outline'}`}
+              style={{ width: 'auto', minHeight: '34px', padding: '2px 14px', fontSize: '11px' }}
+              onClick={handleToggleNotifications}
+            >
+              {userProfile.settings.reminderEnabled ? 'ON' : 'OFF'}
+            </button>
+          </div>
+
+          <div className="flex-between">
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: 700 }}>REMINDER TIME</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Default: 17:30 (Asia/Kolkata)</div>
+            </div>
+            <input
+              type="time"
+              className="sys-input"
+              style={{ width: '100px', minHeight: '36px', textAlign: 'center' }}
+              value={userProfile.settings.reminderTime || '17:30'}
+              onChange={(e) => handleReminderTimeChange(e.target.value)}
+            />
+          </div>
+
+          <div className="flex-between">
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: 700 }}>MOTION</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Optimized for OPPO A54</div>
+            </div>
+            <button
+              type="button"
+              className={`sys-btn ${userProfile.settings.reducedMotion ? 'sys-btn-inverted' : 'sys-btn-outline'}`}
+              style={{ width: 'auto', minHeight: '34px', padding: '2px 14px', fontSize: '11px' }}
+              onClick={handleToggleMotion}
+            >
+              {userProfile.settings.reducedMotion ? 'REDUCED' : 'STANDARD'}
+            </button>
+          </div>
+        </div>
+      </section>
+
       {/* REWARD VAULT */}
       <section className="sys-section font-mono">
         <div className="sys-section-title">
           <span>REWARD VAULT</span>
-          <span className="sys-tag" style={{ border: '1px solid #ffffff' }}>
-            {userProfile.rewardTokens} TOKENS AVAILABLE
-          </span>
+          <span className="sys-tag">{userProfile.rewardTokens} TOKENS</span>
         </div>
 
-        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
-          Tokens are acquired authoritatively via session milestones and boss defeats. Redeem tokens for self-selected rewards.
+        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '12px', lineHeight: 1.4 }}>
+          Tokens are earned from consistency milestones and boss victories. Redeem tokens for earned rewards.
         </p>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '14px' }}>
+        <div style={{ display: 'flex', flexDirection: 'column', gap: '8px', marginBottom: '12px' }}>
           {rewardsList.map((rew) => (
             <div
               key={rew.id}
@@ -214,12 +260,11 @@ export const ProfileScreen: React.FC = () => {
           ))}
         </div>
 
-        {/* Add Custom Reward */}
         <div style={{ display: 'flex', gap: '8px' }}>
           <input
             type="text"
             className="sys-input"
-            placeholder="Add custom reward suggestion..."
+            placeholder="New custom reward..."
             value={customRewardInput}
             onChange={(e) => setCustomRewardInput(e.target.value)}
           />
@@ -233,17 +278,16 @@ export const ProfileScreen: React.FC = () => {
           </button>
         </div>
 
-        {/* Transaction History */}
         {transactions.length > 0 && (
-          <div style={{ marginTop: '16px', borderTop: '1px solid var(--border-subtle)', paddingTop: '10px' }}>
-            <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginBottom: '6px' }}>
-              VAULT LEDGER
+          <div style={{ marginTop: '14px', borderTop: '1px solid var(--border-subtle)', paddingTop: '8px' }}>
+            <div style={{ fontSize: '10px', color: 'var(--text-muted)', marginBottom: '4px' }}>
+              VAULT ACTIVITY
             </div>
-            {transactions.slice(0, 5).map((tx) => (
+            {transactions.slice(0, 3).map((tx) => (
               <div key={tx.id} className="flex-between" style={{ fontSize: '11px', padding: '2px 0' }}>
                 <span>{tx.title}</span>
                 <span style={{ color: tx.type === 'EARNED' ? '#ffffff' : 'var(--text-muted)' }}>
-                  {tx.type === 'EARNED' ? '+1 TOKEN' : '-1 TOKEN'}
+                  {tx.type === 'EARNED' ? '+1 Token' : '-1 Token'}
                 </span>
               </div>
             ))}
@@ -251,95 +295,53 @@ export const ProfileScreen: React.FC = () => {
         )}
       </section>
 
-      {/* SYSTEM SETTINGS */}
+      {/* PRIVACY & SECURITY */}
       <section className="sys-section font-mono">
         <div className="sys-section-title">
-          <span>SYSTEM SETTINGS</span>
-          <span className="sys-tag">PREFERENCES</span>
+          <span>PRIVACY</span>
+          <span className="sys-tag">ENCRYPTED</span>
         </div>
-
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
-          <div className="flex-between">
-            <div>
-              <div style={{ fontSize: '12px', fontWeight: 700 }}>TRAINING REMINDER</div>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Daily scheduled alert (Asia/Kolkata)</div>
-            </div>
-            <button
-              type="button"
-              className={`sys-btn ${userProfile.settings.reminderEnabled ? 'sys-btn-inverted' : 'sys-btn-outline'}`}
-              style={{ width: 'auto', minHeight: '32px', padding: '4px 12px', fontSize: '11px' }}
-              onClick={handleToggleNotifications}
-            >
-              {userProfile.settings.reminderEnabled ? 'ENABLED' : 'DISABLED'}
-            </button>
-          </div>
-
-          <div className="flex-between">
-            <div>
-              <div style={{ fontSize: '12px', fontWeight: 700 }}>REMINDER TIME</div>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Default: 17:30 (5:30 PM)</div>
-            </div>
-            <input
-              type="time"
-              className="sys-input"
-              style={{ width: '110px', minHeight: '36px', textAlign: 'center' }}
-              value={userProfile.settings.reminderTime || '17:30'}
-              onChange={(e) => handleReminderTimeChange(e.target.value)}
-            />
-          </div>
-
-          <div className="flex-between">
-            <div>
-              <div style={{ fontSize: '12px', fontWeight: 700 }}>MOTION PROFILE</div>
-              <div style={{ fontSize: '10px', color: 'var(--text-muted)' }}>Instant transitions for OPPO A54</div>
-            </div>
-            <button
-              type="button"
-              className={`sys-btn ${userProfile.settings.reducedMotion ? 'sys-btn-inverted' : 'sys-btn-outline'}`}
-              style={{ width: 'auto', minHeight: '32px', padding: '4px 12px', fontSize: '11px' }}
-              onClick={handleToggleMotion}
-            >
-              {userProfile.settings.reducedMotion ? 'REDUCED' : 'STANDARD'}
-            </button>
-          </div>
-        </div>
+        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.4 }}>
+          All photos are stripped of EXIF metadata and stored in private cloud storage. Workout logs are isolated strictly under your authenticated UID.
+        </p>
       </section>
 
-      {/* DANGER ZONE / LOGOUT / DELETE */}
-      <section className="sys-section font-mono" style={{ borderColor: '#ffffff' }}>
-        <div className="sys-section-title">
-          <span>ACCOUNT ACTIONS</span>
-          <span className="sys-tag">DANGER ZONE</span>
-        </div>
+      {/* ACCOUNT ACTIONS (SIGN OUT & DELETE) */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '10px', marginTop: '24px' }}>
+        <Button variant="outline" onClick={logout} style={{ minHeight: '48px' }}>
+          SIGN OUT
+        </Button>
 
-        <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
-          <Button variant="outline" onClick={logout}>
-            SIGN OUT OF ARCHIMEDES
-          </Button>
-
-          <button
-            type="button"
-            className="sys-btn sys-btn-subtle"
-            style={{ color: '#ffffff', borderColor: 'var(--border-medium)' }}
-            onClick={() => setShowDeleteModal(true)}
-          >
-            DELETE ALL ACCOUNT DATA
-          </button>
-        </div>
-      </section>
+        <button
+          type="button"
+          onClick={() => setShowDeleteModal(true)}
+          style={{
+            background: 'none',
+            border: 'none',
+            color: 'var(--text-muted)',
+            fontFamily: 'var(--font-mono)',
+            fontSize: '11px',
+            textDecoration: 'underline',
+            cursor: 'pointer',
+            padding: '8px 0'
+          }}
+        >
+          Delete Account
+        </button>
+      </div>
 
       {/* Delete Confirmation Modal */}
       <Modal isOpen={showDeleteModal} onClose={() => setShowDeleteModal(false)} title="DELETE ACCOUNT">
         <div className="font-mono">
           <div className="sys-alert-inverted" style={{ fontSize: '12px', padding: '10px', marginBottom: '14px' }}>
-            WARNING: This operation is permanent and irreversible.
+            Permanent action. This cannot be undone.
           </div>
           <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '14px' }}>
-            All user profile data, sessions, exercise records, achievements, bosses, measurements, and private progress photos will be deleted immediately.
+            All progression, session logs, check-ins, and photos will be permanently deleted.
           </p>
 
           <label style={{ fontSize: '11px', color: 'var(--text-muted)', display: 'block', marginBottom: '6px' }}>
-            TYPE "DELETE" TO CONFIRM:
+            Type "DELETE" to confirm:
           </label>
           <input
             type="text"

@@ -1,14 +1,14 @@
-export const CHALLENGE_START_DATE = '2026-10-12';
-export const CHALLENGE_END_DATE = '2027-02-08';
+export const CHALLENGE_START_DATE = '2026-10-07';
+export const CHALLENGE_END_DATE = '2027-02-07';
 export const CHALLENGE_TIMEZONE = 'Asia/Kolkata';
-export const TOTAL_CHALLENGE_DAYS = 120;
+export const TOTAL_CHALLENGE_DAYS = 124;
 
 export interface ChallengeDayInfo {
-  dayNumber: number; // 1 to 120
+  dayNumber: number; // 1 to 124
   dateString: string; // YYYY-MM-DD
-  formattedDate: string; // "11 OCT 2026"
+  formattedDate: string; // "07 OCT 2026"
   weekday: number; // 0 = Sunday, 1 = Monday, ..., 6 = Saturday
-  weekdayName: string; // "SUNDAY"
+  weekdayName: string; // "WEDNESDAY"
   isBeforeChallenge: boolean;
   isAfterChallenge: boolean;
   isInsideChallenge: boolean;
