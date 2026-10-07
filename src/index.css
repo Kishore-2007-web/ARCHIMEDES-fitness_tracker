@@ -80,7 +80,7 @@
   width: 100%;
   max-width: 640px;
   margin: 0 auto;
-  padding: 16px 20px calc(84px + var(--safe-bottom)) 20px;
+  padding: 14px 16px calc(84px + var(--safe-bottom)) 16px;
 }
 
 @media (min-width: 1024px) {

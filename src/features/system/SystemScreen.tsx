@@ -50,11 +50,11 @@ export const SystemScreen: React.FC<SystemScreenProps> = ({ onNavigateToQuest })
     }
   }
 
-  // Find next milestone boss
+  // Find next milestone boss (e.g. Iron Gate Day 30)
   const upcomingBoss =
+    SYSTEM_BOSSES.find((b) => b.type === 'milestone' && b.dayNumber >= challengeDay.dayNumber && b.status !== 'completed') ||
     SYSTEM_BOSSES.find((b) => b.dayNumber >= challengeDay.dayNumber && b.status !== 'completed') ||
-    SYSTEM_BOSSES[1] ||
-    SYSTEM_BOSSES[0];
+    SYSTEM_BOSSES[1];
 
   return (
     <div className="anim-fade-in">
