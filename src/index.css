@@ -489,3 +489,133 @@
   text-transform: uppercase;
   text-align: left;
 }
+
+/* Calendar Grid & Low-End Optimized Micro-Interactions */
+.cal-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(26px, 1fr));
+  gap: 3px;
+  width: 100%;
+}
+
+.cal-cell {
+  aspect-ratio: 1;
+  min-height: 26px;
+  min-width: 26px;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-family: var(--font-mono);
+  font-size: 9px;
+  font-weight: 700;
+  cursor: pointer;
+  user-select: none;
+  background-color: transparent;
+  transition: transform 0.08s ease, border-color 0.12s ease, background-color 0.12s ease;
+  will-change: transform;
+  border-radius: var(--radius-none);
+  border: 1px solid var(--border-faint);
+  color: var(--text-muted);
+}
+
+.cal-cell:active {
+  transform: scale(0.96);
+}
+
+/* COMPLETED DAY: White check, stronger white border, subtle completed appearance */
+.cal-cell.cal-completed {
+  background-color: rgba(255, 255, 255, 0.07);
+  border: 1.5px solid rgba(255, 255, 255, 0.85);
+  color: #ffffff;
+}
+
+/* CURRENT DAY: Highlighted/selected appearance, showing current day number */
+.cal-cell.cal-current {
+  background-color: rgba(255, 255, 255, 0.16);
+  border: 1.5px solid #ffffff;
+  color: #ffffff;
+  font-weight: 800;
+}
+
+/* INCOMPLETE DAY: Existing dark appearance */
+.cal-cell.cal-incomplete {
+  background-color: transparent;
+  border: 1px solid var(--border-faint);
+  color: var(--text-muted);
+}
+
+/* Selected outline highlight for focused inspection */
+.cal-cell.cal-selected {
+  outline: 1.5px solid #ffffff;
+  outline-offset: 1px;
+  z-index: 2;
+}
+
+/* Low-end friendly completed pop animation (transform and border only, runs once) */
+@keyframes calCompletedPop {
+  0% {
+    transform: scale(0.92);
+    border-color: rgba(255, 255, 255, 0.4);
+  }
+  50% {
+    transform: scale(1.04);
+    border-color: #ffffff;
+  }
+  100% {
+    transform: scale(1);
+    border-color: rgba(255, 255, 255, 0.85);
+  }
+}
+
+@keyframes checkmarkFadeIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.6);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.anim-day-completed {
+  animation: calCompletedPop 0.26s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.anim-check-in {
+  animation: checkmarkFadeIn 0.2s ease-out forwards;
+}
+
+/* Subtle section fade & slide-in when entering */
+@keyframes sectionEnter {
+  from {
+    opacity: 0;
+    transform: translateY(5px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.anim-section-in {
+  animation: sectionEnter 0.2s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Subtle tap feedback for timeline add buttons and interactive cards */
+.btn-tap-subtle {
+  transition: transform 0.08s ease;
+  will-change: transform;
+}
+
+.btn-tap-subtle:active {
+  transform: scale(0.96);
+}
+
+/* Progress bar fill transition */
+.progress-bar-fill {
+  transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+  will-change: width;
+}
+

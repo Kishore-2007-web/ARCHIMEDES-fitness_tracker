@@ -41,10 +41,10 @@ export const WEEKDAY_SCHEDULE_METADATA: Record<number, { id: string; title: stri
     mission: 'Complete all primary Squat and Bench sets with recorded weights.'
   },
   2: {
-    id: 'agility_athleticism',
-    title: 'MOBILITY + AGILITY + ATHLETICISM',
+    id: 'shoulders_arms',
+    title: 'SHOULDERS + ARMS',
     baseXP: 200,
-    mission: 'Execute the full 30-minute agility block without truncating reaction sets.'
+    mission: 'Complete Landmine Press, shoulder rotation stability, and arm hypertrophy sets.'
   },
   3: {
     id: 'deadlift_strength',
@@ -53,28 +53,28 @@ export const WEEKDAY_SCHEDULE_METADATA: Record<number, { id: string; title: stri
     mission: 'Complete primary conventional deadlift working sets with clean technique.'
   },
   4: {
-    id: 'athletic_mobility',
-    title: 'ATHLETIC + MOBILITY DAY',
+    id: 'athletic_core_neck',
+    title: 'ATHLETIC + CORE + NECK',
     baseXP: 200,
-    mission: 'Complete conditioning block and thorough 15-minute recovery.'
+    mission: 'Execute sled push, upright pulls, dedicated neck press, and core integrity sets.'
   },
   5: {
     id: 'strength_b',
     title: 'SQUAT + BENCH STRENGTH B',
     baseXP: 300,
-    mission: 'Perform light secondary deadlift strictly between 50-65% intensity.'
+    mission: 'Execute 4×4 squat and bench working sets plus overhead and back work.'
   },
   6: {
-    id: 'calisthenics_strength',
-    title: 'CALISTHENICS + ATHLETIC STRENGTH',
+    id: 'calisthenics_athletic',
+    title: 'CALISTHENICS + ATHLETIC',
     baseXP: 250,
-    mission: 'Execute push-ups and assisted pull-ups with verified controlled reps.'
+    mission: 'Execute pull-up and push-up progressions with strict form.'
   },
   0: {
     id: 'active_recovery',
     title: 'ACTIVE RECOVERY',
     baseXP: 100,
-    mission: 'Complete 45-minute continuous walk and low-intensity mobility protocol.'
+    mission: 'Complete 30–45 min continuous walk, light stretching, and deep breathing.'
   }
 };
 

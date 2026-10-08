@@ -9,7 +9,8 @@ import {
 import {
   getActiveSession,
   saveActiveSession,
-  subscribeToActiveSession
+  subscribeToActiveSession,
+  getCompletedSessions
 } from '../lib/firebase/db';
 import { finalizeWorkoutSession } from '../lib/firebase/functions';
 
@@ -24,6 +25,10 @@ interface UserProgressionContextType {
   challengeDay: ChallengeDayInfo;
   selectedDayNumber: number;
   setSelectedDayNumber: (day: number) => void;
+  completedDays: number[];
+  recentlyCompletedDay: number | null;
+  markDayCompleted: (day: number) => void;
+  toggleDayCompletion: (day: number) => void;
   activeSession: ActiveSession | null;
   loadingSession: boolean;
   restTimer: RestTimerState;
@@ -63,6 +68,67 @@ export const UserProgressionProvider: React.FC<{ children: React.ReactNode }> = 
     const today = getChallengeDay();
     return today.isInsideChallenge ? today.dayNumber : 1;
   });
+
+  // Dynamic Completed Days State (Default [1, 2] completed as per challenge state)
+  const [completedDays, setCompletedDays] = useState<number[]>(() => {
+    try {
+      const stored = localStorage.getItem('archimedes_completed_days');
+      if (stored) {
+        const parsed = JSON.parse(stored);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
+      }
+    } catch {}
+    return [1, 2];
+  });
+
+  const [recentlyCompletedDay, setRecentlyCompletedDay] = useState<number | null>(null);
+
+  // Sync completed days to local storage
+  useEffect(() => {
+    try {
+      localStorage.setItem('archimedes_completed_days', JSON.stringify(completedDays));
+    } catch {}
+  }, [completedDays]);
+
+  // Sync with Firestore completed sessions if available
+  useEffect(() => {
+    if (!currentUser) return;
+    getCompletedSessions(currentUser.uid)
+      .then((sessions) => {
+        if (sessions && sessions.length > 0) {
+          const sessionDays = sessions.filter((s) => s.status === 'completed').map((s) => s.dayNumber);
+          setCompletedDays((prev) => {
+            const merged = Array.from(new Set([...prev, ...sessionDays])).sort((a, b) => a - b);
+            return merged;
+          });
+        }
+      })
+      .catch(() => {});
+  }, [currentUser]);
+
+  const markDayCompleted = (day: number) => {
+    setCompletedDays((prev) => {
+      if (prev.includes(day)) return prev;
+      return [...prev, day].sort((a, b) => a - b);
+    });
+    setRecentlyCompletedDay(day);
+    window.setTimeout(() => {
+      setRecentlyCompletedDay((current) => (current === day ? null : current));
+    }, 600);
+  };
+
+  const toggleDayCompletion = (day: number) => {
+    setCompletedDays((prev) => {
+      if (prev.includes(day)) {
+        return prev.filter((d) => d !== day);
+      }
+      return [...prev, day].sort((a, b) => a - b);
+    });
+    setRecentlyCompletedDay(day);
+    window.setTimeout(() => {
+      setRecentlyCompletedDay((current) => (current === day ? null : current));
+    }, 600);
+  };
 
   const [activeSession, setActiveSession] = useState<ActiveSession | null>(null);
   const [loadingSession, setLoadingSession] = useState<boolean>(false);
@@ -280,6 +346,7 @@ export const UserProgressionProvider: React.FC<{ children: React.ReactNode }> = 
     });
 
     setActiveSession(null);
+    markDayCompleted(activeSession.dayNumber);
 
     // Trigger sequential XP reveal overlay
     setXpRevealData({
@@ -312,6 +379,10 @@ export const UserProgressionProvider: React.FC<{ children: React.ReactNode }> = 
         challengeDay,
         selectedDayNumber,
         setSelectedDayNumber,
+        completedDays,
+        recentlyCompletedDay,
+        markDayCompleted,
+        toggleDayCompletion,
         activeSession,
         loadingSession,
         restTimer,
