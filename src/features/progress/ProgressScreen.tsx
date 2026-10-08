@@ -8,7 +8,7 @@ import { ProgressCheckpoint, ExerciseHistoricalRecord } from '../../types/progre
 import { CompletedSession } from '../../types/workout';
 import { Button } from '../../components/common/Button';
 import { padDayNumber } from '../../lib/formatting/formatters';
-import { getDateStringForDayNumber, TOTAL_CHALLENGE_DAYS } from '../../lib/dates/challengeDates';
+import { getDateStringForDayNumber, getChallengeDay, TOTAL_CHALLENGE_DAYS } from '../../lib/dates/challengeDates';
 
 type CheckpointId = 'day001' | 'day030' | 'day060' | 'day090' | 'day124';
 
@@ -22,7 +22,14 @@ const CHECKPOINTS_CONFIG: { id: CheckpointId; label: string; day: number }[] = [
 
 export const ProgressScreen: React.FC = () => {
   const { currentUser, userProfile, updateProfileData } = useAuth();
-  const { challengeDay, setSelectedDayNumber } = useUserProgression();
+  const {
+    challengeDay,
+    selectedDayNumber,
+    setSelectedDayNumber,
+    completedDays,
+    recentlyCompletedDay,
+    toggleDayCompletion
+  } = useUserProgression();
 
   const [checkpoints, setCheckpoints] = useState<Record<string, ProgressCheckpoint>>({});
   const [completedSessions, setCompletedSessions] = useState<CompletedSession[]>([]);
@@ -137,6 +144,15 @@ export const ProgressScreen: React.FC = () => {
   completedSessions.forEach((s) => {
     sessionStatusMap.set(s.dayNumber, s.status);
   });
+
+  // Current active / upcoming challenge day based on dynamic completedDays state
+  const currentDayNumber = completedDays.includes(challengeDay.dayNumber)
+    ? Math.min(TOTAL_CHALLENGE_DAYS, Math.max(0, ...completedDays) + 1)
+    : challengeDay.dayNumber;
+
+  // Selected calendar day info
+  const selectedDateStr = getDateStringForDayNumber(selectedDayNumber);
+  const selectedDayInfo = getChallengeDay(selectedDateStr);
 
   return (
     <div className="anim-fade-in">
