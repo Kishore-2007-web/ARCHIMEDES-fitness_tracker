@@ -8,6 +8,12 @@ import {
   addRewardTransaction
 } from '../../lib/firebase/db';
 import { requestNotificationPermission } from '../../lib/firebase/messaging';
+import {
+  getNotificationPermissionStatus,
+  requestBrowserNotificationPermission,
+  sendTestNotification,
+  NotificationStatus
+} from '../../lib/notifications/localNotifications';
 import { RewardItem, RewardTransaction } from '../../types/gamification';
 import { Button } from '../../components/common/Button';
 import { Modal } from '../../components/common/Modal';
@@ -21,6 +27,10 @@ export const ProfileScreen: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [deleteConfirmText, setDeleteConfirmText] = useState('');
   const [isDeleting, setIsDeleting] = useState(false);
+
+  // Notification testing state
+  const [permissionStatus, setPermissionStatus] = useState<NotificationStatus>(getNotificationPermissionStatus);
+  const [notificationFeedback, setNotificationFeedback] = useState<string | null>(null);
 
   useEffect(() => {
     if (!currentUser) return;
@@ -42,11 +52,30 @@ export const ProfileScreen: React.FC = () => {
   const handleToggleNotifications = async () => {
     const nextVal = !userProfile.settings.reminderEnabled;
     if (nextVal) {
-      await requestNotificationPermission();
+      const browserPerm = await requestBrowserNotificationPermission();
+      setPermissionStatus(browserPerm);
+      try {
+        const token = await requestNotificationPermission();
+        if (token) {
+          await updateProfileData({
+            fcmToken: token,
+            settings: { ...userProfile.settings, reminderEnabled: nextVal }
+          });
+          return;
+        }
+      } catch {}
     }
     await updateProfileData({
       settings: { ...userProfile.settings, reminderEnabled: nextVal }
     });
+  };
+
+  const handleSendTestNotification = async () => {
+    setNotificationFeedback('SENDING TEST ALERT...');
+    const result = await sendTestNotification();
+    setPermissionStatus(getNotificationPermissionStatus());
+    setNotificationFeedback(result.message);
+    setTimeout(() => setNotificationFeedback(null), 4000);
   };
 
   const handleReminderTimeChange = async (newTime: string) => {
@@ -168,11 +197,26 @@ export const ProfileScreen: React.FC = () => {
       </section>
 
       {/* REMINDERS & NOTIFICATIONS */}
-      <section className="sys-section font-mono">
+      <section className="sys-section font-mono anim-section-in">
         <div className="sys-section-title">
           <span>NOTIFICATIONS & REMINDERS</span>
-          <span className="sys-tag">ALERT</span>
+          <span className="sys-tag">
+            {permissionStatus === 'granted'
+              ? 'PERMISSION: GRANTED'
+              : permissionStatus === 'denied'
+              ? 'PERMISSION: BLOCKED'
+              : 'ALERT'}
+          </span>
         </div>
+
+        {notificationFeedback && (
+          <div
+            className="sys-alert-inverted font-mono"
+            style={{ fontSize: '11px', padding: '8px 10px', marginBottom: '8px' }}
+          >
+            {notificationFeedback}
+          </div>
+        )}
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '14px' }}>
           <div className="flex-between">
@@ -193,7 +237,7 @@ export const ProfileScreen: React.FC = () => {
           <div className="flex-between">
             <div>
               <div style={{ fontSize: '12px', fontWeight: 700 }}>REMINDER TIME</div>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Default: 17:30 (Asia/Kolkata)</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Daily schedule (Asia/Kolkata)</div>
             </div>
             <input
               type="time"
@@ -202,6 +246,21 @@ export const ProfileScreen: React.FC = () => {
               value={userProfile.settings.reminderTime || '17:30'}
               onChange={(e) => handleReminderTimeChange(e.target.value)}
             />
+          </div>
+
+          <div className="flex-between" style={{ borderTop: '1px solid var(--border-subtle)', paddingTop: '10px' }}>
+            <div>
+              <div style={{ fontSize: '12px', fontWeight: 700 }}>TEST NOTIFICATION</div>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)' }}>Trigger test alert to verify device delivery</div>
+            </div>
+            <button
+              type="button"
+              className="sys-btn sys-btn-outline"
+              style={{ width: 'auto', minHeight: '34px', padding: '2px 12px', fontSize: '11px' }}
+              onClick={handleSendTestNotification}
+            >
+              SEND TEST
+            </button>
           </div>
 
           <div className="flex-between">

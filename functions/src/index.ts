@@ -172,8 +172,8 @@ export const scheduledTrainingReminder = onSchedule(
     });
     const todayStr = formatter.format(new Date());
 
-    // Check challenge date bounds (2026-10-11 to 2027-02-07)
-    if (todayStr < '2026-10-11' || todayStr > '2027-02-07') {
+    // Check challenge date bounds (2026-10-07 to 2027-02-07)
+    if (todayStr < '2026-10-07' || todayStr > '2027-02-07') {
       return;
     }
 

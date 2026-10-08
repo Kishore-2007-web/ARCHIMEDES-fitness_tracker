@@ -52,6 +52,7 @@ export interface UserProfile {
   currentTitle: string;
   onboardingComplete: boolean;
   day1PhotosComplete: boolean;
+  fcmToken?: string;
   createdAt: string;
   updatedAt: string;
 }
