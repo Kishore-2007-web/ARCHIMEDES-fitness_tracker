@@ -302,7 +302,7 @@ export const ProgressScreen: React.FC = () => {
       </section>
 
       {/* 4. PHOTO TIMELINE */}
-      <section className="sys-section font-mono">
+      <section className="sys-section font-mono anim-section-in">
         <div className="sys-section-title">
           <span>PHOTO TIMELINE</span>
           <span className="sys-tag">5 CHECKPOINTS</span>
@@ -318,7 +318,7 @@ export const ProgressScreen: React.FC = () => {
               <button
                 key={cpId}
                 type="button"
-                className="sys-btn sys-btn-subtle"
+                className="sys-btn sys-btn-subtle btn-tap-subtle"
                 style={{
                   minHeight: '44px',
                   padding: '4px',
@@ -390,38 +390,89 @@ export const ProgressScreen: React.FC = () => {
       </section>
 
       {/* 5. 124-DAY CHALLENGE CALENDAR */}
-      <section className="sys-section font-mono">
+      <section className="sys-section font-mono anim-section-in">
         <div className="sys-section-title">
           <span>CHALLENGE CALENDAR</span>
           <span className="sys-tag">{TOTAL_CHALLENGE_DAYS} DAYS</span>
         </div>
 
-        <div style={{ display: 'flex', flexWrap: 'wrap', gap: '3px', marginTop: '8px' }}>
+        {/* Calendar Legend */}
+        <div
+          className="font-mono flex-between"
+          style={{ marginBottom: '10px', fontSize: '10px', color: 'var(--text-muted)', flexWrap: 'wrap', gap: '8px' }}
+        >
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span
+              style={{
+                display: 'inline-flex',
+                width: '15px',
+                height: '15px',
+                border: '1.5px solid rgba(255, 255, 255, 0.85)',
+                background: 'rgba(255, 255, 255, 0.07)',
+                color: '#ffffff',
+                fontSize: '9px',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800
+              }}
+            >
+              ✓
+            </span>
+            <span>COMPLETED ({completedDays.length})</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span
+              style={{
+                display: 'inline-flex',
+                width: '15px',
+                height: '15px',
+                border: '1.5px solid #ffffff',
+                background: 'rgba(255, 255, 255, 0.16)',
+                color: '#ffffff',
+                fontSize: '8px',
+                alignItems: 'center',
+                justifyContent: 'center',
+                fontWeight: 800
+              }}
+            >
+              {currentDayNumber}
+            </span>
+            <span>CURRENT (DAY {currentDayNumber})</span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '5px' }}>
+            <span
+              style={{
+                display: 'inline-flex',
+                width: '15px',
+                height: '15px',
+                border: '1px solid var(--border-faint)',
+                color: 'var(--text-muted)',
+                fontSize: '8px',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}
+            >
+              4
+            </span>
+            <span>INCOMPLETE</span>
+          </div>
+        </div>
+
+        {/* 124-Day Responsive Grid */}
+        <div className="cal-grid">
           {Array.from({ length: TOTAL_CHALLENGE_DAYS }, (_, i) => i + 1).map((d) => {
-            const status = sessionStatusMap.get(d);
-            const isToday = d === challengeDay.dayNumber;
+            const isCompleted = completedDays.includes(d);
+            const isCurrent = d === currentDayNumber;
+            const isSelected = d === selectedDayNumber;
+            const isRecent = recentlyCompletedDay === d;
 
-            let bg = 'transparent';
-            let border = '1px solid var(--border-faint)';
-            let color = 'var(--text-muted)';
-
-            if (status === 'completed') {
-              bg = '#ffffff';
-              border = '1px solid #ffffff';
-              color = '#000000';
-            } else if (status === 'reduced') {
-              bg = 'rgba(255, 255, 255, 0.4)';
-              border = '1px solid #ffffff';
-              color = '#000000';
-            } else if (status === 'exception') {
-              border = '1px solid #ffffff';
-              color = '#ffffff';
-            } else if (status === 'missed') {
-              border = '1px solid #ffffff';
-              color = 'var(--text-muted)';
-            } else if (isToday) {
-              border = '1px solid #ffffff';
-              color = '#ffffff';
+            let stateClass = 'cal-incomplete';
+            if (isCompleted) {
+              stateClass = 'cal-completed';
+            } else if (isCurrent) {
+              stateClass = 'cal-current';
             }
 
             return (
@@ -429,26 +480,74 @@ export const ProgressScreen: React.FC = () => {
                 key={d}
                 type="button"
                 onClick={() => setSelectedDayNumber(d)}
-                title={`Day ${d}`}
-                style={{
-                  width: '26px',
-                  height: '26px',
-                  backgroundColor: bg,
-                  border,
-                  color,
-                  fontSize: '9px',
-                  fontWeight: 700,
-                  cursor: 'pointer',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
-                  padding: 0
-                }}
+                title={`Day ${d}: ${isCompleted ? 'Completed' : isCurrent ? 'Current' : 'Incomplete'}`}
+                aria-label={`Day ${d}: ${isCompleted ? 'Completed' : isCurrent ? 'Current' : 'Incomplete'}`}
+                className={`cal-cell ${stateClass} ${isSelected ? 'cal-selected' : ''} ${isRecent ? 'anim-day-completed' : ''}`}
               >
-                {d}
+                {isCompleted ? (
+                  <span className={isRecent ? 'anim-check-in' : ''} style={{ fontSize: '11px', fontWeight: 800 }}>
+                    ✓
+                  </span>
+                ) : (
+                  <span>{d}</span>
+                )}
               </button>
             );
           })}
+        </div>
+
+        {/* Selected Day Status Summary & Dynamic Action */}
+        <div
+          className="font-mono flex-between anim-section-in"
+          style={{
+            marginTop: '12px',
+            padding: '8px 12px',
+            backgroundColor: 'var(--bg-secondary)',
+            border: '1px solid var(--border-subtle)',
+            fontSize: '11px',
+            flexWrap: 'wrap',
+            gap: '8px'
+          }}
+        >
+          <div>
+            <span style={{ color: 'var(--text-muted)', marginRight: '6px' }}>SELECTED:</span>
+            <span style={{ fontWeight: 800, color: 'var(--text-primary)' }}>DAY {selectedDayNumber}</span>
+            <span style={{ color: 'var(--text-secondary)', marginLeft: '6px' }}>
+              · {selectedDayInfo.workoutTitle}
+            </span>
+          </div>
+
+          <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+            <span
+              className="sys-tag"
+              style={{
+                fontSize: '9px',
+                borderColor: completedDays.includes(selectedDayNumber) ? '#ffffff' : 'var(--border-subtle)',
+                color: completedDays.includes(selectedDayNumber) ? '#ffffff' : 'var(--text-muted)'
+              }}
+            >
+              {completedDays.includes(selectedDayNumber)
+                ? '✓ COMPLETED'
+                : selectedDayNumber === currentDayNumber
+                ? 'CURRENT'
+                : 'INCOMPLETE'}
+            </span>
+
+            <button
+              type="button"
+              className="sys-btn sys-btn-subtle"
+              style={{
+                minHeight: '26px',
+                padding: '2px 8px',
+                fontSize: '9px',
+                width: 'auto'
+              }}
+              onClick={() => toggleDayCompletion(selectedDayNumber)}
+              title="Toggle day completion state"
+            >
+              {completedDays.includes(selectedDayNumber) ? 'RESET' : 'MARK COMPLETE'}
+            </button>
+          </div>
         </div>
       </section>
     </div>

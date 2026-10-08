@@ -53,7 +53,10 @@ export const WeeklyScheduleModal: React.FC<WeeklyScheduleModalProps> = ({
     onClose();
   };
 
-  const renderExerciseCategoryGroup = (categoryKey: string, exercises: ExerciseDefinition[], startIndex: number) => {
+  const renderExerciseCategoryGroup = (
+    categoryKey: string,
+    items: { ex: ExerciseDefinition; originalIndex: number }[]
+  ) => {
     return (
       <div key={categoryKey} style={{ marginBottom: '16px' }}>
         <div
@@ -70,11 +73,11 @@ export const WeeklyScheduleModal: React.FC<WeeklyScheduleModalProps> = ({
           }}
         >
           <span>{CATEGORY_DISPLAY_NAMES[categoryKey] || categoryKey.toUpperCase()}</span>
-          <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{exercises.length} MOVEMENTS</span>
+          <span style={{ fontSize: '10px', color: 'var(--text-muted)' }}>{items.length} MOVEMENTS</span>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
-          {exercises.map((ex, idx) => (
+          {items.map(({ ex, originalIndex }) => (
             <div
               key={ex.id}
               style={{
@@ -85,7 +88,7 @@ export const WeeklyScheduleModal: React.FC<WeeklyScheduleModalProps> = ({
             >
               <div className="flex-between">
                 <div className="font-mono" style={{ fontSize: '13px', fontWeight: 800, color: 'var(--text-primary)' }}>
-                  <span style={{ color: 'var(--text-muted)', marginRight: '8px' }}>#{startIndex + idx}</span>
+                  <span style={{ color: 'var(--text-muted)', marginRight: '8px' }}>#{originalIndex}</span>
                   {ex.name}
                 </div>
                 <span
@@ -125,19 +128,17 @@ export const WeeklyScheduleModal: React.FC<WeeklyScheduleModalProps> = ({
   };
 
   const renderDayScheduleContent = (day: WorkoutScheduleDay) => {
-    // Group exercises by category preserving relative order
-    const categoryGroups: { category: string; exercises: ExerciseDefinition[]; startIndex: number }[] = [];
-    let runningIndex = 1;
+    // Group exercises by category preserving accurate original index
+    const categoryGroups: { category: string; exercises: { ex: ExerciseDefinition; originalIndex: number }[] }[] = [];
 
-    for (const ex of day.exercises) {
+    day.exercises.forEach((ex, idx) => {
       let group = categoryGroups.find((g) => g.category === ex.category);
       if (!group) {
-        group = { category: ex.category, exercises: [], startIndex: runningIndex };
+        group = { category: ex.category, exercises: [] };
         categoryGroups.push(group);
       }
-      group.exercises.push(ex);
-      runningIndex++;
-    }
+      group.exercises.push({ ex, originalIndex: idx + 1 });
+    });
 
     return (
       <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
@@ -214,7 +215,7 @@ export const WeeklyScheduleModal: React.FC<WeeklyScheduleModalProps> = ({
             </div>
 
             {categoryGroups.map((group) =>
-              renderExerciseCategoryGroup(group.category, group.exercises, group.startIndex)
+              renderExerciseCategoryGroup(group.category, group.exercises)
             )}
           </div>
         )}
