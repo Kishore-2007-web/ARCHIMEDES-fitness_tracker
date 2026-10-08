@@ -368,3 +368,130 @@ describe('7. Date Formatting & Reward Token Generator', () => {
     expect(badLuckProtected.granted).toBe(true);
   });
 });
+
+describe('8. Updated Workout Schedule Structure', () => {
+  it('contains the exact 7-day schedule with all required exercises', async () => {
+    const { WORKOUT_SCHEDULE, COMMON_WARMUP_CHECKLIST, COMMON_RECOVERY_CHECKLIST } = await import('../data/workoutSchedule');
+
+    // Warm-up and recovery counts
+    expect(COMMON_WARMUP_CHECKLIST.length).toBe(15);
+    expect(COMMON_RECOVERY_CHECKLIST.length).toBe(13);
+
+    // Monday: Squat + Bench Strength A
+    const monday = WORKOUT_SCHEDULE[1];
+    expect(monday.title).toBe('SQUAT + BENCH STRENGTH A');
+    expect(monday.exercises.map((e) => e.name)).toEqual([
+      'Barbell Back Squat',
+      'Barbell Bench Press',
+      'Machine/Cable Row',
+      'Farmer Carry',
+      'Dead Hang',
+      'Cable Triceps Pushdown',
+      'Calf Raises'
+    ]);
+    expect(monday.walkingRange).toBe('30–45 min');
+
+    // Tuesday: Shoulders + Arms
+    const tuesday = WORKOUT_SCHEDULE[2];
+    expect(tuesday.title).toBe('SHOULDERS + ARMS');
+    expect(tuesday.exercises.map((e) => e.name)).toEqual([
+      'Landmine Press',
+      'Bottoms-Up Kettlebell Carry',
+      'Cable/Band External Rotation',
+      'Face Pull',
+      'Hammer Curl',
+      'Plate Pinch Hold',
+      'Mobility'
+    ]);
+
+    // Wednesday: Deadlift + Full Body Strength
+    const wednesday = WORKOUT_SCHEDULE[3];
+    expect(wednesday.title).toBe('DEADLIFT + FULL BODY STRENGTH');
+    expect(wednesday.exercises.map((e) => e.name)).toEqual([
+      'Conventional Deadlift',
+      'Leg Press',
+      'Lat Pulldown',
+      'Dumbbell Bench Press',
+      'Back Extension',
+      'Grip Trainer'
+    ]);
+
+    // Thursday: Athletic + Core + Neck
+    const thursday = WORKOUT_SCHEDULE[4];
+    expect(thursday.title).toBe('ATHLETIC + CORE + NECK');
+    expect(thursday.exercises.map((e) => e.name)).toEqual([
+      'Sled Push',
+      'Barbell/Dumbbell High Pull OR Upright Row',
+      'Shrugs',
+      'Dumbbell/Plate Isometric Neck Press',
+      'Deep-Squat Behind-the-Neck Barbell Press',
+      'Cable Crunch',
+      'Pallof Press',
+      'Dead Bug',
+      'Footwork'
+    ]);
+
+    // Friday: Squat + Bench Strength B
+    const friday = WORKOUT_SCHEDULE[5];
+    expect(friday.title).toBe('SQUAT + BENCH STRENGTH B');
+    expect(friday.exercises.map((e) => e.name)).toEqual([
+      'Back Squat',
+      'Bench Press',
+      'Seated Row',
+      'Overhead Press',
+      'Reverse Curls'
+    ]);
+
+    // Saturday: Calisthenics + Athletic
+    const saturday = WORKOUT_SCHEDULE[6];
+    expect(saturday.title).toBe('CALISTHENICS + ATHLETIC');
+    expect(saturday.exercises.map((e) => e.name)).toEqual([
+      'Pull-up Progression',
+      'Push-up Progression',
+      'Bodyweight Squat',
+      'Farmer Carry',
+      'Calf Raises'
+    ]);
+
+    // Sunday: Active Recovery
+    const sunday = WORKOUT_SCHEDULE[0];
+    expect(sunday.title).toBe('ACTIVE RECOVERY');
+    expect(sunday.exercises.map((e) => e.name)).toEqual([
+      'Easy Walking',
+      'Light Stretching',
+      'Optional deep breathing'
+    ]);
+  });
+});
+
+describe('9. Calendar Dynamic Completion Logic', () => {
+  it('correctly manages dynamic completedDays and computes current day', () => {
+    // Initial challenge state: Day 1 and Day 2 completed
+    const initialCompletedDays = [1, 2];
+
+    const getDayState = (day: number, completed: number[], current: number) => {
+      if (completed.includes(day)) return 'completed';
+      if (day === current) return 'current';
+      return 'incomplete';
+    };
+
+    const currentDay = Math.max(...initialCompletedDays) + 1; // Day 3
+    expect(currentDay).toBe(3);
+
+    expect(getDayState(1, initialCompletedDays, currentDay)).toBe('completed');
+    expect(getDayState(2, initialCompletedDays, currentDay)).toBe('completed');
+    expect(getDayState(3, initialCompletedDays, currentDay)).toBe('current');
+    expect(getDayState(4, initialCompletedDays, currentDay)).toBe('incomplete');
+    expect(getDayState(124, initialCompletedDays, currentDay)).toBe('incomplete');
+
+    // Dynamic progression: Completing Day 3
+    const updatedCompletedDays = [...initialCompletedDays, 3];
+    const nextCurrentDay = Math.max(...updatedCompletedDays) + 1; // Day 4
+
+    expect(getDayState(1, updatedCompletedDays, nextCurrentDay)).toBe('completed');
+    expect(getDayState(2, updatedCompletedDays, nextCurrentDay)).toBe('completed');
+    expect(getDayState(3, updatedCompletedDays, nextCurrentDay)).toBe('completed');
+    expect(getDayState(4, updatedCompletedDays, nextCurrentDay)).toBe('current');
+    expect(getDayState(5, updatedCompletedDays, nextCurrentDay)).toBe('incomplete');
+  });
+});

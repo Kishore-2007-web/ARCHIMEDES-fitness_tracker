@@ -1,4 +1,4 @@
-import { WorkoutScheduleDay, PreparationSection, ExerciseDefinition } from '../types/workout';
+import { WorkoutScheduleDay, PreparationSection } from '../types/workout';
 
 // 15-Exercise Common Warm-Up Protocol (18–22 min)
 export const COMMON_WARMUP_CHECKLIST: string[] = [
