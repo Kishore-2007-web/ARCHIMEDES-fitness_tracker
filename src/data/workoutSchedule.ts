@@ -121,6 +121,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     primaryAttributes: ['strength', 'discipline', 'focus'],
     preparationSections: COMMON_WARMUP_SECTIONS,
     preparationChecklist: COMMON_WARMUP_CHECKLIST,
+    preworkoutImageUrl: '/warmup-protocol.jpg',
     exercises: [
       {
         id: 'back_squat',
@@ -208,6 +209,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     primaryAttributes: ['strength', 'mobility', 'discipline'],
     preparationSections: COMMON_WARMUP_SECTIONS,
     preparationChecklist: COMMON_WARMUP_CHECKLIST,
+    preworkoutImageUrl: '/warmup-protocol.jpg',
     exercises: [
       {
         id: 'landmine_press',
@@ -293,6 +295,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     primaryAttributes: ['strength', 'endurance', 'discipline'],
     preparationSections: COMMON_WARMUP_SECTIONS,
     preparationChecklist: COMMON_WARMUP_CHECKLIST,
+    preworkoutImageUrl: '/warmup-protocol.jpg',
     exercises: [
       {
         id: 'conventional_deadlift',
@@ -370,6 +373,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     primaryAttributes: ['agility', 'endurance', 'mobility'],
     preparationSections: COMMON_WARMUP_SECTIONS,
     preparationChecklist: COMMON_WARMUP_CHECKLIST,
+    preworkoutImageUrl: '/warmup-protocol.jpg',
     exercises: [
       {
         id: 'sled_push',
@@ -473,6 +477,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     primaryAttributes: ['strength', 'discipline', 'focus'],
     preparationSections: COMMON_WARMUP_SECTIONS,
     preparationChecklist: COMMON_WARMUP_CHECKLIST,
+    preworkoutImageUrl: '/warmup-protocol.jpg',
     exercises: [
       {
         id: 'back_squat',
@@ -542,6 +547,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     primaryAttributes: ['strength', 'endurance', 'agility', 'discipline'],
     preparationSections: COMMON_WARMUP_SECTIONS,
     preparationChecklist: COMMON_WARMUP_CHECKLIST,
+    preworkoutImageUrl: '/warmup-protocol.jpg',
     exercises: [
       {
         id: 'pullup_progression',
@@ -603,14 +609,15 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     title: 'ACTIVE RECOVERY',
     subtitle: 'System Restoration, Joint Flushing & Aerobic Reset',
     baseXP: 100,
-    preparationMinutes: 0,
+    preparationMinutes: 20,
     recoveryMinutes: 45,
     walkingMinutes: 45,
     walkingRange: '30–45 min',
     dayNote: 'Active recovery day. No heavy loads. Flush lactate, mobilize joints, reset autonomic nervous system.',
     primaryAttributes: ['mobility', 'endurance', 'focus'],
-    preparationSections: [],
-    preparationChecklist: [],
+    preparationSections: COMMON_WARMUP_SECTIONS,
+    preparationChecklist: COMMON_WARMUP_CHECKLIST,
+    preworkoutImageUrl: '/warmup-protocol.jpg',
     exercises: [
       {
         id: 'easy_walking',

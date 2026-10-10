@@ -26,6 +26,7 @@ export const RecoverySection: React.FC<RecoverySectionProps> = ({
   onToggleWalking
 }) => {
   const [isOpen, setIsOpen] = useState(false);
+  const [showImage, setShowImage] = useState(false);
 
   return (
     <div style={{ marginBottom: '16px' }}>
@@ -54,9 +55,53 @@ export const RecoverySection: React.FC<RecoverySectionProps> = ({
         <div className="sys-collapsible-content anim-fade-in">
           {/* Recovery Elements */}
           <div style={{ marginBottom: '14px' }}>
-            <div className="font-mono" style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>
-              RECOVERY PROTOCOL ({durationMinutes} MIN)
+            <div className="font-mono flex-between" style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '8px' }}>
+              <span>RECOVERY PROTOCOL ({durationMinutes} MIN)</span>
             </div>
+
+            {/* VIEW IMAGE BUTTON UNDER RECOVERY PROTOCOL */}
+            <div style={{ marginBottom: '10px' }}>
+              <button
+                type="button"
+                className="sys-btn sys-btn-subtle font-mono"
+                style={{
+                  width: 'auto',
+                  minHeight: '30px',
+                  padding: '4px 12px',
+                  fontSize: '11px',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => setShowImage(!showImage)}
+              >
+                <span>📷</span> {showImage ? 'HIDE IMAGE' : 'VIEW IMAGE'}
+              </button>
+            </div>
+
+            {showImage && (
+              <div
+                className="anim-fade-in"
+                style={{
+                  marginBottom: '12px',
+                  border: '1px solid var(--border-medium)',
+                  background: '#050505',
+                  padding: '10px'
+                }}
+              >
+                <div className="font-mono" style={{ textAlign: 'center', padding: '10px 8px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                    RECOVERY PROTOCOL — VISUAL GUIDE
+                  </div>
+                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                    No diagram attached yet for recovery protocol. Follow decompression and aerobic flushing items below.
+                  </div>
+                </div>
+              </div>
+            )}
             {sections && sections.length > 0 ? (
               sections.map((sec, idx) => (
                 <div key={idx} style={{ marginBottom: '8px' }}>

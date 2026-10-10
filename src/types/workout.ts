@@ -54,6 +54,9 @@ export interface WorkoutScheduleDay {
   recoverySections?: PreparationSection[];
   recoveryChecklist: string[];
   primaryAttributes: ('strength' | 'endurance' | 'agility' | 'mobility' | 'discipline' | 'focus')[];
+  preworkoutImageUrl?: string;
+  exerciseProtocolImageUrl?: string;
+  recoveryProtocolImageUrl?: string;
 }
 
 export interface LoggedSet {

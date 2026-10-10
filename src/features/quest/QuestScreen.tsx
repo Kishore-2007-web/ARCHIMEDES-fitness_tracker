@@ -32,6 +32,7 @@ export const QuestScreen: React.FC = () => {
   const [showScheduleModal, setShowScheduleModal] = useState<boolean>(false);
   const [isFinalizing, setIsFinalizing] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
+  const [showWorkoutImage, setShowWorkoutImage] = useState<boolean>(false);
 
   // Compute selected day metadata
   const selectedDateStr = getDateStringForDayNumber(selectedDayNumber);
@@ -260,6 +261,50 @@ export const QuestScreen: React.FC = () => {
               <span>MAIN WORKOUT</span>
               <span className="sys-tag">{schedule.exercises.length} MOVEMENTS</span>
             </div>
+
+            {/* VIEW IMAGE BUTTON UNDER MAIN WORKOUT / EXERCISE PROTOCOL */}
+            <div style={{ padding: '0 12px 10px 12px' }}>
+              <button
+                type="button"
+                className="sys-btn sys-btn-subtle font-mono"
+                style={{
+                  width: 'auto',
+                  minHeight: '30px',
+                  padding: '4px 12px',
+                  fontSize: '11px',
+                  fontWeight: 800,
+                  letterSpacing: '0.08em',
+                  display: 'inline-flex',
+                  alignItems: 'center',
+                  gap: '6px',
+                  cursor: 'pointer'
+                }}
+                onClick={() => setShowWorkoutImage(!showWorkoutImage)}
+              >
+                <span>📷</span> {showWorkoutImage ? 'HIDE IMAGE' : 'VIEW IMAGE'}
+              </button>
+            </div>
+
+            {showWorkoutImage && (
+              <div
+                className="anim-fade-in"
+                style={{
+                  margin: '0 12px 12px 12px',
+                  border: '1px solid var(--border-medium)',
+                  background: '#050505',
+                  padding: '10px'
+                }}
+              >
+                <div className="font-mono" style={{ textAlign: 'center', padding: '10px 8px' }}>
+                  <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                    {schedule.title} — EXERCISE PROTOCOL
+                  </div>
+                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                    No diagram attached yet for this movement protocol. Follow movement list and execution notes below.
+                  </div>
+                </div>
+              </div>
+            )}
 
             <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
               {schedule.exercises.map((ex, idx) => {
