@@ -468,14 +468,14 @@ export const WeeklyScheduleModal: React.FC<WeeklyScheduleModalProps> = ({
                 >
                   <span>📷</span> {isRecoveryImageOpen ? 'HIDE IMAGE' : 'VIEW IMAGE'}
                 </button>
-                {isRecoveryImageOpen && day.recoveryProtocolImageUrl && (
+                {isRecoveryImageOpen && (
                   <button
                     type="button"
                     onClick={() =>
                       setLightboxData({
-                        src: day.recoveryProtocolImageUrl!,
-                        title: 'RECOVERY PROTOCOL',
-                        subtitle: `${day.weekdayName} // RECOVERY`
+                        src: day.recoveryProtocolImageUrl || '/recovery-protocol.jpg',
+                        title: '15 MIN RECOVERY PROTOCOL',
+                        subtitle: `${day.weekdayName} // RECOVERY PROTOCOL`
                       })
                     }
                     style={{
@@ -493,7 +493,7 @@ export const WeeklyScheduleModal: React.FC<WeeklyScheduleModalProps> = ({
                 )}
               </div>
 
-              {/* RECOVERY PROTOCOL IMAGE / VISUAL GUIDE DISPLAY */}
+              {/* RECOVERY PROTOCOL IMAGE DISPLAY */}
               {isRecoveryImageOpen && (
                 <div
                   className="anim-fade-in"
@@ -501,52 +501,39 @@ export const WeeklyScheduleModal: React.FC<WeeklyScheduleModalProps> = ({
                     marginBottom: '12px',
                     border: '1px solid var(--border-medium)',
                     background: '#050505',
-                    padding: '10px'
+                    padding: '8px'
                   }}
                 >
-                  {day.recoveryProtocolImageUrl ? (
-                    <>
-                      <div
-                        className="flex-between font-mono"
-                        style={{
-                          fontSize: '10px',
-                          color: 'var(--text-muted)',
-                          letterSpacing: '0.1em',
-                          marginBottom: '6px'
-                        }}
-                      >
-                        <span>RECOVERY PROTOCOL DIAGRAM</span>
-                        <span style={{ color: 'var(--text-secondary)' }}>CLICK IMAGE TO ZOOM</span>
-                      </div>
-                      <img
-                        src={day.recoveryProtocolImageUrl}
-                        alt="Recovery Protocol Diagram"
-                        style={{
-                          width: '100%',
-                          height: 'auto',
-                          display: 'block',
-                          border: '1px solid var(--border-faint)',
-                          cursor: 'zoom-in'
-                        }}
-                        onClick={() =>
-                          setLightboxData({
-                            src: day.recoveryProtocolImageUrl!,
-                            title: 'RECOVERY PROTOCOL',
-                            subtitle: `${day.weekdayName} // RECOVERY`
-                          })
-                        }
-                      />
-                    </>
-                  ) : (
-                    <div className="font-mono" style={{ textAlign: 'center', padding: '12px 8px' }}>
-                      <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>
-                        RECOVERY PROTOCOL — VISUAL GUIDE
-                      </div>
-                      <div style={{ fontSize: '10px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                        Reference diagram not yet attached for recovery protocol. Follow decompression and aerobic flushing items below.
-                      </div>
-                    </div>
-                  )}
+                  <div
+                    className="flex-between font-mono"
+                    style={{
+                      fontSize: '10px',
+                      color: 'var(--text-muted)',
+                      letterSpacing: '0.1em',
+                      marginBottom: '6px'
+                    }}
+                  >
+                    <span>15 MIN RECOVERY — COOL-DOWN · MOBILITY · DECOMPRESSION</span>
+                    <span style={{ color: 'var(--text-secondary)' }}>CLICK IMAGE TO ZOOM</span>
+                  </div>
+                  <img
+                    src={day.recoveryProtocolImageUrl || '/recovery-protocol.jpg'}
+                    alt="15 Min Recovery Routine"
+                    style={{
+                      width: '100%',
+                      height: 'auto',
+                      display: 'block',
+                      border: '1px solid var(--border-faint)',
+                      cursor: 'zoom-in'
+                    }}
+                    onClick={() =>
+                      setLightboxData({
+                        src: day.recoveryProtocolImageUrl || '/recovery-protocol.jpg',
+                        title: '15 MIN RECOVERY PROTOCOL',
+                        subtitle: `${day.weekdayName} // RECOVERY PROTOCOL`
+                      })
+                    }
+                  />
                 </div>
               )}
 

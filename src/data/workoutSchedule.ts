@@ -190,7 +190,8 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       }
     ],
     recoverySections: COMMON_RECOVERY_SECTIONS,
-    recoveryChecklist: COMMON_RECOVERY_CHECKLIST
+    recoveryChecklist: COMMON_RECOVERY_CHECKLIST,
+    recoveryProtocolImageUrl: '/recovery-protocol.jpg'
   },
 
   // 2 = TUESDAY: Shoulders + Arms
@@ -276,7 +277,8 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       }
     ],
     recoverySections: COMMON_RECOVERY_SECTIONS,
-    recoveryChecklist: COMMON_RECOVERY_CHECKLIST
+    recoveryChecklist: COMMON_RECOVERY_CHECKLIST,
+    recoveryProtocolImageUrl: '/recovery-protocol.jpg'
   },
 
   // 3 = WEDNESDAY: Deadlift + Full Body Strength
@@ -354,7 +356,8 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       }
     ],
     recoverySections: COMMON_RECOVERY_SECTIONS,
-    recoveryChecklist: COMMON_RECOVERY_CHECKLIST
+    recoveryChecklist: COMMON_RECOVERY_CHECKLIST,
+    recoveryProtocolImageUrl: '/recovery-protocol.jpg'
   },
 
   // 4 = THURSDAY: Athletic + Core + Neck
@@ -458,7 +461,8 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       }
     ],
     recoverySections: COMMON_RECOVERY_SECTIONS,
-    recoveryChecklist: COMMON_RECOVERY_CHECKLIST
+    recoveryChecklist: COMMON_RECOVERY_CHECKLIST,
+    recoveryProtocolImageUrl: '/recovery-protocol.jpg'
   },
 
   // 5 = FRIDAY: Squat + Bench Strength B
@@ -528,7 +532,8 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       }
     ],
     recoverySections: COMMON_RECOVERY_SECTIONS,
-    recoveryChecklist: COMMON_RECOVERY_CHECKLIST
+    recoveryChecklist: COMMON_RECOVERY_CHECKLIST,
+    recoveryProtocolImageUrl: '/recovery-protocol.jpg'
   },
 
   // 6 = SATURDAY: Calisthenics + Athletic
@@ -598,7 +603,8 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       }
     ],
     recoverySections: COMMON_RECOVERY_SECTIONS,
-    recoveryChecklist: COMMON_RECOVERY_CHECKLIST
+    recoveryChecklist: COMMON_RECOVERY_CHECKLIST,
+    recoveryProtocolImageUrl: '/recovery-protocol.jpg'
   },
 
   // 0 = SUNDAY: Active Recovery
@@ -662,6 +668,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       'Easy Walking — 30–45 min',
       'Light Stretching — 10–15 min',
       'Optional deep breathing — 2–5 min'
-    ]
+    ],
+    recoveryProtocolImageUrl: '/recovery-protocol.jpg'
   }
 };

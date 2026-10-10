@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { PreparationSection } from '../../types/workout';
 import { Button } from '../../components/common/Button';
+import { ImageViewerModal } from '../../components/overlays/ImageViewerModal';
 
 interface RecoverySectionProps {
   durationMinutes: number;
@@ -12,6 +13,7 @@ interface RecoverySectionProps {
   isWalkingComplete: boolean;
   onToggleRecovery: (val: boolean) => void;
   onToggleWalking: (val: boolean) => void;
+  imageUrl?: string;
 }
 
 export const RecoverySection: React.FC<RecoverySectionProps> = ({
@@ -23,10 +25,12 @@ export const RecoverySection: React.FC<RecoverySectionProps> = ({
   isRecoveryComplete,
   isWalkingComplete,
   onToggleRecovery,
-  onToggleWalking
+  onToggleWalking,
+  imageUrl = '/recovery-protocol.jpg'
 }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [showImage, setShowImage] = useState(false);
+  const [showLightbox, setShowLightbox] = useState(false);
 
   return (
     <div style={{ marginBottom: '16px' }}>
@@ -60,7 +64,7 @@ export const RecoverySection: React.FC<RecoverySectionProps> = ({
             </div>
 
             {/* VIEW IMAGE BUTTON UNDER RECOVERY PROTOCOL */}
-            <div style={{ marginBottom: '10px' }}>
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', marginBottom: '10px' }}>
               <button
                 type="button"
                 className="sys-btn sys-btn-subtle font-mono"
@@ -80,26 +84,59 @@ export const RecoverySection: React.FC<RecoverySectionProps> = ({
               >
                 <span>📷</span> {showImage ? 'HIDE IMAGE' : 'VIEW IMAGE'}
               </button>
+              {showImage && (
+                <button
+                  type="button"
+                  onClick={() => setShowLightbox(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    textDecoration: 'underline',
+                    cursor: 'pointer'
+                  }}
+                >
+                  🔍 FULLSCREEN
+                </button>
+              )}
             </div>
 
             {showImage && (
               <div
                 className="anim-fade-in"
                 style={{
-                  marginBottom: '12px',
+                  marginBottom: '14px',
                   border: '1px solid var(--border-medium)',
                   background: '#050505',
-                  padding: '10px'
+                  padding: '8px'
                 }}
               >
-                <div className="font-mono" style={{ textAlign: 'center', padding: '10px 8px' }}>
-                  <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>
-                    RECOVERY PROTOCOL — VISUAL GUIDE
-                  </div>
-                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                    No diagram attached yet for recovery protocol. Follow decompression and aerobic flushing items below.
-                  </div>
+                <div
+                  className="flex-between font-mono"
+                  style={{
+                    fontSize: '10px',
+                    color: 'var(--text-muted)',
+                    letterSpacing: '0.1em',
+                    marginBottom: '6px'
+                  }}
+                >
+                  <span>15 MIN RECOVERY — COOL-DOWN · MOBILITY · DECOMPRESSION</span>
+                  <span style={{ color: 'var(--text-secondary)' }}>CLICK IMAGE TO ZOOM</span>
                 </div>
+                <img
+                  src={imageUrl}
+                  alt="15 Min Recovery Routine"
+                  style={{
+                    width: '100%',
+                    height: 'auto',
+                    display: 'block',
+                    border: '1px solid var(--border-faint)',
+                    cursor: 'zoom-in'
+                  }}
+                  onClick={() => setShowLightbox(true)}
+                />
               </div>
             )}
             {sections && sections.length > 0 ? (
@@ -159,6 +196,14 @@ export const RecoverySection: React.FC<RecoverySectionProps> = ({
           )}
         </div>
       )}
+
+      <ImageViewerModal
+        isOpen={showLightbox}
+        onClose={() => setShowLightbox(false)}
+        src={imageUrl}
+        title="15 MIN RECOVERY PROTOCOL"
+        subtitle="RECOVERY PROTOCOL"
+      />
     </div>
   );
 };
