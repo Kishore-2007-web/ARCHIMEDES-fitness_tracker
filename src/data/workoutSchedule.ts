@@ -378,6 +378,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     preparationSections: COMMON_WARMUP_SECTIONS,
     preparationChecklist: COMMON_WARMUP_CHECKLIST,
     preworkoutImageUrl: '/warmup-protocol.jpg',
+    exerciseProtocolImageUrl: '/thursday-exercise-protocol.jpg',
     exercises: [
       {
         id: 'sled_push',
@@ -417,7 +418,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
       },
       {
         id: 'deep_squat_btn_press',
-        name: 'Deep-Squat Behind-the-Neck Barbell Press',
+        name: 'Deep-Squat Behind-the-Neck Barbell Press (Zoro)',
         targetSets: 3,
         targetRepOrDuration: '6–8',
         metricType: 'WEIGHT_REPS',

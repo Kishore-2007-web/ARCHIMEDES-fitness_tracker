@@ -75,4 +75,17 @@ describe('7-Day Workout Blueprint Image Integration', () => {
     const monday = WORKOUT_SCHEDULE[1];
     expect(monday.exerciseProtocolImageUrl).toBe('/monday-exercise-protocol.jpg');
   });
+
+  it('Public thursday-exercise-protocol.jpg exists and Thursday has exerciseProtocolImageUrl and Zoro exercise', () => {
+    const publicPath = path.resolve(__dirname, '../../public/thursday-exercise-protocol.jpg');
+    expect(fs.existsSync(publicPath)).toBe(true);
+    const stats = fs.statSync(publicPath);
+    expect(stats.size).toBeGreaterThan(100000); // 356KB image
+
+    const thursday = WORKOUT_SCHEDULE[4];
+    expect(thursday.exerciseProtocolImageUrl).toBe('/thursday-exercise-protocol.jpg');
+    const zoroExercise = thursday.exercises.find((ex) => ex.id === 'deep_squat_btn_press');
+    expect(zoroExercise).toBeDefined();
+    expect(zoroExercise!.name).toContain('Zoro');
+  });
 });
