@@ -299,6 +299,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     preparationSections: COMMON_WARMUP_SECTIONS,
     preparationChecklist: COMMON_WARMUP_CHECKLIST,
     preworkoutImageUrl: '/warmup-protocol.jpg',
+    exerciseProtocolImageUrl: '/wednesday-exercise-protocol.jpg',
     exercises: [
       {
         id: 'conventional_deadlift',
