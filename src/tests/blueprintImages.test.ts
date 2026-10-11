@@ -76,14 +76,14 @@ describe('7-Day Workout Blueprint Image Integration', () => {
     expect(friday.exerciseProtocolImageUrl).toBe('/friday-exercise-protocol.jpg');
   });
 
-  it('Public monday-exercise-protocol.png exists and Monday has exerciseProtocolImageUrl', () => {
-    const publicPath = path.resolve(__dirname, '../../public/monday-exercise-protocol.png');
+  it('Public monday-exercise-protocol.jpg exists and Monday has exerciseProtocolImageUrl', () => {
+    const publicPath = path.resolve(__dirname, '../../public/monday-exercise-protocol.jpg');
     expect(fs.existsSync(publicPath)).toBe(true);
     const stats = fs.statSync(publicPath);
-    expect(stats.size).toBeGreaterThan(100000); // 239KB image
+    expect(stats.size).toBeGreaterThan(100000); // 363KB image
 
     const monday = WORKOUT_SCHEDULE[1];
-    expect(monday.exerciseProtocolImageUrl).toBe('/monday-exercise-protocol.png');
+    expect(monday.exerciseProtocolImageUrl).toBe('/monday-exercise-protocol.jpg');
   });
 
   it('Public thursday-exercise-protocol.jpg exists and Thursday has exerciseProtocolImageUrl and Zoro exercise', () => {
