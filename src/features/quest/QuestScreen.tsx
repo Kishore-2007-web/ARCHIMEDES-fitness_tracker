@@ -7,6 +7,7 @@ import { getExerciseHistory } from '../../lib/firebase/db';
 import { Button } from '../../components/common/Button';
 import { ExceptionModal } from '../../components/overlays/ExceptionModal';
 import { WeeklyScheduleModal } from '../../components/overlays/WeeklyScheduleModal';
+import { ImageViewerModal } from '../../components/overlays/ImageViewerModal';
 import { padDayNumber } from '../../lib/formatting/formatters';
 import { getDateStringForDayNumber, getChallengeDay, TOTAL_CHALLENGE_DAYS } from '../../lib/dates/challengeDates';
 import { ExceptionReason } from '../../types/workout';
@@ -33,6 +34,7 @@ export const QuestScreen: React.FC = () => {
   const [isFinalizing, setIsFinalizing] = useState<boolean>(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [showWorkoutImage, setShowWorkoutImage] = useState<boolean>(false);
+  const [showWorkoutLightbox, setShowWorkoutLightbox] = useState<boolean>(false);
 
   // Compute selected day metadata
   const selectedDateStr = getDateStringForDayNumber(selectedDayNumber);
@@ -263,7 +265,7 @@ export const QuestScreen: React.FC = () => {
             </div>
 
             {/* VIEW IMAGE BUTTON UNDER MAIN WORKOUT / EXERCISE PROTOCOL */}
-            <div style={{ padding: '0 12px 10px 12px' }}>
+            <div style={{ padding: '0 12px 10px 12px', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
               <button
                 type="button"
                 className="sys-btn sys-btn-subtle font-mono"
@@ -283,6 +285,23 @@ export const QuestScreen: React.FC = () => {
               >
                 <span>📷</span> {showWorkoutImage ? 'HIDE IMAGE' : 'VIEW IMAGE'}
               </button>
+              {showWorkoutImage && schedule.exerciseProtocolImageUrl && (
+                <button
+                  type="button"
+                  onClick={() => setShowWorkoutLightbox(true)}
+                  style={{
+                    background: 'none',
+                    border: 'none',
+                    color: 'var(--text-secondary)',
+                    fontFamily: 'var(--font-mono)',
+                    fontSize: '11px',
+                    textDecoration: 'underline',
+                    cursor: 'pointer'
+                  }}
+                >
+                  🔍 FULLSCREEN
+                </button>
+              )}
             </div>
 
             {showWorkoutImage && (
@@ -292,17 +311,46 @@ export const QuestScreen: React.FC = () => {
                   margin: '0 12px 12px 12px',
                   border: '1px solid var(--border-medium)',
                   background: '#050505',
-                  padding: '10px'
+                  padding: '8px'
                 }}
               >
-                <div className="font-mono" style={{ textAlign: 'center', padding: '10px 8px' }}>
-                  <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>
-                    {schedule.title} — EXERCISE PROTOCOL
+                {schedule.exerciseProtocolImageUrl ? (
+                  <>
+                    <div
+                      className="flex-between font-mono"
+                      style={{
+                        fontSize: '10px',
+                        color: 'var(--text-muted)',
+                        letterSpacing: '0.1em',
+                        marginBottom: '6px'
+                      }}
+                    >
+                      <span>{schedule.title} // EXERCISE PROTOCOL</span>
+                      <span style={{ color: 'var(--text-secondary)' }}>CLICK IMAGE TO ZOOM</span>
+                    </div>
+                    <img
+                      src={schedule.exerciseProtocolImageUrl}
+                      alt={`${schedule.title} Exercise Diagram`}
+                      style={{
+                        width: '100%',
+                        height: 'auto',
+                        display: 'block',
+                        border: '1px solid var(--border-faint)',
+                        cursor: 'zoom-in'
+                      }}
+                      onClick={() => setShowWorkoutLightbox(true)}
+                    />
+                  </>
+                ) : (
+                  <div className="font-mono" style={{ textAlign: 'center', padding: '10px 8px' }}>
+                    <div style={{ fontSize: '11px', fontWeight: 800, color: 'var(--text-primary)', marginBottom: '4px' }}>
+                      {schedule.title} — EXERCISE PROTOCOL
+                    </div>
+                    <div style={{ fontSize: '10px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
+                      No diagram attached yet for this movement protocol. Follow movement list and execution notes below.
+                    </div>
                   </div>
-                  <div style={{ fontSize: '10px', color: 'var(--text-muted)', lineHeight: 1.5 }}>
-                    No diagram attached yet for this movement protocol. Follow movement list and execution notes below.
-                  </div>
-                </div>
+                )}
               </div>
             )}
 
@@ -458,6 +506,14 @@ export const QuestScreen: React.FC = () => {
           setShowScheduleModal(false);
           setIsTrainingActive(false);
         }}
+      />
+
+      <ImageViewerModal
+        isOpen={showWorkoutLightbox}
+        onClose={() => setShowWorkoutLightbox(false)}
+        src={schedule.exerciseProtocolImageUrl || ''}
+        title={schedule.title}
+        subtitle={`${dayInfo.weekdayName} // EXERCISE PROTOCOL`}
       />
     </div>
   );

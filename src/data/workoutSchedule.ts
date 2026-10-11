@@ -122,6 +122,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     preparationSections: COMMON_WARMUP_SECTIONS,
     preparationChecklist: COMMON_WARMUP_CHECKLIST,
     preworkoutImageUrl: '/warmup-protocol.jpg',
+    exerciseProtocolImageUrl: '/monday-exercise-protocol.jpg',
     exercises: [
       {
         id: 'back_squat',
@@ -553,6 +554,7 @@ export const WORKOUT_SCHEDULE: Record<number, WorkoutScheduleDay> = {
     preparationSections: COMMON_WARMUP_SECTIONS,
     preparationChecklist: COMMON_WARMUP_CHECKLIST,
     preworkoutImageUrl: '/warmup-protocol.jpg',
+    exerciseProtocolImageUrl: '/saturday-exercise-protocol.jpg',
     exercises: [
       {
         id: 'pullup_progression',

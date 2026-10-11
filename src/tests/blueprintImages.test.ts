@@ -55,4 +55,24 @@ describe('7-Day Workout Blueprint Image Integration', () => {
     expect(COMMON_RECOVERY_SECTIONS[1].title).toContain('Lower Body & Hip Recovery');
     expect(COMMON_RECOVERY_SECTIONS[2].title).toContain('Spine & Upper Body Decompression');
   });
+
+  it('Public saturday-exercise-protocol.jpg exists and Saturday has exerciseProtocolImageUrl', () => {
+    const publicPath = path.resolve(__dirname, '../../public/saturday-exercise-protocol.jpg');
+    expect(fs.existsSync(publicPath)).toBe(true);
+    const stats = fs.statSync(publicPath);
+    expect(stats.size).toBeGreaterThan(100000); // 428KB image
+
+    const saturday = WORKOUT_SCHEDULE[6];
+    expect(saturday.exerciseProtocolImageUrl).toBe('/saturday-exercise-protocol.jpg');
+  });
+
+  it('Public monday-exercise-protocol.jpg exists and Monday has exerciseProtocolImageUrl', () => {
+    const publicPath = path.resolve(__dirname, '../../public/monday-exercise-protocol.jpg');
+    expect(fs.existsSync(publicPath)).toBe(true);
+    const stats = fs.statSync(publicPath);
+    expect(stats.size).toBeGreaterThan(100000); // 312KB image
+
+    const monday = WORKOUT_SCHEDULE[1];
+    expect(monday.exerciseProtocolImageUrl).toBe('/monday-exercise-protocol.jpg');
+  });
 });
