@@ -66,7 +66,7 @@ describe('7-Day Workout Blueprint Image Integration', () => {
     expect(saturday.exerciseProtocolImageUrl).toBe('/saturday-exercise-protocol.jpg');
   });
 
-  it('Public friday-exercise-protocol.jpg exists, Friday has exerciseProtocolImageUrl, and Monday is empty', () => {
+  it('Public friday-exercise-protocol.jpg exists and Friday has exerciseProtocolImageUrl', () => {
     const publicPath = path.resolve(__dirname, '../../public/friday-exercise-protocol.jpg');
     expect(fs.existsSync(publicPath)).toBe(true);
     const stats = fs.statSync(publicPath);
@@ -74,9 +74,16 @@ describe('7-Day Workout Blueprint Image Integration', () => {
 
     const friday = WORKOUT_SCHEDULE[5];
     expect(friday.exerciseProtocolImageUrl).toBe('/friday-exercise-protocol.jpg');
+  });
+
+  it('Public monday-exercise-protocol.png exists and Monday has exerciseProtocolImageUrl', () => {
+    const publicPath = path.resolve(__dirname, '../../public/monday-exercise-protocol.png');
+    expect(fs.existsSync(publicPath)).toBe(true);
+    const stats = fs.statSync(publicPath);
+    expect(stats.size).toBeGreaterThan(100000); // 239KB image
 
     const monday = WORKOUT_SCHEDULE[1];
-    expect(monday.exerciseProtocolImageUrl).toBeUndefined();
+    expect(monday.exerciseProtocolImageUrl).toBe('/monday-exercise-protocol.png');
   });
 
   it('Public thursday-exercise-protocol.jpg exists and Thursday has exerciseProtocolImageUrl and Zoro exercise', () => {
@@ -100,5 +107,15 @@ describe('7-Day Workout Blueprint Image Integration', () => {
 
     const wednesday = WORKOUT_SCHEDULE[3];
     expect(wednesday.exerciseProtocolImageUrl).toBe('/wednesday-exercise-protocol.jpg');
+  });
+
+  it('Public tuesday-exercise-protocol.jpg exists and Tuesday has exerciseProtocolImageUrl', () => {
+    const publicPath = path.resolve(__dirname, '../../public/tuesday-exercise-protocol.jpg');
+    expect(fs.existsSync(publicPath)).toBe(true);
+    const stats = fs.statSync(publicPath);
+    expect(stats.size).toBeGreaterThan(100000); // 324KB image
+
+    const tuesday = WORKOUT_SCHEDULE[2];
+    expect(tuesday.exerciseProtocolImageUrl).toBe('/tuesday-exercise-protocol.jpg');
   });
 });
