@@ -424,7 +424,7 @@ describe('8. Updated Workout Schedule Structure', () => {
       'Barbell/Dumbbell High Pull OR Upright Row',
       'Shrugs',
       'Dumbbell/Plate Isometric Neck Press',
-      'Deep-Squat Behind-the-Neck Barbell Press',
+      'Deep-Squat Behind-the-Neck Barbell Press (Zoro)',
       'Cable Crunch',
       'Pallof Press',
       'Dead Bug',

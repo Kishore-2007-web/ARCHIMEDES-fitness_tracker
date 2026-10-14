@@ -16,7 +16,7 @@ import { RecoverySection } from './RecoverySection';
 import { ActiveStepLogger } from './ActiveStepLogger';
 
 export const QuestScreen: React.FC = () => {
-  const { currentUser, isOnline } = useAuth();
+  const { currentUser } = useAuth();
   const {
     selectedDayNumber,
     setSelectedDayNumber,
