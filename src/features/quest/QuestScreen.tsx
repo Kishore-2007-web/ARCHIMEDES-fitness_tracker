@@ -84,10 +84,6 @@ export const QuestScreen: React.FC = () => {
   };
 
   const handleFinalize = async () => {
-    if (!isOnline) {
-      setErrorMessage('CONNECTION REQUIRED: ARCHIMEDES requires an active connection to safely save progression.');
-      return;
-    }
     setErrorMessage(null);
     setIsFinalizing(true);
     try {
@@ -102,10 +98,6 @@ export const QuestScreen: React.FC = () => {
   };
 
   const handleExceptionConfirm = async (reason: ExceptionReason, isReduced?: boolean) => {
-    if (!isOnline) {
-      setErrorMessage('CONNECTION REQUIRED: Active connection required.');
-      return;
-    }
     setErrorMessage(null);
     setIsFinalizing(true);
     try {

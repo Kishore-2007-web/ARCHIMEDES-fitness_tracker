@@ -99,6 +99,8 @@ export const LoginScreen: React.FC = () => {
       setLocalError('Sign-in cancelled: popup was closed.');
     } else if (code === 'auth/unauthorized-domain' || message.includes('unauthorized-domain')) {
       setLocalError('Unauthorized domain. Add localhost to Firebase Console -> Authentication -> Authorized domains.');
+    } else if (code === 'auth/network-request-failed' || !navigator.onLine) {
+      setLocalError('Network connection unavailable. Tap ENTER STANDALONE PROTOCOL below for 100% offline access.');
     } else {
       setLocalError(message || 'Authentication error.');
     }
@@ -516,7 +518,7 @@ export const LoginScreen: React.FC = () => {
           <span>CONTINUE WITH GOOGLE</span>
         </button>
 
-        {/* Instant Operator Mode */}
+        {/* Instant Standalone Offline Mode */}
         <button
           id="btn-operator-login"
           type="button"
@@ -542,8 +544,29 @@ export const LoginScreen: React.FC = () => {
             e.currentTarget.style.color = 'var(--text-secondary)';
           }}
         >
-          OPEN HOME (OPERATOR MODE)
+          ENTER STANDALONE PROTOCOL (100% OFFLINE)
         </button>
+
+        {email.trim().length > 0 && (
+          <button
+            type="button"
+            onClick={handleOfflineEmailEntry}
+            style={{
+              width: '100%',
+              minHeight: '34px',
+              marginTop: '6px',
+              background: 'transparent',
+              border: 'none',
+              color: 'var(--text-muted)',
+              fontFamily: 'var(--font-mono)',
+              fontSize: '11px',
+              textDecoration: 'underline',
+              cursor: 'pointer'
+            }}
+          >
+            Or start offline profile with "{email.trim()}"
+          </button>
+        )}
 
         <div
           className="font-mono"
@@ -554,7 +577,7 @@ export const LoginScreen: React.FC = () => {
             lineHeight: 1.4
           }}
         >
-          Zero setup required · Full 124-day progression, workout logger, PRs & offline storage
+          Autonomous PWA · Zero cloud dependency · Full 124-day progression, workout logger, PRs & offline storage
         </div>
 
         <div

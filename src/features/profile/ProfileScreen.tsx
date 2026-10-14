@@ -125,6 +125,68 @@ export const ProfileScreen: React.FC = () => {
     setTransactions((prev) => [tx, ...prev]);
   };
 
+  const [backupFeedback, setBackupFeedback] = useState<string | null>(null);
+
+  const handleExportBackup = () => {
+    try {
+      const dump: Record<string, string> = {};
+      for (let i = 0; i < localStorage.length; i++) {
+        const key = localStorage.key(i);
+        if (key && key.startsWith('archimedes_')) {
+          const val = localStorage.getItem(key);
+          if (val) dump[key] = val;
+        }
+      }
+      const dataStr = 'data:text/json;charset=utf-8,' + encodeURIComponent(JSON.stringify(dump, null, 2));
+      const downloadAnchor = document.createElement('a');
+      downloadAnchor.setAttribute('href', dataStr);
+      downloadAnchor.setAttribute('download', `archimedes-backup-${new Date().toISOString().split('T')[0]}.json`);
+      document.body.appendChild(downloadAnchor);
+      downloadAnchor.click();
+      downloadAnchor.remove();
+      setBackupFeedback('BACKUP EXPORTED SUCCESSFULLY');
+      setTimeout(() => setBackupFeedback(null), 4000);
+    } catch (err: any) {
+      setBackupFeedback('EXPORT FAILED: ' + (err.message || 'Unknown error'));
+    }
+  };
+
+  const handleImportBackup = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const content = event.target?.result as string;
+        const data = JSON.parse(content);
+        if (typeof data !== 'object' || data === null) {
+          throw new Error('Invalid backup structure');
+        }
+
+        let importedCount = 0;
+        Object.entries(data).forEach(([key, value]) => {
+          if (key.startsWith('archimedes_') && typeof value === 'string') {
+            localStorage.setItem(key, value);
+            importedCount++;
+          }
+        });
+
+        if (importedCount === 0) {
+          throw new Error('No valid ARCHIMEDES system data found.');
+        }
+
+        setBackupFeedback(`RESTORED ${importedCount} SYSTEM ENTRIES. REBOOTING...`);
+        setTimeout(() => {
+          window.location.reload();
+        }, 1200);
+      } catch (err: any) {
+        setBackupFeedback('IMPORT ERROR: ' + (err.message || 'Invalid backup file'));
+      }
+    };
+    reader.readAsText(file);
+  };
+
   const handleConfirmDeleteAccount = async () => {
     if (deleteConfirmText !== 'DELETE') return;
     setIsDeleting(true);
@@ -350,6 +412,65 @@ export const ProfileScreen: React.FC = () => {
                 </span>
               </div>
             ))}
+          </div>
+        )}
+      </section>
+
+      {/* OFFLINE STORAGE & BACKUP (STANDALONE PWA) */}
+      <section className="sys-section font-mono">
+        <div className="sys-section-title">
+          <span>OFFLINE STORAGE & BACKUP</span>
+          <span className="sys-tag">STANDALONE PWA</span>
+        </div>
+        <p style={{ fontSize: '12px', color: 'var(--text-secondary)', lineHeight: 1.4, margin: '6px 0 14px 0' }}>
+          Your 120-day journey is stored autonomously in local device storage. Export a portable JSON backup anytime to safeguard your progression.
+        </p>
+
+        <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+          <button
+            type="button"
+            onClick={handleExportBackup}
+            className="sys-btn"
+            style={{
+              border: '1px solid var(--border-medium)',
+              fontSize: '11px',
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              minHeight: '44px',
+              cursor: 'pointer'
+            }}
+          >
+            EXPORT BACKUP
+          </button>
+
+          <label
+            className="sys-btn"
+            style={{
+              border: '1px solid var(--border-medium)',
+              fontSize: '11px',
+              fontWeight: 700,
+              letterSpacing: '0.08em',
+              minHeight: '44px',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              cursor: 'pointer',
+              textAlign: 'center'
+            }}
+          >
+            IMPORT BACKUP
+            <input
+              type="file"
+              accept=".json"
+              onChange={handleImportBackup}
+              style={{ display: 'none' }}
+            />
+          </label>
+        </div>
+
+        {backupFeedback && (
+          <div style={{ marginTop: '10px', fontSize: '11px', color: '#00ff66', letterSpacing: '0.05em' }}>
+            {backupFeedback}
           </div>
         )}
       </section>

@@ -60,7 +60,7 @@ interface UserProgressionContextType {
 const UserProgressionContext = createContext<UserProgressionContextType | undefined>(undefined);
 
 export const UserProgressionProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-  const { currentUser, userProfile, isOnline } = useAuth();
+  const { currentUser, userProfile } = useAuth();
 
   // Challenge day resolution
   const [challengeDay] = useState<ChallengeDayInfo>(() => getChallengeDay());
@@ -332,10 +332,6 @@ export const UserProgressionProvider: React.FC<{ children: React.ReactNode }> = 
 
   const finalizeCurrentSession = async (options: { isReduced?: boolean; exceptionReason?: ExceptionReason } = {}) => {
     if (!currentUser || !userProfile || !activeSession) return;
-
-    if (!isOnline) {
-      throw new Error('CONNECTION REQUIRED: ARCHIMEDES requires an active connection to safely save progression.');
-    }
 
     const result = await finalizeWorkoutSession({
       uid: currentUser.uid,
