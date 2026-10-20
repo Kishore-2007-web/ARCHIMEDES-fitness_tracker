@@ -662,3 +662,59 @@
   transition: width 0.25s cubic-bezier(0.16, 1, 0.3, 1);
   will-change: width;
 }
+
+/* Tactical System Initialization Animations */
+@keyframes sysRadarRotate {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sysRadarReverse {
+  0% {
+    transform: rotate(360deg);
+  }
+  100% {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes sysPulseCore {
+  0%, 100% {
+    transform: scale(0.92);
+    opacity: 0.6;
+    filter: drop-shadow(0 0 4px rgba(255, 255, 255, 0.4));
+  }
+  50% {
+    transform: scale(1.08);
+    opacity: 1;
+    filter: drop-shadow(0 0 14px rgba(255, 255, 255, 0.9));
+  }
+}
+
+@keyframes sysBarRunner {
+  0% {
+    left: -35%;
+    width: 30%;
+  }
+  50% {
+    left: 35%;
+    width: 45%;
+  }
+  100% {
+    left: 105%;
+    width: 30%;
+  }
+}
+
+@keyframes sysScanGrid {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 30px;
+  }
+}

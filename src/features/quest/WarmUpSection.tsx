@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PreparationSection } from '../../types/workout';
 import { Button } from '../../components/common/Button';
 import { ImageViewerModal } from '../../components/overlays/ImageViewerModal';
+import { TimedChecklistItem } from '../../components/common/TimedChecklistItem';
 
 interface WarmUpSectionProps {
   durationMinutes: number;
@@ -188,16 +189,7 @@ export const WarmUpSection: React.FC<WarmUpSectionProps> = ({
                         }}
                       >
                         {sec.items.map((item, iIdx) => (
-                          <div
-                            key={iIdx}
-                            style={{
-                              fontSize: '12px',
-                              color: 'var(--text-secondary)',
-                              lineHeight: 1.4
-                            }}
-                          >
-                            • {item}
-                          </div>
+                          <TimedChecklistItem key={iIdx} item={item} />
                         ))}
                       </div>
                     )}
@@ -208,9 +200,7 @@ export const WarmUpSection: React.FC<WarmUpSectionProps> = ({
           ) : (
             <div style={{ display: 'flex', flexDirection: 'column', gap: '6px', marginBottom: '14px' }}>
               {items.map((item, idx) => (
-                <div key={idx} style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                  • {item}
-                </div>
+                <TimedChecklistItem key={idx} item={item} />
               ))}
             </div>
           )}

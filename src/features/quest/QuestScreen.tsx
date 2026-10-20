@@ -14,6 +14,8 @@ import { ExceptionReason } from '../../types/workout';
 import { WarmUpSection } from './WarmUpSection';
 import { RecoverySection } from './RecoverySection';
 import { ActiveStepLogger } from './ActiveStepLogger';
+import { ExerciseStopwatch } from '../../components/common/ExerciseStopwatch';
+import { parseDurationFromText } from '../../lib/formatting/durationParser';
 
 export const QuestScreen: React.FC = () => {
   const { currentUser } = useAuth();
@@ -51,6 +53,7 @@ export const QuestScreen: React.FC = () => {
   const [isTrainingActive, setIsTrainingActive] = useState<boolean>(() => hasLoggedSets);
   const [activeExerciseIndex, setActiveExerciseIndex] = useState<number>(0);
   const [showFinalizeSection, setShowFinalizeSection] = useState<boolean>(false);
+  const [openExerciseTimerId, setOpenExerciseTimerId] = useState<string | null>(null);
 
   // Auto-resume to active mode if session already has logged sets
   useEffect(() => {
@@ -350,31 +353,79 @@ export const QuestScreen: React.FC = () => {
               {schedule.exercises.map((ex, idx) => {
                 const logged = activeSession?.exercises[ex.id]?.sets || [];
                 const isComplete = logged.length >= ex.targetSets;
+                const parsed = parseDurationFromText(ex.targetRepOrDuration);
+                const isTimed = ex.metricType === 'DURATION' || ex.metricType === 'WEIGHT_DURATION' || parsed !== null;
+                const isTimerOpen = openExerciseTimerId === ex.id;
 
                 return (
                   <div
                     key={ex.id}
-                    className="font-mono flex-between"
                     style={{
-                      padding: '8px 10px',
                       backgroundColor: 'var(--bg-primary)',
-                      border: '1px solid var(--border-subtle)',
-                      fontSize: '13px'
+                      border: isTimerOpen ? '1px solid #ffffff' : '1px solid var(--border-subtle)',
+                      transition: 'border 0.2s'
                     }}
                   >
-                    <div>
-                      <span style={{ color: 'var(--text-muted)', marginRight: '8px' }}>
-                        {idx + 1}.
-                      </span>
-                      <span style={{ fontWeight: 700 }}>{ex.name}</span>
+                    <div
+                      className="font-mono flex-between"
+                      style={{
+                        padding: '10px',
+                        fontSize: '13px'
+                      }}
+                    >
+                      <div>
+                        <span style={{ color: 'var(--text-muted)', marginRight: '8px' }}>
+                          {idx + 1}.
+                        </span>
+                        <span style={{ fontWeight: 700 }}>{ex.name}</span>
+                      </div>
+
+                      <div className="flex-center gap-2">
+                        <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
+                          {ex.targetSets} × {ex.targetRepOrDuration}
+                        </span>
+
+                        {isTimed && (
+                          <button
+                            type="button"
+                            onClick={() => setOpenExerciseTimerId(isTimerOpen ? null : ex.id)}
+                            className="font-mono"
+                            style={{
+                              background: isTimerOpen ? '#ffffff' : 'rgba(255, 255, 255, 0.08)',
+                              color: isTimerOpen ? '#000000' : '#ffffff',
+                              border: '1px solid var(--border-medium)',
+                              padding: '2px 8px',
+                              fontSize: '10px',
+                              fontWeight: 800,
+                              cursor: 'pointer',
+                              borderRadius: '2px',
+                              display: 'inline-flex',
+                              alignItems: 'center',
+                              gap: '4px'
+                            }}
+                            title={`Open stopwatch for ${ex.name}`}
+                          >
+                            <span>⏱</span>
+                            <span>{isTimerOpen ? 'HIDE' : `${parsed?.primarySeconds || 30}s`}</span>
+                          </button>
+                        )}
+
+                        {isComplete && <span style={{ color: '#ffffff', fontWeight: 800 }}>✓</span>}
+                      </div>
                     </div>
 
-                    <div className="flex-center gap-2">
-                      <span style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                        {ex.targetSets} × {ex.targetRepOrDuration}
-                      </span>
-                      {isComplete && <span style={{ color: '#ffffff', fontWeight: 800 }}>✓</span>}
-                    </div>
+                    {isTimed && isTimerOpen && (
+                      <div style={{ padding: '0 10px 10px 10px' }}>
+                        <ExerciseStopwatch
+                          targetSeconds={parsed?.primarySeconds || 30}
+                          quickPresets={parsed?.availableOptions.length ? parsed.availableOptions : [15, 20, 30, 45, 60]}
+                          exerciseName={ex.name}
+                          compact={true}
+                          autoStart={true}
+                          onClose={() => setOpenExerciseTimerId(null)}
+                        />
+                      </div>
+                    )}
                   </div>
                 );
               })}

@@ -9,6 +9,7 @@ import { SystemScreen } from './features/system/SystemScreen';
 import { QuestScreen } from './features/quest/QuestScreen';
 import { XPRevealOverlay } from './components/overlays/XPRevealOverlay';
 import { LevelUpOverlay } from './components/overlays/LevelUpOverlay';
+import { SystemLoadingScreen } from './components/common/SystemLoadingScreen';
 
 // Lazy-loaded secondary views for low-end mobile performance
 const StatsScreen = lazy(() => import('./features/stats/StatsScreen').then(m => ({ default: m.StatsScreen })));
@@ -55,54 +56,7 @@ export const AppContent: React.FC = () => {
   };
 
   if (loading) {
-    return (
-      <div className="flex-center min-h-screen bg-black font-mono text-center" style={{ padding: '24px' }}>
-        <div style={{ maxWidth: '340px', width: '100%' }}>
-          <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: 'var(--text-muted)' }}>
-            ARCHIMEDES // OS
-          </div>
-          <div style={{ fontSize: '16px', fontWeight: 800, marginTop: '8px', letterSpacing: '0.05em' }}>
-            INITIALIZING SYSTEM...
-          </div>
-          <div
-            style={{
-              width: '120px',
-              height: '2px',
-              background: 'var(--border-subtle)',
-              margin: '16px auto',
-              overflow: 'hidden',
-              position: 'relative'
-            }}
-          >
-            <div
-              style={{
-                width: '40px',
-                height: '100%',
-                background: '#ffffff',
-                position: 'absolute',
-                animation: 'pulse 1s infinite alternate'
-              }}
-            />
-          </div>
-
-          {showBypass && (
-            <div className="anim-fade-in" style={{ marginTop: '20px' }}>
-              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px' }}>
-                Connection taking longer than usual.
-              </div>
-              <button
-                type="button"
-                className="sys-btn sys-btn-inverted"
-                style={{ width: '100%', fontSize: '12px', padding: '10px 14px' }}
-                onClick={() => enterAsOperator()}
-              >
-                BYPASS // ENTER OPERATOR MODE
-              </button>
-            </div>
-          )}
-        </div>
-      </div>
-    );
+    return <SystemLoadingScreen onBypass={enterAsOperator} showBypass={showBypass} />;
   }
 
   // Unauthenticated screen

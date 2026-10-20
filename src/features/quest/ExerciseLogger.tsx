@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { ExerciseDefinition, LoggedSet } from '../../types/workout';
 import { ExerciseHistoricalRecord } from '../../types/progress';
 import { Button } from '../../components/common/Button';
+import { ExerciseStopwatch } from '../../components/common/ExerciseStopwatch';
+import { parseDurationFromText } from '../../lib/formatting/durationParser';
 
 interface ExerciseLoggerProps {
   exercise: ExerciseDefinition;
@@ -20,6 +22,7 @@ export const ExerciseLogger: React.FC<ExerciseLoggerProps> = ({
 }) => {
   const currentSetNumber = loggedSets.length + 1;
   const isAllTargetSetsCompleted = loggedSets.length >= exercise.targetSets;
+  const parsedDuration = parseDurationFromText(exercise.targetRepOrDuration);
 
   // Set input state
   const lastLoggedSet = loggedSets[loggedSets.length - 1];
@@ -176,7 +179,16 @@ export const ExerciseLogger: React.FC<ExerciseLoggerProps> = ({
         )}
 
         {exercise.metricType === 'DURATION' && (
-          <div style={{ marginBottom: '10px' }}>
+          <div style={{ marginBottom: '14px' }}>
+            <div style={{ marginBottom: '10px' }}>
+              <ExerciseStopwatch
+                targetSeconds={parsedDuration?.primarySeconds || (duration ? Number(duration) : 30)}
+                exerciseName={exercise.name}
+                quickPresets={parsedDuration?.availableOptions.length ? parsedDuration.availableOptions : [15, 20, 30, 45, 60]}
+                onApplyDuration={(sec) => setDuration(String(sec))}
+                compact={true}
+              />
+            </div>
             <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block' }}>
               DURATION (SECONDS)
             </label>
@@ -192,32 +204,43 @@ export const ExerciseLogger: React.FC<ExerciseLoggerProps> = ({
         )}
 
         {exercise.metricType === 'WEIGHT_DURATION' && (
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px', marginBottom: '10px' }}>
-            <div>
-              <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block' }}>
-                KG LOAD (PER HAND)
-              </label>
-              <input
-                type="number"
-                inputMode="decimal"
-                className="sys-input"
-                placeholder="Weight"
-                value={weight}
-                onChange={(e) => setWeight(e.target.value)}
+          <div style={{ marginBottom: '14px' }}>
+            <div style={{ marginBottom: '10px' }}>
+              <ExerciseStopwatch
+                targetSeconds={parsedDuration?.primarySeconds || (duration ? Number(duration) : 30)}
+                exerciseName={exercise.name}
+                quickPresets={parsedDuration?.availableOptions.length ? parsedDuration.availableOptions : [15, 20, 30, 45, 60]}
+                onApplyDuration={(sec) => setDuration(String(sec))}
+                compact={true}
               />
             </div>
-            <div>
-              <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block' }}>
-                HOLD SECONDS
-              </label>
-              <input
-                type="number"
-                inputMode="numeric"
-                className="sys-input"
-                placeholder="Seconds"
-                value={duration}
-                onChange={(e) => setDuration(e.target.value)}
-              />
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <div>
+                <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block' }}>
+                  KG LOAD (PER HAND)
+                </label>
+                <input
+                  type="number"
+                  inputMode="decimal"
+                  className="sys-input"
+                  placeholder="Weight"
+                  value={weight}
+                  onChange={(e) => setWeight(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block' }}>
+                  HOLD SECONDS
+                </label>
+                <input
+                  type="number"
+                  inputMode="numeric"
+                  className="sys-input"
+                  placeholder="Seconds"
+                  value={duration}
+                  onChange={(e) => setDuration(e.target.value)}
+                />
+              </div>
             </div>
           </div>
         )}

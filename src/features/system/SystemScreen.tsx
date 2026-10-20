@@ -12,6 +12,7 @@ import { formatXPNumber, padDayNumber } from '../../lib/formatting/formatters';
 import { WORKOUT_SCHEDULE } from '../../data/workoutSchedule';
 import { SYSTEM_BOSSES } from '../../data/bosses';
 import { TOTAL_CHALLENGE_DAYS } from '../../lib/dates/challengeDates';
+import { ExerciseStopwatch } from '../../components/common/ExerciseStopwatch';
 
 interface SystemScreenProps {
   onNavigateToQuest: () => void;
@@ -21,6 +22,7 @@ export const SystemScreen: React.FC<SystemScreenProps> = ({ onNavigateToQuest })
   const { userProfile } = useAuth();
   const { challengeDay, activeSession, setSelectedDayNumber } = useUserProgression();
   const [showBlueprintModal, setShowBlueprintModal] = useState<boolean>(false);
+  const [showBossStopwatch, setShowBossStopwatch] = useState<boolean>(false);
 
   if (!userProfile) return null;
 
@@ -182,10 +184,44 @@ export const SystemScreen: React.FC<SystemScreenProps> = ({ onNavigateToQuest })
                 {upcomingBoss.targetMetric?.description || upcomingBoss.subtitle}
               </div>
             </div>
-            <span className="sys-tag" style={{ fontSize: '10px', whiteSpace: 'nowrap', marginLeft: '12px' }}>
-              +{upcomingBoss.reward.xp} XP
-            </span>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+              {upcomingBoss.targetMetric?.type === 'DURATION' && (
+                <button
+                  type="button"
+                  onClick={() => setShowBossStopwatch(!showBossStopwatch)}
+                  className="font-mono"
+                  style={{
+                    background: showBossStopwatch ? '#ffffff' : 'rgba(255, 255, 255, 0.08)',
+                    color: showBossStopwatch ? '#000000' : '#ffffff',
+                    border: '1px solid var(--border-medium)',
+                    padding: '3px 8px',
+                    fontSize: '10px',
+                    fontWeight: 800,
+                    cursor: 'pointer',
+                    borderRadius: '2px'
+                  }}
+                  title={`Test ${upcomingBoss.targetMetric.targetValue}s stopwatch`}
+                >
+                  ⏱ {showBossStopwatch ? 'HIDE' : `${upcomingBoss.targetMetric.targetValue}s TIMER`}
+                </button>
+              )}
+              <span className="sys-tag" style={{ fontSize: '10px', whiteSpace: 'nowrap' }}>
+                +{upcomingBoss.reward.xp} XP
+              </span>
+            </div>
           </div>
+
+          {showBossStopwatch && upcomingBoss.targetMetric?.type === 'DURATION' && (
+            <div style={{ marginTop: '12px' }}>
+              <ExerciseStopwatch
+                targetSeconds={upcomingBoss.targetMetric.targetValue}
+                exerciseName={upcomingBoss.title}
+                compact={true}
+                autoStart={true}
+                onClose={() => setShowBossStopwatch(false)}
+              />
+            </div>
+          )}
         </section>
       )}
 

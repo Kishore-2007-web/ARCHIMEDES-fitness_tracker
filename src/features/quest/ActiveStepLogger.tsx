@@ -4,6 +4,8 @@ import { ExerciseHistoricalRecord } from '../../types/progress';
 import { useUserProgression } from '../../context/UserProgressionContext';
 import { formatSecondsToTimer } from '../../lib/formatting/formatters';
 import { Button } from '../../components/common/Button';
+import { ExerciseStopwatch } from '../../components/common/ExerciseStopwatch';
+import { parseDurationFromText } from '../../lib/formatting/durationParser';
 
 interface ActiveStepLoggerProps {
   exercises: ExerciseDefinition[];
@@ -31,6 +33,7 @@ export const ActiveStepLogger: React.FC<ActiveStepLoggerProps> = ({
   } = useUserProgression();
 
   const currentExercise = exercises[activeExerciseIndex] || exercises[0];
+  const parsedDuration = parseDurationFromText(currentExercise.targetRepOrDuration);
   const loggedSets = activeSession?.exercises[currentExercise.id]?.sets || [];
   const currentSetNumber = loggedSets.length + 1;
   const isExerciseDone = loggedSets.length >= currentExercise.targetSets;
@@ -406,7 +409,16 @@ export const ActiveStepLogger: React.FC<ActiveStepLoggerProps> = ({
 
             {/* DURATION */}
             {currentExercise.metricType === 'DURATION' && (
-              <div style={{ marginBottom: '14px' }}>
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ marginBottom: '10px' }}>
+                  <ExerciseStopwatch
+                    targetSeconds={parsedDuration?.primarySeconds || (duration ? Number(duration) : 30)}
+                    exerciseName={currentExercise.name}
+                    quickPresets={parsedDuration?.availableOptions.length ? parsedDuration.availableOptions : [15, 20, 30, 45, 60]}
+                    onApplyDuration={(sec) => setDuration(String(sec))}
+                    compact={true}
+                  />
+                </div>
                 <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
                   DURATION (SECONDS)
                 </label>
@@ -423,32 +435,43 @@ export const ActiveStepLogger: React.FC<ActiveStepLoggerProps> = ({
 
             {/* WEIGHT_DURATION */}
             {currentExercise.metricType === 'WEIGHT_DURATION' && (
-              <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px', marginBottom: '14px' }}>
-                <div>
-                  <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
-                    KG LOAD (PER HAND)
-                  </label>
-                  <input
-                    type="number"
-                    inputMode="decimal"
-                    className="sys-num-input"
-                    placeholder="kg"
-                    value={weight}
-                    onChange={(e) => setWeight(e.target.value)}
+              <div style={{ marginBottom: '16px' }}>
+                <div style={{ marginBottom: '10px' }}>
+                  <ExerciseStopwatch
+                    targetSeconds={parsedDuration?.primarySeconds || (duration ? Number(duration) : 30)}
+                    exerciseName={currentExercise.name}
+                    quickPresets={parsedDuration?.availableOptions.length ? parsedDuration.availableOptions : [15, 20, 30, 45, 60]}
+                    onApplyDuration={(sec) => setDuration(String(sec))}
+                    compact={true}
                   />
                 </div>
-                <div>
-                  <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
-                    HOLD SECONDS
-                  </label>
-                  <input
-                    type="number"
-                    inputMode="numeric"
-                    className="sys-num-input"
-                    placeholder="sec"
-                    value={duration}
-                    onChange={(e) => setDuration(e.target.value)}
-                  />
+                <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '10px' }}>
+                  <div>
+                    <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                      KG LOAD (PER HAND)
+                    </label>
+                    <input
+                      type="number"
+                      inputMode="decimal"
+                      className="sys-num-input"
+                      placeholder="kg"
+                      value={weight}
+                      onChange={(e) => setWeight(e.target.value)}
+                    />
+                  </div>
+                  <div>
+                    <label className="font-mono" style={{ fontSize: '10px', color: 'var(--text-muted)', display: 'block', marginBottom: '4px' }}>
+                      HOLD SECONDS
+                    </label>
+                    <input
+                      type="number"
+                      inputMode="numeric"
+                      className="sys-num-input"
+                      placeholder="sec"
+                      value={duration}
+                      onChange={(e) => setDuration(e.target.value)}
+                    />
+                  </div>
                 </div>
               </div>
             )}

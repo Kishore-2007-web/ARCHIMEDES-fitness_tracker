@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { PreparationSection } from '../../types/workout';
 import { Button } from '../../components/common/Button';
 import { ImageViewerModal } from '../../components/overlays/ImageViewerModal';
+import { TimedChecklistItem } from '../../components/common/TimedChecklistItem';
 
 interface RecoverySectionProps {
   durationMinutes: number;
@@ -147,9 +148,7 @@ export const RecoverySection: React.FC<RecoverySectionProps> = ({
                   </div>
                   <div style={{ display: 'flex', flexDirection: 'column', gap: '4px', marginTop: '4px', paddingLeft: '4px' }}>
                     {sec.items.map((it, iIdx) => (
-                      <div key={iIdx} style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                        • {it}
-                      </div>
+                      <TimedChecklistItem key={iIdx} item={it} />
                     ))}
                   </div>
                 </div>
@@ -157,9 +156,7 @@ export const RecoverySection: React.FC<RecoverySectionProps> = ({
             ) : (
               <div style={{ display: 'flex', flexDirection: 'column', gap: '4px' }}>
                 {items.map((it, idx) => (
-                  <div key={idx} style={{ fontSize: '12px', color: 'var(--text-secondary)' }}>
-                    • {it}
-                  </div>
+                  <TimedChecklistItem key={idx} item={it} />
                 ))}
               </div>
             )}
