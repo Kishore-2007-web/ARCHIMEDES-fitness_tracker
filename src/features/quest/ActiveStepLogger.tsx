@@ -5,7 +5,6 @@ import { useUserProgression } from '../../context/UserProgressionContext';
 import { formatSecondsToTimer } from '../../lib/formatting/formatters';
 import { Button } from '../../components/common/Button';
 import { ExerciseStopwatch } from '../../components/common/ExerciseStopwatch';
-import { parseDurationFromText } from '../../lib/formatting/durationParser';
 
 interface ActiveStepLoggerProps {
   exercises: ExerciseDefinition[];
@@ -33,7 +32,6 @@ export const ActiveStepLogger: React.FC<ActiveStepLoggerProps> = ({
   } = useUserProgression();
 
   const currentExercise = exercises[activeExerciseIndex] || exercises[0];
-  const parsedDuration = parseDurationFromText(currentExercise.targetRepOrDuration);
   const loggedSets = activeSession?.exercises[currentExercise.id]?.sets || [];
   const currentSetNumber = loggedSets.length + 1;
   const isExerciseDone = loggedSets.length >= currentExercise.targetSets;
@@ -88,8 +86,8 @@ export const ActiveStepLogger: React.FC<ActiveStepLoggerProps> = ({
 
     try {
       await onLogSet(currentExercise.id, newSet);
-      // Trigger default 3-minute silent rest timer
-      startRestTimer(180);
+      // Trigger default 30-second silent rest timer
+      startRestTimer(30);
     } catch (err) {
       console.error('Failed to log set:', err);
     } finally {
@@ -412,9 +410,9 @@ export const ActiveStepLogger: React.FC<ActiveStepLoggerProps> = ({
               <div style={{ marginBottom: '16px' }}>
                 <div style={{ marginBottom: '10px' }}>
                   <ExerciseStopwatch
-                    targetSeconds={parsedDuration?.primarySeconds || (duration ? Number(duration) : 30)}
+                    targetSeconds={30}
                     exerciseName={currentExercise.name}
-                    quickPresets={parsedDuration?.availableOptions.length ? parsedDuration.availableOptions : [15, 20, 30, 45, 60]}
+                    quickPresets={[15, 20, 30, 45, 60]}
                     onApplyDuration={(sec) => setDuration(String(sec))}
                     compact={true}
                   />
@@ -438,9 +436,9 @@ export const ActiveStepLogger: React.FC<ActiveStepLoggerProps> = ({
               <div style={{ marginBottom: '16px' }}>
                 <div style={{ marginBottom: '10px' }}>
                   <ExerciseStopwatch
-                    targetSeconds={parsedDuration?.primarySeconds || (duration ? Number(duration) : 30)}
+                    targetSeconds={30}
                     exerciseName={currentExercise.name}
-                    quickPresets={parsedDuration?.availableOptions.length ? parsedDuration.availableOptions : [15, 20, 30, 45, 60]}
+                    quickPresets={[15, 20, 30, 45, 60]}
                     onApplyDuration={(sec) => setDuration(String(sec))}
                     compact={true}
                   />

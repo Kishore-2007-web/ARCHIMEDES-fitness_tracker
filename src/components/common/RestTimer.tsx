@@ -33,14 +33,14 @@ export const RestTimer: React.FC = () => {
           {formatSecondsToTimer(restTimer.secondsRemaining)}
         </div>
         <div className="font-mono" style={{ fontSize: '11px', color: 'var(--text-muted)', marginTop: '6px' }}>
-          DEFAULT 03:00 // SILENT PROTOCOL
+          DEFAULT 00:30 // SILENT PROTOCOL
         </div>
       </div>
 
       <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
         {!restTimer.isActive ? (
-          <Button variant="inverted" onClick={() => startRestTimer(180)}>
-            START TIMER
+          <Button variant="inverted" onClick={() => startRestTimer(30)}>
+            START TIMER (30s)
           </Button>
         ) : (
           <Button variant="outline" onClick={pauseRestTimer}>

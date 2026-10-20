@@ -71,7 +71,7 @@ export const TimedChecklistItem: React.FC<TimedChecklistItemProps> = ({ item }) 
           title={`Open ${parsed.primarySeconds}s stopwatch for this exercise`}
         >
           <span>⏱</span>
-          <span>{showTimer ? 'HIDE' : `${parsed.primarySeconds}s TIMER`}</span>
+          <span>{showTimer ? 'HIDE' : '30s TIMER'}</span>
         </button>
       </div>
 
@@ -79,8 +79,8 @@ export const TimedChecklistItem: React.FC<TimedChecklistItemProps> = ({ item }) 
       {showTimer && (
         <div style={{ marginTop: '8px', marginBottom: '8px' }}>
           <ExerciseStopwatch
-            targetSeconds={parsed.primarySeconds}
-            quickPresets={parsed.availableOptions.length > 1 ? parsed.availableOptions : [15, parsed.primarySeconds, 45, 60]}
+            targetSeconds={30}
+            quickPresets={[15, 20, 30, 45, 60]}
             exerciseName={exerciseLabel.slice(0, 30)}
             compact={true}
             autoStart={true}

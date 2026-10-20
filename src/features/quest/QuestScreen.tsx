@@ -406,7 +406,7 @@ export const QuestScreen: React.FC = () => {
                             title={`Open stopwatch for ${ex.name}`}
                           >
                             <span>⏱</span>
-                            <span>{isTimerOpen ? 'HIDE' : `${parsed?.primarySeconds || 30}s`}</span>
+                            <span>{isTimerOpen ? 'HIDE' : '30s'}</span>
                           </button>
                         )}
 
@@ -417,8 +417,8 @@ export const QuestScreen: React.FC = () => {
                     {isTimed && isTimerOpen && (
                       <div style={{ padding: '0 10px 10px 10px' }}>
                         <ExerciseStopwatch
-                          targetSeconds={parsed?.primarySeconds || 30}
-                          quickPresets={parsed?.availableOptions.length ? parsed.availableOptions : [15, 20, 30, 45, 60]}
+                          targetSeconds={30}
+                          quickPresets={[15, 20, 30, 45, 60]}
                           exerciseName={ex.name}
                           compact={true}
                           autoStart={true}

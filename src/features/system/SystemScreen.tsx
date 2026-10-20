@@ -202,7 +202,7 @@ export const SystemScreen: React.FC<SystemScreenProps> = ({ onNavigateToQuest })
                   }}
                   title={`Test ${upcomingBoss.targetMetric.targetValue}s stopwatch`}
                 >
-                  ⏱ {showBossStopwatch ? 'HIDE' : `${upcomingBoss.targetMetric.targetValue}s TIMER`}
+                  ⏱ {showBossStopwatch ? 'HIDE' : '30s TIMER'}
                 </button>
               )}
               <span className="sys-tag" style={{ fontSize: '10px', whiteSpace: 'nowrap' }}>
@@ -214,7 +214,7 @@ export const SystemScreen: React.FC<SystemScreenProps> = ({ onNavigateToQuest })
           {showBossStopwatch && upcomingBoss.targetMetric?.type === 'DURATION' && (
             <div style={{ marginTop: '12px' }}>
               <ExerciseStopwatch
-                targetSeconds={upcomingBoss.targetMetric.targetValue}
+                targetSeconds={30}
                 exerciseName={upcomingBoss.title}
                 compact={true}
                 autoStart={true}

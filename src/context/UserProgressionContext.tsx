@@ -149,8 +149,8 @@ export const UserProgressionProvider: React.FC<{ children: React.ReactNode }> = 
   // Rest Timer State (Timestamp-based to survive backgrounding on Android OPPO A54)
   const [restTimer, setRestTimer] = useState<RestTimerState>({
     isActive: false,
-    secondsRemaining: 180,
-    totalDuration: 180,
+    secondsRemaining: 30,
+    totalDuration: 30,
     targetEndTime: null
   });
 
@@ -183,7 +183,7 @@ export const UserProgressionProvider: React.FC<{ children: React.ReactNode }> = 
     };
   }, [restTimer.isActive, restTimer.targetEndTime]);
 
-  const startRestTimer = (durationSeconds = 180) => {
+  const startRestTimer = (durationSeconds = 30) => {
     const target = Date.now() + durationSeconds * 1000;
     setRestTimer({
       isActive: true,
@@ -230,8 +230,8 @@ export const UserProgressionProvider: React.FC<{ children: React.ReactNode }> = 
   const resetRestTimer = () => {
     setRestTimer({
       isActive: false,
-      secondsRemaining: 180,
-      totalDuration: 180,
+      secondsRemaining: 30,
+      totalDuration: 30,
       targetEndTime: null
     });
   };

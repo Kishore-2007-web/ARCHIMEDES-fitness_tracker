@@ -3,7 +3,6 @@ import { ExerciseDefinition, LoggedSet } from '../../types/workout';
 import { ExerciseHistoricalRecord } from '../../types/progress';
 import { Button } from '../../components/common/Button';
 import { ExerciseStopwatch } from '../../components/common/ExerciseStopwatch';
-import { parseDurationFromText } from '../../lib/formatting/durationParser';
 
 interface ExerciseLoggerProps {
   exercise: ExerciseDefinition;
@@ -22,7 +21,6 @@ export const ExerciseLogger: React.FC<ExerciseLoggerProps> = ({
 }) => {
   const currentSetNumber = loggedSets.length + 1;
   const isAllTargetSetsCompleted = loggedSets.length >= exercise.targetSets;
-  const parsedDuration = parseDurationFromText(exercise.targetRepOrDuration);
 
   // Set input state
   const lastLoggedSet = loggedSets[loggedSets.length - 1];
@@ -182,9 +180,9 @@ export const ExerciseLogger: React.FC<ExerciseLoggerProps> = ({
           <div style={{ marginBottom: '14px' }}>
             <div style={{ marginBottom: '10px' }}>
               <ExerciseStopwatch
-                targetSeconds={parsedDuration?.primarySeconds || (duration ? Number(duration) : 30)}
+                targetSeconds={30}
                 exerciseName={exercise.name}
-                quickPresets={parsedDuration?.availableOptions.length ? parsedDuration.availableOptions : [15, 20, 30, 45, 60]}
+                quickPresets={[15, 20, 30, 45, 60]}
                 onApplyDuration={(sec) => setDuration(String(sec))}
                 compact={true}
               />
@@ -207,9 +205,9 @@ export const ExerciseLogger: React.FC<ExerciseLoggerProps> = ({
           <div style={{ marginBottom: '14px' }}>
             <div style={{ marginBottom: '10px' }}>
               <ExerciseStopwatch
-                targetSeconds={parsedDuration?.primarySeconds || (duration ? Number(duration) : 30)}
+                targetSeconds={30}
                 exerciseName={exercise.name}
-                quickPresets={parsedDuration?.availableOptions.length ? parsedDuration.availableOptions : [15, 20, 30, 45, 60]}
+                quickPresets={[15, 20, 30, 45, 60]}
                 onApplyDuration={(sec) => setDuration(String(sec))}
                 compact={true}
               />
