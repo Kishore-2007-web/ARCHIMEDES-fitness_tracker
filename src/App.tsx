@@ -16,8 +16,16 @@ const ProgressScreen = lazy(() => import('./features/progress/ProgressScreen').t
 const ProfileScreen = lazy(() => import('./features/profile/ProfileScreen').then(m => ({ default: m.ProfileScreen })));
 
 export const AppContent: React.FC = () => {
-  const { currentUser, userProfile, loading } = useAuth();
+  const { currentUser, userProfile, loading, enterAsOperator } = useAuth();
   const { xpRevealData, closeXPReveal, levelUpData, closeLevelUp } = useUserProgression();
+  const [showBypass, setShowBypass] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setShowBypass(true);
+    }, 1500);
+    return () => clearTimeout(timer);
+  }, []);
 
   // Route / Navigation State
   const [activeTab, setActiveTab] = useState<NavTab>(() => {
@@ -48,14 +56,50 @@ export const AppContent: React.FC = () => {
 
   if (loading) {
     return (
-      <div className="flex-center min-h-screen bg-black font-mono text-center">
-        <div>
+      <div className="flex-center min-h-screen bg-black font-mono text-center" style={{ padding: '24px' }}>
+        <div style={{ maxWidth: '340px', width: '100%' }}>
           <div style={{ fontSize: '11px', letterSpacing: '0.25em', color: 'var(--text-muted)' }}>
             ARCHIMEDES // OS
           </div>
-          <div style={{ fontSize: '16px', fontWeight: 800, marginTop: '8px' }}>
+          <div style={{ fontSize: '16px', fontWeight: 800, marginTop: '8px', letterSpacing: '0.05em' }}>
             INITIALIZING SYSTEM...
           </div>
+          <div
+            style={{
+              width: '120px',
+              height: '2px',
+              background: 'var(--border-subtle)',
+              margin: '16px auto',
+              overflow: 'hidden',
+              position: 'relative'
+            }}
+          >
+            <div
+              style={{
+                width: '40px',
+                height: '100%',
+                background: '#ffffff',
+                position: 'absolute',
+                animation: 'pulse 1s infinite alternate'
+              }}
+            />
+          </div>
+
+          {showBypass && (
+            <div className="anim-fade-in" style={{ marginTop: '20px' }}>
+              <div style={{ fontSize: '11px', color: 'var(--text-muted)', marginBottom: '12px' }}>
+                Connection taking longer than usual.
+              </div>
+              <button
+                type="button"
+                className="sys-btn sys-btn-inverted"
+                style={{ width: '100%', fontSize: '12px', padding: '10px 14px' }}
+                onClick={() => enterAsOperator()}
+              >
+                BYPASS // ENTER OPERATOR MODE
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );

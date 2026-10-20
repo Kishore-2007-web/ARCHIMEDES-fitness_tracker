@@ -40,6 +40,13 @@ function localSet<T>(key: string, value: T): void {
   } catch {}
 }
 
+function promiseWithTimeout<T>(promise: Promise<T>, ms: number, fallback: T): Promise<T> {
+  return Promise.race([
+    promise,
+    new Promise<T>((resolve) => setTimeout(() => resolve(fallback), ms))
+  ]);
+}
+
 /**
  * User Profile Firestore & LocalStorage Service
  */
@@ -49,8 +56,8 @@ export async function getUserProfile(uid: string): Promise<UserProfile | null> {
 
   try {
     const ref = doc(db, 'users', uid);
-    const snap = await getDoc(ref);
-    if (!snap.exists()) return localVal;
+    const snap = await promiseWithTimeout(getDoc(ref), 1800, null);
+    if (!snap || !snap.exists()) return localVal;
     const data = snap.data() as UserProfile;
     localSet(`archimedes_profile_${uid}`, data);
     return data;
@@ -65,7 +72,11 @@ export async function saveUserProfile(profile: UserProfile): Promise<void> {
 
   try {
     const ref = doc(db, 'users', profile.uid);
-    await setDoc(ref, { ...profile, updatedAt: new Date().toISOString() }, { merge: true });
+    await promiseWithTimeout(
+      setDoc(ref, { ...profile, updatedAt: new Date().toISOString() }, { merge: true }),
+      2000,
+      undefined
+    );
   } catch (err) {
     console.warn('Profile saved locally (offline mode active):', err);
   }

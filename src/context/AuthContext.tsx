@@ -141,10 +141,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   // Sync auth state with Firebase Auth
   useEffect(() => {
     let unsubscribeProfile: (() => void) | null = null;
+    let isMounted = true;
+
+    // Safety fallback: Never keep the user stuck on INITIALIZING SYSTEM for more than 1800ms
+    const safetyTimer = setTimeout(() => {
+      if (isMounted) {
+        setLoading(false);
+      }
+    }, 1800);
 
     checkRedirectResult()
       .then((user) => {
-        if (user) {
+        if (isMounted && user) {
           setCurrentUser(user);
         }
       })
@@ -160,57 +168,71 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       });
 
     const unsubscribeAuth = subscribeToAuthState(async (user) => {
-      if (user) {
-        // Authenticated Firebase Google user
-        try {
-          localStorage.removeItem('archimedes_active_mode');
-        } catch {}
-        setIsOperatorMode(false);
-        setCurrentUser(user);
-
-        try {
-          const profile = await getUserProfile(user.uid);
-          if (!profile) {
-            const initialProfile = createDefaultUserProfile(
-              user.uid,
-              user.displayName || 'ARCHIMEDES OPERATOR',
-              user.email || '',
-              user.photoURL || undefined
-            );
-            await saveUserProfile(initialProfile);
-            setUserProfile(initialProfile);
-          } else {
-            setUserProfile(profile);
+      try {
+        if (user) {
+          // Authenticated Firebase Google user
+          try {
+            localStorage.removeItem('archimedes_active_mode');
+          } catch {}
+          if (isMounted) {
+            setIsOperatorMode(false);
+            setCurrentUser(user);
           }
 
-          // Real-time Firestore sync
-          unsubscribeProfile = subscribeToUserProfile(user.uid, (p) => {
-            if (p) setUserProfile(p);
-          });
-        } catch (err) {
-          console.error('Error loading user profile:', err);
-        }
-      } else {
-        // No Firebase user signed in
-        if (unsubscribeProfile) unsubscribeProfile();
+          try {
+            const profile = await getUserProfile(user.uid);
+            if (!profile) {
+              const initialProfile = createDefaultUserProfile(
+                user.uid,
+                user.displayName || 'ARCHIMEDES OPERATOR',
+                user.email || '',
+                user.photoURL || undefined
+              );
+              saveUserProfile(initialProfile);
+              if (isMounted) setUserProfile(initialProfile);
+            } else {
+              if (isMounted) setUserProfile(profile);
+            }
 
-        if (isPreviouslyOperator()) {
-          const operatorUser = getInitialOperatorUser();
-          const operatorProfile = getInitialOperatorProfile();
-          setCurrentUser(operatorUser);
-          setUserProfile(operatorProfile);
-          setIsOperatorMode(true);
+            // Real-time Firestore sync
+            unsubscribeProfile = subscribeToUserProfile(user.uid, (p) => {
+              if (isMounted && p) setUserProfile(p);
+            });
+          } catch (err) {
+            console.error('Error loading user profile:', err);
+          }
         } else {
-          // Unauthenticated: present Login Screen
-          setCurrentUser(null);
-          setUserProfile(null);
-          setIsOperatorMode(false);
+          // No Firebase user signed in
+          if (unsubscribeProfile) unsubscribeProfile();
+
+          if (isPreviouslyOperator()) {
+            const operatorUser = getInitialOperatorUser();
+            const operatorProfile = getInitialOperatorProfile();
+            if (isMounted) {
+              setCurrentUser(operatorUser);
+              setUserProfile(operatorProfile);
+              setIsOperatorMode(true);
+            }
+          } else {
+            // Unauthenticated: present Login Screen
+            if (isMounted) {
+              setCurrentUser(null);
+              setUserProfile(null);
+              setIsOperatorMode(false);
+            }
+          }
+        }
+      } finally {
+        if (isMounted) {
+          clearTimeout(safetyTimer);
+          setLoading(false);
         }
       }
-      setLoading(false);
     });
 
     return () => {
+      isMounted = false;
+      clearTimeout(safetyTimer);
       unsubscribeAuth();
       if (unsubscribeProfile) unsubscribeProfile();
     };
@@ -272,6 +294,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
     setUserProfile(profile);
     saveUserProfile(profile);
+    setLoading(false);
   };
 
   const sendPasswordReset = async (email: string) => {
@@ -294,6 +317,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     );
     setUserProfile(profile);
     saveUserProfile(profile);
+    setLoading(false);
   };
 
   const logout = async () => {

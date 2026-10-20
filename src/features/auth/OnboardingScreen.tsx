@@ -53,23 +53,49 @@ export const OnboardingScreen: React.FC = () => {
     }
   };
 
-  const handleCompleteOnboarding = async () => {
+  const handleCompleteOnboarding = async (skipPhotos: boolean = false) => {
     if (!currentUser) return;
-    if (!frontBlob || !sideBlob || !backBlob) {
-      setErrorMsg('All 3 Day 1 baseline photos (Front, Side, Back) are mandatory.');
-      return;
-    }
 
     setStep('saving');
     setErrorMsg(null);
 
     try {
-      // 1. Upload photos to Firebase Storage under authenticated user path
-      const [frontUrl, sideUrl, backUrl] = await Promise.all([
-        uploadProgressPhoto(currentUser.uid, 'day001', 'front', frontBlob),
-        uploadProgressPhoto(currentUser.uid, 'day001', 'side', sideBlob),
-        uploadProgressPhoto(currentUser.uid, 'day001', 'back', backBlob)
-      ]);
+      let frontUrl: string | undefined = undefined;
+      let sideUrl: string | undefined = undefined;
+      let backUrl: string | undefined = undefined;
+
+      // 1. Upload any provided photos (optional)
+      if (!skipPhotos) {
+        const uploadTasks: Promise<void>[] = [];
+
+        if (frontBlob) {
+          uploadTasks.push(
+            uploadProgressPhoto(currentUser.uid, 'day001', 'front', frontBlob)
+              .then((u) => { frontUrl = u; })
+              .catch((e) => console.warn('Front photo upload notice:', e))
+          );
+        }
+        if (sideBlob) {
+          uploadTasks.push(
+            uploadProgressPhoto(currentUser.uid, 'day001', 'side', sideBlob)
+              .then((u) => { sideUrl = u; })
+              .catch((e) => console.warn('Side photo upload notice:', e))
+          );
+        }
+        if (backBlob) {
+          uploadTasks.push(
+            uploadProgressPhoto(currentUser.uid, 'day001', 'back', backBlob)
+              .then((u) => { backUrl = u; })
+              .catch((e) => console.warn('Back photo upload notice:', e))
+          );
+        }
+
+        if (uploadTasks.length > 0) {
+          await Promise.all(uploadTasks);
+        }
+      }
+
+      const hasAnyPhotos = Boolean(frontUrl || sideUrl || backUrl);
 
       // 2. Save Day 1 progress checkpoint document in Firestore
       await saveProgressCheckpoint(currentUser.uid, {
@@ -86,7 +112,7 @@ export const OnboardingScreen: React.FC = () => {
           side: sideUrl,
           back: backUrl
         },
-        photosComplete: true,
+        photosComplete: hasAnyPhotos,
         createdAt: new Date().toISOString(),
         updatedAt: new Date().toISOString()
       });
@@ -277,9 +303,14 @@ export const OnboardingScreen: React.FC = () => {
             </div>
           </div>
 
-          <Button variant="inverted" onClick={() => setStep('photos')}>
-            NEXT: DAY 1 PROGRESS PHOTOS
-          </Button>
+          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+            <Button variant="subtle" onClick={() => handleCompleteOnboarding(true)}>
+              SKIP PHOTOS & INITIALIZE
+            </Button>
+            <Button variant="inverted" onClick={() => setStep('photos')}>
+              NEXT: PHOTOS (OPTIONAL) →
+            </Button>
+          </div>
         </div>
       )}
 
@@ -287,11 +318,11 @@ export const OnboardingScreen: React.FC = () => {
         <div className="sys-section anim-fade-in">
           <div className="sys-section-title">
             <span>DAY 1 PROGRESS PHOTOS</span>
-            <span className="sys-tag">MANDATORY</span>
+            <span className="sys-tag" style={{ borderColor: 'var(--text-muted)', color: 'var(--text-muted)' }}>OPTIONAL</span>
           </div>
 
           <p style={{ fontSize: '12px', color: 'var(--text-secondary)', marginBottom: '16px' }}>
-            Day 1 front, side, and back photos anchor your 124-day physical timeline. Photos are compressed client-side, stripped of EXIF metadata, and stored privately under your UID.
+            Day 1 front, side, and back photos anchor your 124-day physical timeline (optional). You can upload photos now, upload only the ones you have, or skip this step entirely.
           </p>
 
           <div style={{ display: 'flex', flexDirection: 'column', gap: '14px', marginBottom: '20px' }}>
@@ -299,7 +330,9 @@ export const OnboardingScreen: React.FC = () => {
             <div style={{ border: '1px solid var(--border-subtle)', padding: '12px' }}>
               <div className="flex-between font-mono" style={{ fontSize: '12px', marginBottom: '8px' }}>
                 <span>1. FRONT PROFILE</span>
-                <span>{frontBlob ? '✓ READY' : 'REQUIRED'}</span>
+                <span style={{ color: frontBlob ? 'var(--neon-green)' : 'var(--text-muted)' }}>
+                  {frontBlob ? '✓ READY' : 'OPTIONAL'}
+                </span>
               </div>
               {frontPreview && (
                 <div style={{ marginBottom: '8px', textAlign: 'center' }}>
@@ -319,7 +352,9 @@ export const OnboardingScreen: React.FC = () => {
             <div style={{ border: '1px solid var(--border-subtle)', padding: '12px' }}>
               <div className="flex-between font-mono" style={{ fontSize: '12px', marginBottom: '8px' }}>
                 <span>2. SIDE PROFILE</span>
-                <span>{sideBlob ? '✓ READY' : 'REQUIRED'}</span>
+                <span style={{ color: sideBlob ? 'var(--neon-green)' : 'var(--text-muted)' }}>
+                  {sideBlob ? '✓ READY' : 'OPTIONAL'}
+                </span>
               </div>
               {sidePreview && (
                 <div style={{ marginBottom: '8px', textAlign: 'center' }}>
@@ -339,7 +374,9 @@ export const OnboardingScreen: React.FC = () => {
             <div style={{ border: '1px solid var(--border-subtle)', padding: '12px' }}>
               <div className="flex-between font-mono" style={{ fontSize: '12px', marginBottom: '8px' }}>
                 <span>3. BACK PROFILE</span>
-                <span>{backBlob ? '✓ READY' : 'REQUIRED'}</span>
+                <span style={{ color: backBlob ? 'var(--neon-green)' : 'var(--text-muted)' }}>
+                  {backBlob ? '✓ READY' : 'OPTIONAL'}
+                </span>
               </div>
               {backPreview && (
                 <div style={{ marginBottom: '8px', textAlign: 'center' }}>
@@ -356,16 +393,29 @@ export const OnboardingScreen: React.FC = () => {
             </div>
           </div>
 
-          <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
-            <Button variant="subtle" onClick={() => setStep('baseline')}>
-              BACK
-            </Button>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '10px' }}>
+            <div style={{ display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '8px' }}>
+              <Button variant="subtle" onClick={() => setStep('baseline')}>
+                ← BACK
+              </Button>
+              <Button
+                variant="subtle"
+                onClick={() => handleCompleteOnboarding(true)}
+                disabled={isProcessingPhoto}
+              >
+                SKIP PHOTOS
+              </Button>
+            </div>
             <Button
               variant="inverted"
-              onClick={handleCompleteOnboarding}
-              disabled={!frontBlob || !sideBlob || !backBlob || isProcessingPhoto}
+              onClick={() => handleCompleteOnboarding(false)}
+              disabled={isProcessingPhoto}
             >
-              {isProcessingPhoto ? 'PROCESSING...' : 'INITIALIZE SYSTEM'}
+              {isProcessingPhoto
+                ? 'PROCESSING...'
+                : (frontBlob || sideBlob || backBlob)
+                  ? 'INITIALIZE SYSTEM WITH PHOTOS'
+                  : 'INITIALIZE SYSTEM'}
             </Button>
           </div>
         </div>
